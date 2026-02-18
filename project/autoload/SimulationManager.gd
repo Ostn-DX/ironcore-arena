@@ -275,9 +275,9 @@ func _compute_target_score(bot, target, distance: float) -> float:
 	var w_hp: float = profile.get("w_hp", 0.2)
 	var w_focus: float = profile.get("w_focus", 0.5)
 	
-	var dist_score: float = 1.0 - clampf(distance / max_range, 0.0, 1.0)
-	var threat_score: float = clampf(target.compute_dps() / 100.0, 0.0, 1.0)
-	var hp_score: float = 1.0 - clampf(float(target.hp) / float(target.max_hp), 0.0, 1.0)
+	var dist_score: float = 1.0 - clamp(distance / max_range, 0.0, 1.0)
+	var threat_score: float = clamp(target.compute_dps() / 100.0, 0.0, 1.0)
+	var hp_score: float = 1.0 - clamp(float(target.hp) / float(target.max_hp), 0.0, 1.0)
 	var focus_score: float = 1.0 if target.sim_id == bot.target_id else 0.0
 	
 	return w_dist * dist_score + w_threat * threat_score + w_hp * hp_score + w_focus * focus_score
@@ -392,8 +392,8 @@ func _process_movement() -> void:
 		bot.position += bot.velocity * DT
 		
 		# Clamp to arena
-		bot.position.x = clampf(bot.position.x, bot.radius, arena_size.x - bot.radius)
-		bot.position.y = clampf(bot.position.y, bot.radius, arena_size.y - bot.radius)
+		bot.position.x = clamp(bot.position.x, bot.radius, arena_size.x - bot.radius)
+		bot.position.y = clamp(bot.position.y, bot.radius, arena_size.y - bot.radius)
 		
 		if not headless:
 			entity_moved.emit(bot.sim_id, bot.position, bot.rotation)
@@ -516,7 +516,7 @@ func _resolve_beam_hit(bot, target, wpn_data) -> void:
 	
 	# Apply resistances
 	var resistance: float = target.get("resist_energy", 0.0)
-	damage *= (1.0 - clampf(resistance, 0.0, 0.9))
+	damage *= (1.0 - clamp(resistance, 0.0, 0.9))
 	
 	_apply_damage(target, int(damage), bot.sim_id)
 

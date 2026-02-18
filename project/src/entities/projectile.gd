@@ -143,7 +143,7 @@ func resolve_hit(target_bot: Dictionary, rng: RandomNumberGenerator) -> Dictiona
 	elif damage_type == "explosive":
 		resistance = target_bot.get("resist_explosive", 0.0)
 	
-	actual_damage *= (1.0 - clampf(resistance, 0.0, 0.9))
+	actual_damage *= (1.0 - clamp(resistance, 0.0, 0.9))
 	result["damage"] = int(actual_damage)
 	
 	# Copy effects
