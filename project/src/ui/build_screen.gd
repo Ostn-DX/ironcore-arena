@@ -8,7 +8,7 @@ var current_bot: Dictionary = {
 	"id": "bot_1",
 	"name": "Bot 1",
 	"chassis": "chassis_light_t1",
-	"armor": "arm_plate_t1", 
+	"armor": "arm_plate_t1",
 	"weapon": "wpn_mg_t1"
 }
 
@@ -64,14 +64,14 @@ func _load_shop() -> void:
 				match_cat = (part_cat == "weapon" or part_cat == "utility")
 		
 		if match_cat:
-			var name: String = part.get("name", "Unknown")
+			var part_name: String = part.get("name", "Unknown")
 			var cost: int = part.get("cost", 0)
 			
 			var display: String
 			if GameState.is_arcade_mode():
-				display = name + " - FREE"
+				display = part_name + " - FREE"
 			else:
-				display = name + " - " + str(cost) + " CR"
+				display = part_name + " - " + str(cost) + " CR"
 			
 			shop_list.add_item(display)
 			shop_list.set_item_metadata(shop_list.get_item_count() - 1, part)
@@ -90,8 +90,8 @@ func _load_inventory() -> void:
 		if part.is_empty():
 			continue
 		
-		var name: String = part.get("name", "Unknown")
-		inventory_list.add_item(name + " [" + str(qty) + "]")
+		var part_name: String = part.get("name", "Unknown")
+		inventory_list.add_item(part_name + " [" + str(qty) + "]")
 		inventory_list.set_item_metadata(inventory_list.get_item_count() - 1, part)
 
 func _load_my_bots() -> void:
@@ -114,9 +114,24 @@ func _on_inventory_selected(index: int) -> void:
 
 func _on_my_bot_selected(index: int) -> void:
 	var bot: Dictionary = my_bots_list.get_item_metadata(index)
-	current_bot = bot
-	bot_name_edit.text = bot.get("name", "")
+	# Convert arrays to single strings if needed
+	current_bot["id"] = bot.get("id", "bot_1")
+	current_bot["name"] = bot.get("name", "Bot 1")
+	current_bot["chassis"] = _get_single_part(bot, "chassis")
+	current_bot["armor"] = _get_single_part(bot, "armor")
+	current_bot["weapon"] = _get_single_part(bot, "weapon")
+	
+	bot_name_edit.text = current_bot["name"]
 	_update_bot_display()
+
+func _get_single_part(bot: Dictionary, slot: String) -> String:
+	## Get a single part ID from bot, handling both array and string formats
+	var value = bot.get(slot, "")
+	if value is Array:
+		return value[0] if value.size() > 0 else ""
+	elif value is String:
+		return value
+	return ""
 
 func _update_preview() -> void:
 	if selected_part.is_empty():

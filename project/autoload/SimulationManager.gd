@@ -548,7 +548,7 @@ func _resolve_beam_hit(bot, target, wpn_data) -> void:
 	
 	_apply_damage(target, int(damage), bot.sim_id)
 
-func _get_bot_resistance(bot, damage_type: String) -> float:
+func _get_bot_resistance(_bot, _damage_type: String) -> float:
 	## Calculate total resistance from equipped armor parts
 	var total_resistance: float = 0.0
 	
