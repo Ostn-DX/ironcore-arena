@@ -544,9 +544,11 @@ func _on_back_to_campaign() -> void:
 
 
 func on_show() -> void:
+	print("BuildScreen on_show() called")
 	visible = true
 	_load_parts()
 	_update_display()
+	print("BuildScreen on_show() completed")
 
 
 func on_hide() -> void:

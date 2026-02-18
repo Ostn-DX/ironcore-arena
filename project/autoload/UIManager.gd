@@ -86,7 +86,10 @@ func show_screen(screen: Screen) -> void:
 		
 		# Notify screen it's shown
 		if screen_data["instance"].has_method("on_show"):
+			print("UIManager: Calling on_show for ", _screen_to_string(screen))
 			screen_data["instance"].on_show()
+		else:
+			print("UIManager: Screen ", _screen_to_string(screen), " has no on_show method")
 	
 	screen_changed.emit(_screen_to_string(screen))
 
