@@ -10,3 +10,136 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_build")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.08, 0.12, 1.0)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="MainHBox" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="LeftPanel" type="VBoxContainer" parent="MarginContainer/MainHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="MarginContainer/MainHBox/LeftPanel"]
+layout_mode = 2
+text = "PARTS"
+horizontal_alignment = 1
+
+[node name="PartsList" type="ItemList" parent="MarginContainer/MainHBox/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+item_count = 1
+item_0/text = "Loading..."
+
+[node name="CenterPanel" type="VBoxContainer" parent="MarginContainer/MainHBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="MarginContainer/MainHBox/CenterPanel"]
+layout_mode = 2
+text = "BOT ASSEMBLY"
+horizontal_alignment = 1
+
+[node name="NameEdit" type="LineEdit" parent="MarginContainer/MainHBox/CenterPanel"]
+layout_mode = 2
+placeholder_text = "Bot Name"
+text = "New Bot"
+
+[node name="SlotsContainer" type="GridContainer" parent="MarginContainer/MainHBox/CenterPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 3
+
+[node name="WeightLabel" type="Label" parent="MarginContainer/MainHBox/CenterPanel"]
+layout_mode = 2
+text = "0.0 / 0.0 kg"
+horizontal_alignment = 1
+
+[node name="WeightBar" type="ProgressBar" parent="MarginContainer/MainHBox/CenterPanel"]
+layout_mode = 2
+
+[node name="ButtonRow" type="HBoxContainer" parent="MarginContainer/MainHBox/CenterPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="SaveBtn" type="Button" parent="MarginContainer/MainHBox/CenterPanel/ButtonRow"]
+layout_mode = 2
+text = "Save"
+
+[node name="TestBtn" type="Button" parent="MarginContainer/MainHBox/CenterPanel/ButtonRow"]
+layout_mode = 2
+text = "Test Battle"
+
+[node name="BackBtn" type="Button" parent="MarginContainer/MainHBox/CenterPanel/ButtonRow"]
+layout_mode = 2
+text = "Back"
+
+[node name="RightPanel" type="VBoxContainer" parent="MarginContainer/MainHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="MarginContainer/MainHBox/RightPanel"]
+layout_mode = 2
+text = "SHOP"
+horizontal_alignment = 1
+
+[node name="CreditsLabel" type="Label" parent="MarginContainer/MainHBox/RightPanel"]
+layout_mode = 2
+text = "Credits: 0"
+horizontal_alignment = 1
+
+[node name="DetailsPanel" type="Panel" parent="MarginContainer/MainHBox/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DetailsLabel" type="Label" parent="MarginContainer/MainHBox/RightPanel/DetailsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+text = "Select a part to view details"
+autowrap_mode = 3
+
+[node name="BuyBtn" type="Button" parent="MarginContainer/MainHBox/RightPanel"]
+layout_mode = 2
+text = "Buy"
+
+[node name="SellBtn" type="Button" parent="MarginContainer/MainHBox/RightPanel"]
+layout_mode = 2
+text = "Sell"
+
+[connection signal="item_selected" from="MarginContainer/MainHBox/LeftPanel/PartsList" to="." method="_on_part_selected"]
+[connection signal="pressed" from="MarginContainer/MainHBox/CenterPanel/ButtonRow/SaveBtn" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="MarginContainer/MainHBox/CenterPanel/ButtonRow/TestBtn" to="." method="_on_test_pressed"]
+[connection signal="pressed" from="MarginContainer/MainHBox/CenterPanel/ButtonRow/BackBtn" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="MarginContainer/MainHBox/RightPanel/BuyBtn" to="." method="_on_buy_pressed"]
+[connection signal="pressed" from="MarginContainer/MainHBox/RightPanel/SellBtn" to="." method="_on_sell_pressed"]
