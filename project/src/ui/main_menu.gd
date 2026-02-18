@@ -2,7 +2,9 @@ extends Control
 ## MainMenu — entry point with campaign, arcade, settings, instructions, exit
 
 func _ready() -> void:
+	print("MainMenu _ready() called")
 	_setup_ui()
+	print("MainMenu _setup_ui() completed")
 
 func _setup_ui() -> void:
 	# Dark background
@@ -60,12 +62,15 @@ func _setup_ui() -> void:
 	_create_button("Exit", _on_exit_pressed, vbox)
 
 func _create_button(btn_text: String, callback: Callable, container: VBoxContainer) -> void:
+	print("Creating button: ", btn_text)
 	var btn: Button = Button.new()
 	btn.text = btn_text
 	btn.custom_minimum_size = Vector2(200, 50)
 	btn.add_theme_font_size_override("font_size", 20)
 	btn.pressed.connect(callback)
+	btn.pressed.connect(func(): print("Button pressed: ", btn_text))
 	container.add_child(btn)
+	print("Button added: ", btn_text)
 
 func _on_campaign_pressed() -> void:
 	print("Campaign pressed - calling show_build_screen")
