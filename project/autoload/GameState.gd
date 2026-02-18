@@ -40,6 +40,9 @@ var settings: Dictionary = {
 	"colorblind_mode": "none"
 }
 
+# Game mode: "campaign" or "arcade"
+var game_mode: String = "campaign"
+
 const SAVE_PATH: String = "user://ironcore_save.json"
 const CURRENT_VERSION: String = "0.1.0"
 
@@ -185,6 +188,32 @@ func unlock_campaign_node(node_id: String) -> void:
 		main_path.append(node_id)
 		campaign_progress["main"] = main_path
 		campaign_progress_changed.emit()
+
+
+func set_game_mode(mode: String) -> void:
+	game_mode = mode
+	if mode == "arcade":
+		_unlock_all_parts()
+
+func _unlock_all_parts() -> void:
+	## Give player 99 of every part for arcade sandbox mode
+	if not DataLoader:
+		return
+	
+	var all_parts: Array = DataLoader.get_all_parts()
+	for part in all_parts:
+		if part is Dictionary and part.has("id"):
+			owned_parts[part["id"]] = 99
+	
+	credits = 999999
+	parts_changed.emit()
+	print("Arcade mode: All parts unlocked!")
+
+func is_arcade_mode() -> bool:
+	return game_mode == "arcade"
+
+func is_campaign_mode() -> bool:
+	return game_mode == "campaign"
 
 
 # --- Save / Load ---

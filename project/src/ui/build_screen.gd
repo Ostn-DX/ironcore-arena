@@ -197,7 +197,12 @@ func _load_parts() -> void:
 			var cost: int = part.get("cost", 0)
 			var owned: int = GameState.get_part_quantity(part.get("id", ""))
 			
-			var display_text: String = "%s (%s) - %d CR [%d]" % [name, category, cost, owned]
+			var display_text: String
+			if GameState.is_arcade_mode():
+				display_text = "%s (%s)" % [name, category]
+			else:
+				display_text = "%s (%s) - %d CR [%d]" % [name, category, cost, owned]
+			
 			parts_list.add_item(display_text)
 			parts_list.set_item_metadata(parts_list.get_item_count() - 1, part)
 
@@ -415,31 +420,39 @@ func _update_part_details() -> void:
 	
 	details_label.text = text
 	
-	# Add buy/sell buttons
+	# Add buy/sell buttons (only in campaign mode)
 	for child in details_vbox.get_children():
 		if child is Button:
 			child.queue_free()
 	
-	var part_id: String = selected_part.get("id", "")
-	var owned: int = GameState.get_part_quantity(part_id)
-	var cost: int = selected_part.get("cost", 0)
-	
-	if owned > 0:
-		var sell_btn: Button = Button.new()
-		sell_btn.text = "Sell (%d CR)" % (cost / 2)
-		sell_btn.pressed.connect(_on_sell_part.bind(part_id))
-		details_vbox.add_child(sell_btn)
-	
-	var buy_btn: Button = Button.new()
-	buy_btn.text = "Buy (%d CR)" % cost
-	buy_btn.pressed.connect(_on_buy_part.bind(part_id))
-	details_vbox.add_child(buy_btn)
-	
-	# Equip button
-	var equip_btn: Button = Button.new()
-	equip_btn.text = "Equip to Bot"
-	equip_btn.pressed.connect(_on_equip_selected)
-	details_vbox.add_child(equip_btn)
+	if GameState.is_arcade_mode():
+		# In arcade mode, just show equip button
+		var equip_btn_arcade: Button = Button.new()
+		equip_btn_arcade.text = "Equip to Bot"
+		equip_btn_arcade.pressed.connect(_on_equip_selected)
+		details_vbox.add_child(equip_btn_arcade)
+	else:
+		# In campaign mode, show buy/sell/equip
+		var part_id: String = selected_part.get("id", "")
+		var owned: int = GameState.get_part_quantity(part_id)
+		var cost: int = selected_part.get("cost", 0)
+		
+		if owned > 0:
+			var sell_btn: Button = Button.new()
+			sell_btn.text = "Sell (%d CR)" % (cost / 2)
+			sell_btn.pressed.connect(_on_sell_part.bind(part_id))
+			details_vbox.add_child(sell_btn)
+		
+		var buy_btn: Button = Button.new()
+		buy_btn.text = "Buy (%d CR)" % cost
+		buy_btn.pressed.connect(_on_buy_part.bind(part_id))
+		details_vbox.add_child(buy_btn)
+		
+		# Equip button
+		var equip_btn: Button = Button.new()
+		equip_btn.text = "Equip to Bot"
+		equip_btn.pressed.connect(_on_equip_selected)
+		details_vbox.add_child(equip_btn)
 
 
 func _on_buy_part(part_id: String) -> void:

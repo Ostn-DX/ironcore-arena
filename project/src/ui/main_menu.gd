@@ -72,14 +72,15 @@ func _create_button(text: String, callback: Callable) -> void:
 
 func _on_campaign_pressed() -> void:
 	print("Campaign pressed")
-	# TODO: Go to campaign map when implemented
-	# For now, go to build screen
+	# Set mode to campaign (career progression)
+	GameState.set_game_mode("campaign")
 	UIManager.show_build_screen()
 
 func _on_arcade_pressed() -> void:
 	print("Arcade Battle pressed")
-	# Quick battle with default loadout
-	UIManager.show_battle_screen()
+	# Set mode to arcade (everything unlocked)
+	GameState.set_game_mode("arcade")
+	UIManager.show_build_screen()
 
 func _on_instructions_pressed() -> void:
 	print("Instructions pressed")
