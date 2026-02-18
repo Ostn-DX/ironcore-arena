@@ -1,10 +1,11 @@
 extends Control
 ## BattleScreen — arena view, HUD, command input.
 
-@onready var arena_viewport: SubViewport = $ArenaViewport
-@onready var arena_container: Node2D = $ArenaViewport/ArenaContainer
-@onready var bots_container: Node2D = $ArenaViewport/ArenaContainer/Bots
-@onready var projectiles_container: Node2D = $ArenaViewport/ArenaContainer/Projectiles
+@onready var arena_viewport_container: SubViewportContainer = $ArenaViewport
+@onready var arena_viewport: SubViewport = $ArenaViewport/ArenaViewport
+@onready var arena_container: Node2D = $ArenaViewport/ArenaViewport/ArenaContainer
+@onready var bots_container: Node2D = $ArenaViewport/ArenaViewport/ArenaContainer/Bots
+@onready var projectiles_container: Node2D = $ArenaViewport/ArenaViewport/ArenaContainer/Projectiles
 @onready var hud: Control = $BattleHUD
 
 # Visual representations
