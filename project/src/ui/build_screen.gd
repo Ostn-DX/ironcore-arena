@@ -49,6 +49,14 @@ func _ready() -> void:
 
 
 func _setup_ui() -> void:
+	# Add background so we can see the screen is there
+	var bg: ColorRect = ColorRect.new()
+	bg.color = Color(0.1, 0.1, 0.15)
+	bg.anchor_right = 1.0
+	bg.anchor_bottom = 1.0
+	add_child(bg)
+	print("BuildScreen: Background added")
+	
 	# Main layout: 3 columns
 	# Left: Parts inventory | Center: Chassis assembly | Right: Shop/Details
 	
