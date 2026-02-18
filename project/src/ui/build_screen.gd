@@ -1,175 +1,185 @@
 extends Control
-## BuildScreen — simplified Bot Arena 3 style
-## One chassis, one armor, one weapon
+## BuildScreen — Bot Arena 3 style with Shop, Inventory, My Bots
 
-var selected_chassis: Dictionary = {}
-var selected_armor: Dictionary = {}
-var selected_weapon: Dictionary = {}
+var selected_shop_category: String = ""
+var selected_part: Dictionary = {}
 
-var current_loadout: Dictionary = {
-	"id": "",
-	"name": "New Bot",
-	"chassis": "",
-	"armor": "",
-	"weapon": ""
+var current_bot: Dictionary = {
+	"id": "bot_1",
+	"name": "Bot 1",
+	"chassis": "chassis_light_t1",
+	"armor": "arm_plate_t1", 
+	"weapon": "wpn_mg_t1"
 }
 
-var current_weight: float = 0.0
-var max_weight: float = 0.0
-
-@onready var chassis_list: ItemList = $MarginContainer/MainHBox/LeftPanel/ChassisList
-@onready var armor_list: ItemList = $MarginContainer/MainHBox/CenterPanel/ArmorList
-@onready var weapon_list: ItemList = $MarginContainer/MainHBox/RightPanel/WeaponList
-
-@onready var chassis_info: Label = $MarginContainer/MainHBox/LeftPanel/ChassisInfo
-@onready var armor_info: Label = $MarginContainer/MainHBox/CenterPanel/ArmorInfo
-@onready var weapon_info: Label = $MarginContainer/MainHBox/RightPanel/WeaponInfo
-
-@onready var weight_label: Label = $MarginContainer/MainHBox/BottomBar/WeightLabel
-@onready var credits_label: Label = $MarginContainer/MainHBox/BottomBar/CreditsLabel
-@onready var test_btn: Button = $MarginContainer/MainHBox/BottomBar/TestBtn
-@onready var back_btn: Button = $MarginContainer/MainHBox/BottomBar/BackBtn
+@onready var shop_buttons: HBoxContainer = $MarginContainer/VBox/TopRow/ShopPanel/ShopButtons
+@onready var shop_list: ItemList = $MarginContainer/VBox/TopRow/ShopPanel/ShopList
+@onready var inventory_list: ItemList = $MarginContainer/VBox/TopRow/InventoryPanel/InventoryList
+@onready var my_bots_list: ItemList = $MarginContainer/VBox/TopRow/MyBotsPanel/MyBotsList
+@onready var preview_label: Label = $MarginContainer/VBox/PreviewPanel/PreviewLabel
+@onready var action_button: Button = $MarginContainer/VBox/PreviewPanel/ActionButton
+@onready var bot_name_edit: LineEdit = $MarginContainer/VBox/TopRow/MyBotsPanel/BotNameEdit
+@onready var weight_label: Label = $MarginContainer/VBox/BottomBar/WeightLabel
+@onready var credits_label: Label = $MarginContainer/VBox/BottomBar/CreditsLabel
 
 func _ready() -> void:
-	_load_parts()
-	_set_default_loadout()
-	_update_display()
+	_setup_shop_buttons()
+	_load_inventory()
+	_load_my_bots()
+	_update_bot_display()
+	_update_preview()
 
-func _load_parts() -> void:
-	chassis_list.clear()
-	armor_list.clear()
-	weapon_list.clear()
+func _setup_shop_buttons() -> void:
+	for child in shop_buttons.get_children():
+		child.queue_free()
 	
-	if not DataLoader:
+	for category in ["Chassis", "Plating", "Components"]:
+		var btn: Button = Button.new()
+		btn.text = category
+		btn.pressed.connect(_on_shop_category.bind(category.to_lower()))
+		shop_buttons.add_child(btn)
+
+func _on_shop_category(category: String) -> void:
+	selected_shop_category = category
+	_load_shop()
+
+func _load_shop() -> void:
+	shop_list.clear()
+	if not DataLoader or selected_shop_category.is_empty():
 		return
 	
 	for part in DataLoader.get_all_parts():
 		if not part is Dictionary:
 			continue
 		
-		var category: String = part.get("category", "")
-		var name: String = part.get("name", "Unknown")
-		var cost: int = part.get("cost", 0)
-		var owned: int = GameState.get_part_quantity(part.get("id", "")) if not GameState.is_arcade_mode() else 99
+		var part_cat: String = part.get("category", "")
+		var match_cat: bool = false
 		
-		var display: String = name + "\n" + str(cost) + " CR"
-		if not GameState.is_arcade_mode():
-			display += " [" + str(owned) + "]"
+		match selected_shop_category:
+			"chassis":
+				match_cat = (part_cat == "chassis")
+			"plating":
+				match_cat = (part_cat == "armor")
+			"components":
+				match_cat = (part_cat == "weapon" or part_cat == "utility")
+		
+		if match_cat:
+			var name: String = part.get("name", "Unknown")
+			var cost: int = part.get("cost", 0)
+			shop_list.add_item(name + " - " + str(cost) + " CR")
+			shop_list.set_item_metadata(shop_list.get_item_count() - 1, part)
+
+func _load_inventory() -> void:
+	inventory_list.clear()
+	if not DataLoader:
+		return
+	
+	for part_id in GameState.owned_parts:
+		var qty: int = GameState.owned_parts[part_id]
+		if qty <= 0:
+			continue
+		
+		var part: Dictionary = DataLoader.get_part(part_id)
+		if part.is_empty():
+			continue
+		
+		var name: String = part.get("name", "Unknown")
+		inventory_list.add_item(name + " [" + str(qty) + "]")
+		inventory_list.set_item_metadata(inventory_list.get_item_count() - 1, part)
+
+func _load_my_bots() -> void:
+	my_bots_list.clear()
+	for loadout in GameState.loadouts:
+		my_bots_list.add_item(loadout.get("name", "Unnamed"))
+		my_bots_list.set_item_metadata(my_bots_list.get_item_count() - 1, loadout)
+
+func _on_shop_selected(index: int) -> void:
+	selected_part = shop_list.get_item_metadata(index)
+	_update_preview()
+	action_button.text = "Purchase"
+	action_button.visible = not GameState.is_arcade_mode()
+
+func _on_inventory_selected(index: int) -> void:
+	selected_part = inventory_list.get_item_metadata(index)
+	_update_preview()
+	action_button.text = "Equip"
+	action_button.visible = true
+
+func _on_my_bot_selected(index: int) -> void:
+	var bot: Dictionary = my_bots_list.get_item_metadata(index)
+	current_bot = bot
+	bot_name_edit.text = bot.get("name", "")
+	_update_bot_display()
+
+func _update_preview() -> void:
+	if selected_part.is_empty():
+		preview_label.text = "Select an item to view details"
+		action_button.visible = false
+		return
+	
+	var text: String = ""
+	text += selected_part.get("name", "Unknown") + "\n"
+	text += "Type: " + selected_part.get("category", "").capitalize() + "\n"
+	text += "Weight: %.1f kg\n" % selected_part.get("weight", 0.0)
+	text += "Cost: %d CR\n" % selected_part.get("cost", 0)
+	
+	var stats: Dictionary = selected_part.get("stats", {})
+	for stat_name in stats:
+		text += "%s: %s\n" % [stat_name, str(stats[stat_name])]
+	
+	preview_label.text = text
+
+func _on_action_pressed() -> void:
+	if selected_part.is_empty():
+		return
+	
+	if action_button.text == "Purchase":
+		# Buy from shop
+		var cost: int = selected_part.get("cost", 0)
+		if GameState.spend_credits(cost):
+			GameState.add_part(selected_part.get("id", ""))
+			_load_inventory()
+			_update_preview()
+	elif action_button.text == "Equip":
+		# Equip to current bot
+		var category: String = selected_part.get("category", "")
+		var part_id: String = selected_part.get("id", "")
 		
 		match category:
 			"chassis":
-				chassis_list.add_item(display)
-				chassis_list.set_item_metadata(chassis_list.get_item_count() - 1, part)
+				current_bot["chassis"] = part_id
 			"armor":
-				armor_list.add_item(display)
-				armor_list.set_item_metadata(armor_list.get_item_count() - 1, part)
-			"weapon":
-				weapon_list.add_item(display)
-				weapon_list.set_item_metadata(weapon_list.get_item_count() - 1, part)
-
-func _set_default_loadout() -> void:
-	if not DataLoader:
-		return
-	
-	# Find first available parts
-	for part in DataLoader.get_all_parts():
-		if not part is Dictionary:
-			continue
-		var cat: String = part.get("category", "")
-		var id: String = part.get("id", "")
+				current_bot["armor"] = part_id
+			"weapon", "utility":
+				current_bot["weapon"] = part_id
 		
-		if cat == "chassis" and current_loadout["chassis"].is_empty():
-			current_loadout["chassis"] = id
-		elif cat == "armor" and current_loadout["armor"].is_empty():
-			current_loadout["armor"] = id
-		elif cat == "weapon" and current_loadout["weapon"].is_empty():
-			current_loadout["weapon"] = id
+		_update_bot_display()
 
-func _update_display() -> void:
+func _update_bot_display() -> void:
+	var weight: float = 0.0
+	var max_weight: float = 0.0
+	
 	# Calculate weight
-	current_weight = 0.0
-	max_weight = 0.0
+	for slot in ["chassis", "armor", "weapon"]:
+		if current_bot.has(slot) and not current_bot[slot].is_empty():
+			var part: Dictionary = DataLoader.get_part(current_bot[slot])
+			if not part.is_empty():
+				weight += part.get("weight", 0.0)
+				if slot == "chassis":
+					max_weight = part.get("stats", {}).get("weight_capacity", 0.0)
 	
-	# Chassis info
-	if not current_loadout["chassis"].is_empty():
-		var chassis: Dictionary = DataLoader.get_part(current_loadout["chassis"])
-		var c_stats: Dictionary = chassis.get("stats", {})
-		max_weight = c_stats.get("weight_capacity", 0.0)
-		current_weight += chassis.get("weight", 0.0)
-		
-		chassis_info.text = "CHASSIS: " + chassis.get("name", "")
-		chassis_info.text += "\nWeight Limit: %.0f kg" % max_weight
-		chassis_info.text += "\nCost: %d CR" % chassis.get("cost", 0)
-	
-	# Armor info
-	if not current_loadout["armor"].is_empty():
-		var armor: Dictionary = DataLoader.get_part(current_loadout["armor"])
-		var a_stats: Dictionary = armor.get("stats", {})
-		current_weight += armor.get("weight", 0.0)
-		
-		armor_info.text = "ARMOR: " + armor.get("name", "")
-		armor_info.text += "\nHP: %d" % a_stats.get("hp", 0)
-		armor_info.text += "\nWeight: %.1f kg" % armor.get("weight", 0.0)
-		armor_info.text += "\nCost: %d CR" % armor.get("cost", 0)
-	
-	# Weapon info
-	if not current_loadout["weapon"].is_empty():
-		var weapon: Dictionary = DataLoader.get_part(current_loadout["weapon"])
-		var w_stats: Dictionary = weapon.get("stats", {})
-		current_weight += weapon.get("weight", 0.0)
-		
-		var damage: float = w_stats.get("damage_per_shot", 0.0)
-		var fire_rate: float = w_stats.get("fire_rate", 1.0)
-		var dpm: float = damage * fire_rate * 60.0
-		
-		weapon_info.text = "WEAPON: " + weapon.get("name", "")
-		weapon_info.text += "\nDamage: %.1f" % damage
-		weapon_info.text += "\nRange: %.0f" % w_stats.get("range_max", 0.0)
-		weapon_info.text += "\nDPM: %.0f" % dpm
-		weapon_info.text += "\nWeight: %.1f kg" % weapon.get("weight", 0.0)
-		weapon_info.text += "\nCost: %d CR" % weapon.get("cost", 0)
-	
-	# Weight bar
-	var weight_text: String = "Weight: %.1f / %.1f kg" % [current_weight, max_weight]
-	if current_weight > max_weight:
-		weight_text += " [OVER!]"
-		weight_label.modulate = Color(1, 0, 0)
-	else:
-		weight_label.modulate = Color(1, 1, 1)
-	weight_label.text = weight_text
-	
-	# Credits
+	var status: String = "Weight: %.1f / %.1f kg" % [weight, max_weight]
+	if weight > max_weight:
+		status += " [OVER!]"
+	weight_label.text = status
 	credits_label.text = "Credits: %d" % GameState.credits
-	
-	# Enable/disable test button
-	test_btn.disabled = current_weight > max_weight or current_loadout["chassis"].is_empty()
 
-func _on_chassis_selected(index: int) -> void:
-	var part: Dictionary = chassis_list.get_item_metadata(index)
-	current_loadout["chassis"] = part.get("id", "")
-	_update_display()
-
-func _on_armor_selected(index: int) -> void:
-	var part: Dictionary = armor_list.get_item_metadata(index)
-	current_loadout["armor"] = part.get("id", "")
-	_update_display()
-
-func _on_weapon_selected(index: int) -> void:
-	var part: Dictionary = weapon_list.get_item_metadata(index)
-	current_loadout["weapon"] = part.get("id", "")
-	_update_display()
+func _on_name_changed(new_name: String) -> void:
+	current_bot["name"] = new_name
 
 func _on_test_pressed() -> void:
-	if current_loadout["chassis"].is_empty():
-		return
-	if current_weight > max_weight:
-		return
-	
-	# Save and go to battle
-	current_loadout["id"] = "test_bot"
-	GameState.add_loadout(current_loadout.duplicate())
-	GameState.set_active_loadouts(["test_bot"])
-	
+	GameState.add_loadout(current_bot.duplicate())
+	GameState.set_active_loadouts([current_bot["id"]])
 	get_tree().change_scene_to_file("res://scenes/battle_screen.tscn")
 
 func _on_back_pressed() -> void:

@@ -32,89 +32,120 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="MainHBox" type="HBoxContainer" parent="MarginContainer"]
+[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="LeftPanel" type="VBoxContainer" parent="MarginContainer/MainHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="Title" type="Label" parent="MarginContainer/MainHBox/LeftPanel"]
-layout_mode = 2
-text = "CHASSIS"
-horizontal_alignment = 1
-
-[node name="ChassisList" type="ItemList" parent="MarginContainer/MainHBox/LeftPanel"]
+[node name="TopRow" type="HBoxContainer" parent="MarginContainer/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/separation = 20
 
-[node name="ChassisInfo" type="Label" parent="MarginContainer/MainHBox/LeftPanel"]
-layout_mode = 2
-text = "Select a chassis"
-autowrap_mode = 3
-
-[node name="CenterPanel" type="VBoxContainer" parent="MarginContainer/MainHBox"]
+[node name="ShopPanel" type="VBoxContainer" parent="MarginContainer/VBox/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="MarginContainer/MainHBox/CenterPanel"]
+[node name="Title" type="Label" parent="MarginContainer/VBox/TopRow/ShopPanel"]
 layout_mode = 2
-text = "ARMOR"
+text = "SHOP"
 horizontal_alignment = 1
 
-[node name="ArmorList" type="ItemList" parent="MarginContainer/MainHBox/CenterPanel"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="ArmorInfo" type="Label" parent="MarginContainer/MainHBox/CenterPanel"]
-layout_mode = 2
-text = "Select armor"
-autowrap_mode = 3
-
-[node name="RightPanel" type="VBoxContainer" parent="MarginContainer/MainHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="Title" type="Label" parent="MarginContainer/MainHBox/RightPanel"]
-layout_mode = 2
-text = "WEAPON"
-horizontal_alignment = 1
-
-[node name="WeaponList" type="ItemList" parent="MarginContainer/MainHBox/RightPanel"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="WeaponInfo" type="Label" parent="MarginContainer/MainHBox/RightPanel"]
-layout_mode = 2
-text = "Select a weapon"
-autowrap_mode = 3
-
-[node name="BottomBar" type="HBoxContainer" parent="MarginContainer/MainHBox"]
+[node name="ShopButtons" type="HBoxContainer" parent="MarginContainer/VBox/TopRow/ShopPanel"]
 layout_mode = 2
 alignment = 1
 
-[node name="WeightLabel" type="Label" parent="MarginContainer/MainHBox/BottomBar"]
+[node name="ShopList" type="ItemList" parent="MarginContainer/VBox/TopRow/ShopPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="InventoryPanel" type="VBoxContainer" parent="MarginContainer/VBox/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="MarginContainer/VBox/TopRow/InventoryPanel"]
+layout_mode = 2
+text = "INVENTORY"
+horizontal_alignment = 1
+
+[node name="InventoryList" type="ItemList" parent="MarginContainer/VBox/TopRow/InventoryPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MyBotsPanel" type="VBoxContainer" parent="MarginContainer/VBox/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="MarginContainer/VBox/TopRow/MyBotsPanel"]
+layout_mode = 2
+text = "MY BOTS"
+horizontal_alignment = 1
+
+[node name="MyBotsList" type="ItemList" parent="MarginContainer/VBox/TopRow/MyBotsPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BotNameEdit" type="LineEdit" parent="MarginContainer/VBox/TopRow/MyBotsPanel"]
+layout_mode = 2
+placeholder_text = "Bot Name"
+
+[node name="PreviewPanel" type="Panel" parent="MarginContainer/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 150)
+
+[node name="PreviewLabel" type="Label" parent="MarginContainer/VBox/PreviewPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+text = "Select an item"
+autowrap_mode = 3
+
+[node name="ActionButton" type="Button" parent="MarginContainer/VBox/PreviewPanel"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -40.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Purchase"
+visible = false
+
+[node name="BottomBar" type="HBoxContainer" parent="MarginContainer/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="WeightLabel" type="Label" parent="MarginContainer/VBox/BottomBar"]
 layout_mode = 2
 text = "Weight: 0 / 0 kg"
 
-[node name="CreditsLabel" type="Label" parent="MarginContainer/MainHBox/BottomBar"]
+[node name="CreditsLabel" type="Label" parent="MarginContainer/VBox/BottomBar"]
 layout_mode = 2
 text = "Credits: 0"
 
-[node name="TestBtn" type="Button" parent="MarginContainer/MainHBox/BottomBar"]
+[node name="TestBtn" type="Button" parent="MarginContainer/VBox/BottomBar"]
 layout_mode = 2
 text = "Test Battle"
 
-[node name="BackBtn" type="Button" parent="MarginContainer/MainHBox/BottomBar"]
+[node name="BackBtn" type="Button" parent="MarginContainer/VBox/BottomBar"]
 layout_mode = 2
 text = "Back"
 
-[connection signal="item_selected" from="MarginContainer/MainHBox/LeftPanel/ChassisList" to="." method="_on_chassis_selected"]
-[connection signal="item_selected" from="MarginContainer/MainHBox/CenterPanel/ArmorList" to="." method="_on_armor_selected"]
-[connection signal="item_selected" from="MarginContainer/MainHBox/RightPanel/WeaponList" to="." method="_on_weapon_selected"]
-[connection signal="pressed" from="MarginContainer/MainHBox/BottomBar/TestBtn" to="." method="_on_test_pressed"]
-[connection signal="pressed" from="MarginContainer/MainHBox/BottomBar/BackBtn" to="." method="_on_back_pressed"]
+[connection signal="item_selected" from="MarginContainer/VBox/TopRow/ShopPanel/ShopList" to="." method="_on_shop_selected"]
+[connection signal="item_selected" from="MarginContainer/VBox/TopRow/InventoryPanel/InventoryList" to="." method="_on_inventory_selected"]
+[connection signal="item_selected" from="MarginContainer/VBox/TopRow/MyBotsPanel/MyBotsList" to="." method="_on_my_bot_selected"]
+[connection signal="text_changed" from="MarginContainer/VBox/TopRow/MyBotsPanel/BotNameEdit" to="." method="_on_name_changed"]
+[connection signal="pressed" from="MarginContainer/VBox/PreviewPanel/ActionButton" to="." method="_on_action_pressed"]
+[connection signal="pressed" from="MarginContainer/VBox/BottomBar/TestBtn" to="." method="_on_test_pressed"]
+[connection signal="pressed" from="MarginContainer/VBox/BottomBar/BackBtn" to="." method="_on_back_pressed"]
