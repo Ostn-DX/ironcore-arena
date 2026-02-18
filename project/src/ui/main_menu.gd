@@ -73,18 +73,16 @@ func _create_button(btn_text: String, callback: Callable, container: VBoxContain
 	print("Button added: ", btn_text)
 
 func _on_campaign_pressed() -> void:
-	print("Campaign pressed - calling show_build_screen")
-	# Set mode to campaign (career progression)
+	print("Campaign pressed - going to build screen")
 	GameState.set_game_mode("campaign")
-	print("Game mode set to campaign, now showing build screen")
-	UIManager.show_build_screen()
-	print("show_build_screen called")
+	# Direct scene change instead of UIManager
+	get_tree().change_scene_to_file("res://scenes/build_screen.tscn")
 
 func _on_arcade_pressed() -> void:
-	print("Arcade Battle pressed")
-	# Set mode to arcade (everything unlocked)
+	print("Arcade Battle pressed - going to build screen")
 	GameState.set_game_mode("arcade")
-	UIManager.show_build_screen()
+	# Direct scene change instead of UIManager
+	get_tree().change_scene_to_file("res://scenes/build_screen.tscn")
 
 func _on_instructions_pressed() -> void:
 	print("Instructions pressed")

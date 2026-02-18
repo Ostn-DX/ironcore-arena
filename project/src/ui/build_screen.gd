@@ -38,6 +38,7 @@ const SLOT_COLORS: Dictionary = {
 
 func _ready() -> void:
 	print("BuildScreen _ready() starting")
+	visible = true  # Force visible immediately
 	_setup_ui()
 	print("BuildScreen _setup_ui() done, loading parts")
 	_load_parts()
