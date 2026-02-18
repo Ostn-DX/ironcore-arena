@@ -71,10 +71,12 @@ func _create_button(text: String, callback: Callable) -> void:
 	$ButtonContainer.add_child(btn)
 
 func _on_campaign_pressed() -> void:
-	print("Campaign pressed")
+	print("Campaign pressed - calling show_build_screen")
 	# Set mode to campaign (career progression)
 	GameState.set_game_mode("campaign")
+	print("Game mode set to campaign, now showing build screen")
 	UIManager.show_build_screen()
+	print("show_build_screen called")
 
 func _on_arcade_pressed() -> void:
 	print("Arcade Battle pressed")

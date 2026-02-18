@@ -57,7 +57,9 @@ func _register_screen(screen: Screen, scene_path: String) -> void:
 
 
 func show_screen(screen: Screen) -> void:
+	print("UIManager: Showing screen ", _screen_to_string(screen))
 	if current_screen == screen:
+		print("UIManager: Already on this screen, returning")
 		return
 	
 	# Hide current
