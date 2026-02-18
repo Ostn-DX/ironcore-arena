@@ -11,32 +11,16 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_battle")
 
-[node name="ArenaViewport" type="SubViewportContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-stretch = true
+[node name="ArenaContainer" type="Node2D" parent="."]
 
-[node name="ArenaViewport" type="SubViewport" parent="ArenaViewport"]
-handle_input_locally = false
-size = Vector2i(1280, 720)
-render_target_update_mode = 4
-
-[node name="ArenaContainer" type="Node2D" parent="ArenaViewport/ArenaViewport"]
-
-[node name="Background" type="ColorRect" parent="ArenaViewport/ArenaViewport/ArenaContainer"]
+[node name="Background" type="ColorRect" parent="ArenaContainer"]
 offset_right = 1280.0
 offset_bottom = 720.0
 color = Color(0.08, 0.08, 0.12, 1.0)
 
-[node name="GridLines" type="Node2D" parent="ArenaViewport/ArenaViewport/ArenaContainer"]
+[node name="Bots" type="Node2D" parent="ArenaContainer"]
 
-[node name="Bots" type="Node2D" parent="ArenaViewport/ArenaViewport/ArenaContainer"]
-
-[node name="Projectiles" type="Node2D" parent="ArenaViewport/ArenaViewport/ArenaContainer"]
+[node name="Projectiles" type="Node2D" parent="ArenaContainer"]
 
 [node name="BattleHUD" type="Control" parent="."]
 layout_mode = 1

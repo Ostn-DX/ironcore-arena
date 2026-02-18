@@ -1,11 +1,9 @@
 extends Control
 ## BattleScreen — arena view, HUD, command input.
 
-@onready var arena_viewport_container: SubViewportContainer = $ArenaViewport
-@onready var arena_viewport: SubViewport = $ArenaViewport/ArenaViewport
-@onready var arena_container: Node2D = $ArenaViewport/ArenaViewport/ArenaContainer
-@onready var bots_container: Node2D = $ArenaViewport/ArenaViewport/ArenaContainer/Bots
-@onready var projectiles_container: Node2D = $ArenaViewport/ArenaViewport/ArenaContainer/Projectiles
+@onready var arena_container: Node2D = $ArenaContainer
+@onready var bots_container: Node2D = $ArenaContainer/Bots
+@onready var projectiles_container: Node2D = $ArenaContainer/Projectiles
 @onready var hud: Control = $BattleHUD
 
 # Visual representations
@@ -25,7 +23,6 @@ var battle_active: bool = false
 
 
 func _ready() -> void:
-	_setup_camera()
 	_setup_signals()
 	
 	# Start test battle after short delay
@@ -33,11 +30,8 @@ func _ready() -> void:
 	_start_test_battle()
 
 
-func _setup_camera() -> void:
-	camera = Camera2D.new()
-	camera.anchor_mode = Camera2D.ANCHOR_MODE_FIXED_TOP_LEFT
-	camera.position = Vector2(640, 360)  # Center of 1280x720
-	arena_container.add_child(camera)
+# Camera
+var camera: Camera2D = null
 
 
 func _setup_signals() -> void:
