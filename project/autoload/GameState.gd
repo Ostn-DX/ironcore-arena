@@ -196,9 +196,10 @@ func set_game_mode(mode: String) -> void:
 		# Arcade: free purchases, unlimited credits
 		credits = 999999
 	else:
-		# Campaign: normal economy, give starter kit if new
-		if owned_parts.is_empty():
-			_give_starter_kit()
+		# Campaign: reset to starter kit only
+		owned_parts.clear()
+		_give_starter_kit()
+		credits = 500
 
 func _unlock_all_parts() -> void:
 	## DEPRECATED: Arcade mode now just sets credits high for free purchases

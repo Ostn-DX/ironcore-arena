@@ -188,14 +188,35 @@ func _update_bot_display() -> void:
 	var weight: float = 0.0
 	var max_weight: float = 0.0
 	
-	# Calculate weight
+	# Build equipped display
+	var equipped_text: String = "CURRENT BOT: " + current_bot["name"] + "\n\n"
+	
+	# Calculate weight and build display
 	for slot in ["chassis", "armor", "weapon"]:
-		if current_bot.has(slot) and not current_bot[slot].is_empty():
-			var part: Dictionary = DataLoader.get_part(current_bot[slot])
+		var part_id: String = current_bot.get(slot, "")
+		if not part_id.is_empty():
+			var part: Dictionary = DataLoader.get_part(part_id)
 			if not part.is_empty():
 				weight += part.get("weight", 0.0)
 				if slot == "chassis":
 					max_weight = part.get("stats", {}).get("weight_capacity", 0.0)
+				
+				equipped_text += slot.capitalize() + ": " + part.get("name", "Unknown") + "\n"
+				equipped_text += "  Weight: %.1f kg\n" % part.get("weight", 0.0)
+				if slot == "armor":
+					var hp: int = part.get("stats", {}).get("hp", 0)
+					equipped_text += "  HP: %d\n" % hp
+				elif slot == "weapon":
+					var stats: Dictionary = part.get("stats", {})
+					var dmg: float = stats.get("damage_per_shot", 0)
+					var range_max: float = stats.get("range_max", 0)
+					equipped_text += "  Damage: %.1f, Range: %.0f\n" % [dmg, range_max]
+				equipped_text += "\n"
+		else:
+			equipped_text += slot.capitalize() + ": [Empty]\n\n"
+	
+	# Update preview with equipped info
+	preview_label.text = equipped_text
 	
 	var status: String = "Weight: %.1f / %.1f kg" % [weight, max_weight]
 	if weight > max_weight:
