@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ArenaDefinition",
+  "type": "object",
+  "required": ["id", "name", "weight_cap", "entry_fee", "size", "spawn_points_player", "spawn_points_enemy", "waves", "victory_condition"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{2,48}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "weight_cap": {
+      "type": "number",
+      "minimum": 10,
+      "maximum": 9999
+    },
+    "entry_fee": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "size": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": {"type": "integer", "minimum": 200, "maximum": 4000},
+        "height": {"type": "integer", "minimum": 200, "maximum": 4000}
+      },
+      "additionalProperties": false
+    },
+    "obstacles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "x", "y", "width", "height"],
+        "properties": {
+          "type": {"type": "string", "enum": ["wall", "cover", "hazard_mine", "hazard_turret"]},
+          "x": {"type": "number"},
+          "y": {"type": "number"},
+          "width": {"type": "number", "minimum": 1},
+          "height": {"type": "number", "minimum": 1},
+          "damage": {"type": "number", "minimum": 0},
+          "trigger_radius": {"type": "number", "minimum": 0},
+          "hp": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": false
+      }
+    },
+    "spawn_points_player": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["x", "y"],
+        "properties": {
+          "x": {"type": "number"},
+          "y": {"type": "number"}
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 8
+    },
+    "spawn_points_enemy": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["x", "y"],
+        "properties": {
+          "x": {"type": "number"},
+          "y": {"type": "number"}
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 16
+    },
+    "waves": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["spawn_tick", "enemies"],
+        "properties": {
+          "spawn_tick": {"type": "integer", "minimum": 0},
+          "enemies": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "victory_condition": {
+      "type": "string",
+      "enum": ["eliminate", "survive", "capture"]
+    },
+    "time_limit_ticks": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "modifiers": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,221 @@
+[
+  {
+    "id": "chassis_light_t1",
+    "name": "Scout Frame",
+    "category": "chassis",
+    "tier": 1,
+    "weight": 15.0,
+    "cost": 0,
+    "description": "Lightweight starter chassis. Fast but fragile.",
+    "slots": {"weapon": 2, "armor": 1, "mobility": 1, "sensor": 1, "utility": 1},
+    "stats": {
+      "hp": 100,
+      "base_speed": 120.0,
+      "base_accel": 60.0,
+      "base_turn_rate": 180.0,
+      "chassis_size": 20.0,
+      "power_capacity": 100.0,
+      "heat_capacity": 50.0
+    }
+  },
+  {
+    "id": "chassis_medium_t2",
+    "name": "Enforcer Frame",
+    "category": "chassis",
+    "tier": 2,
+    "weight": 25.0,
+    "cost": 300,
+    "description": "Balanced frame with more slots and durability.",
+    "slots": {"weapon": 3, "armor": 2, "mobility": 1, "sensor": 1, "utility": 2},
+    "stats": {
+      "hp": 180,
+      "base_speed": 100.0,
+      "base_accel": 50.0,
+      "base_turn_rate": 150.0,
+      "chassis_size": 28.0,
+      "power_capacity": 150.0,
+      "heat_capacity": 80.0
+    }
+  },
+  {
+    "id": "wpn_mg_t1",
+    "name": "Light Machine Gun",
+    "category": "weapon",
+    "tier": 1,
+    "weight": 5.0,
+    "cost": 50,
+    "description": "Fast-firing ballistic weapon. Low damage per shot.",
+    "stats": {
+      "damage_per_shot": 8,
+      "fire_rate": 3.0,
+      "range_min": 10,
+      "range_optimal": 60,
+      "range_max": 100,
+      "accuracy": 0.7,
+      "projectile_speed": 400.0,
+      "projectile_type": "ballistic",
+      "heat_per_shot": 2.0,
+      "heat_dissipation_per_tick": 0.3,
+      "overheat_threshold": 40.0
+    }
+  },
+  {
+    "id": "wpn_cannon_t1",
+    "name": "Light Cannon",
+    "category": "weapon",
+    "tier": 1,
+    "weight": 8.0,
+    "cost": 80,
+    "description": "Slow but hard-hitting ballistic weapon.",
+    "stats": {
+      "damage_per_shot": 25,
+      "fire_rate": 0.8,
+      "range_min": 15,
+      "range_optimal": 70,
+      "range_max": 110,
+      "accuracy": 0.8,
+      "projectile_speed": 300.0,
+      "projectile_type": "ballistic",
+      "heat_per_shot": 5.0,
+      "heat_dissipation_per_tick": 0.2,
+      "overheat_threshold": 30.0
+    }
+  },
+  {
+    "id": "wpn_laser_t1",
+    "name": "Beam Cutter",
+    "category": "weapon",
+    "tier": 1,
+    "weight": 6.0,
+    "cost": 70,
+    "description": "Energy beam. Always hits in range but short range.",
+    "stats": {
+      "damage_per_shot": 12,
+      "fire_rate": 2.0,
+      "range_min": 0,
+      "range_optimal": 40,
+      "range_max": 60,
+      "accuracy": 1.0,
+      "projectile_speed": 0,
+      "projectile_type": "beam",
+      "heat_per_shot": 4.0,
+      "heat_dissipation_per_tick": 0.25,
+      "overheat_threshold": 35.0
+    }
+  },
+  {
+    "id": "wpn_rocket_t2",
+    "name": "Micro Rocket Pod",
+    "category": "weapon",
+    "tier": 2,
+    "weight": 10.0,
+    "cost": 200,
+    "description": "Explosive rockets with splash potential.",
+    "stats": {
+      "damage_per_shot": 35,
+      "fire_rate": 0.5,
+      "range_min": 20,
+      "range_optimal": 80,
+      "range_max": 130,
+      "accuracy": 0.65,
+      "projectile_speed": 250.0,
+      "projectile_type": "ballistic",
+      "heat_per_shot": 8.0,
+      "heat_dissipation_per_tick": 0.15,
+      "overheat_threshold": 40.0
+    },
+    "effects": [
+      {"type": "slow", "magnitude": 0.2, "duration": 2.0, "tick_interval": 0, "stacking": "refresh"}
+    ]
+  },
+  {
+    "id": "arm_plate_t1",
+    "name": "Steel Plate",
+    "category": "armor",
+    "tier": 1,
+    "weight": 6.0,
+    "cost": 40,
+    "description": "Basic ballistic armor plate.",
+    "stats": {"hp": 60, "resist_ballistic": 0.1, "resist_energy": 0.0, "resist_explosive": 0.05}
+  },
+  {
+    "id": "arm_composite_t2",
+    "name": "Composite Shell",
+    "category": "armor",
+    "tier": 2,
+    "weight": 10.0,
+    "cost": 150,
+    "description": "Multi-type resistance armor.",
+    "stats": {"hp": 100, "resist_ballistic": 0.12, "resist_energy": 0.1, "resist_explosive": 0.1}
+  },
+  {
+    "id": "mob_wheels_t1",
+    "name": "Standard Wheels",
+    "category": "mobility",
+    "tier": 1,
+    "weight": 4.0,
+    "cost": 30,
+    "description": "Basic wheeled locomotion.",
+    "stats": {"speed_multiplier": 1.0, "accel_multiplier": 1.0, "turn_rate_multiplier": 1.0}
+  },
+  {
+    "id": "mob_tracks_t1",
+    "name": "Light Tracks",
+    "category": "mobility",
+    "tier": 1,
+    "weight": 7.0,
+    "cost": 60,
+    "description": "Slower but steadier tracked movement.",
+    "stats": {"speed_multiplier": 0.85, "accel_multiplier": 1.2, "turn_rate_multiplier": 0.8}
+  },
+  {
+    "id": "mob_hover_t2",
+    "name": "Hover Module",
+    "category": "mobility",
+    "tier": 2,
+    "weight": 8.0,
+    "cost": 180,
+    "description": "Fast hover movement, ignores terrain slowdown.",
+    "stats": {"speed_multiplier": 1.15, "accel_multiplier": 0.9, "turn_rate_multiplier": 1.3}
+  },
+  {
+    "id": "sen_basic_t1",
+    "name": "Basic Scanner",
+    "category": "sensor",
+    "tier": 1,
+    "weight": 2.0,
+    "cost": 20,
+    "description": "Standard detection sensor.",
+    "stats": {"detection_range": 200.0, "accuracy_bonus": 0.05}
+  },
+  {
+    "id": "sen_advanced_t2",
+    "name": "Advanced Scanner",
+    "category": "sensor",
+    "tier": 2,
+    "weight": 3.0,
+    "cost": 120,
+    "description": "Extended range and improved accuracy.",
+    "stats": {"detection_range": 300.0, "accuracy_bonus": 0.15}
+  },
+  {
+    "id": "utl_repair_t1",
+    "name": "Repair Nanites",
+    "category": "utility",
+    "tier": 1,
+    "weight": 3.0,
+    "cost": 60,
+    "description": "Slow passive HP regeneration.",
+    "stats": {"regen_per_tick": 0.05}
+  },
+  {
+    "id": "utl_shield_t2",
+    "name": "Energy Barrier",
+    "category": "utility",
+    "tier": 2,
+    "weight": 7.0,
+    "cost": 200,
+    "description": "Absorbs damage before hull HP.",
+    "stats": {"shield_hp": 80, "shield_recharge_per_tick": 0.1}
+  }
+]

@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BotLoadout",
+  "type": "object",
+  "required": ["id", "name", "chassis", "weapons", "mobility"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{2,48}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "chassis": {
+      "type": "string"
+    },
+    "weapons": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 0,
+      "maxItems": 6
+    },
+    "armor": {
+      "type": "array",
+      "items": {"type": "string"},
+      "maxItems": 6
+    },
+    "mobility": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "maxItems": 4
+    },
+    "sensors": {
+      "type": "array",
+      "items": {"type": "string"},
+      "maxItems": 2
+    },
+    "utilities": {
+      "type": "array",
+      "items": {"type": "string"},
+      "maxItems": 4
+    },
+    "ai_profile": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

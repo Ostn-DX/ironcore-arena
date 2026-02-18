@@ -1,0 +1,33 @@
+# Godot 4 specific
+project/.godot/
+project/.import/
+
+# Godot exports
+*.translation
+export_presets.cfg
+
+# Imported resources
+project/.godot/imported/
+project/.godot/editor/
+project/.godot/global_script_class_cache.cfg
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+*.pck
+*.zip
+export/
+build/
+
+# Logs
+*.log

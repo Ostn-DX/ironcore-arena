@@ -1,0 +1,26 @@
+[
+  {
+    "id": "node_01_training",
+    "arena_id": "arena_training",
+    "prerequisites": [],
+    "rewards": {"credits": 100, "unlock_parts": ["wpn_cannon_t1", "arm_plate_t1"], "unlock_arenas": ["arena_scrapyard"]},
+    "dialogue_before": "Welcome to the Iron Coliseum. Build your first bot and prove yourself.",
+    "dialogue_after": "Not bad. You've earned your license. Tougher fights await."
+  },
+  {
+    "id": "node_02_scrapyard",
+    "arena_id": "arena_scrapyard",
+    "prerequisites": ["node_01_training"],
+    "rewards": {"credits": 200, "unlock_parts": ["mob_tracks_t1", "wpn_laser_t1", "utl_repair_t1"], "unlock_arenas": ["arena_minefield"]},
+    "dialogue_before": "The Scrapyard Ring. Two opponents this time. Bring your best.",
+    "dialogue_after": "Solid work. Tier 2 parts are now available in the shop."
+  },
+  {
+    "id": "node_03_minefield",
+    "arena_id": "arena_minefield",
+    "prerequisites": ["node_02_scrapyard"],
+    "rewards": {"credits": 400, "unlock_parts": ["chassis_medium_t2", "wpn_rocket_t2", "arm_composite_t2", "mob_hover_t2", "sen_advanced_t2", "utl_shield_t2"], "unlock_arenas": []},
+    "dialogue_before": "The Minefield. Watch your step. Mines don't care whose side you're on.",
+    "dialogue_after": "Champion of the qualifying rounds. The real tournament begins soon."
+  }
+]

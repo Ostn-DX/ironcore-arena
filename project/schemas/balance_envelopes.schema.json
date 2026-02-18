@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BalanceEnvelopes",
+  "type": "object",
+  "required": ["tiers"],
+  "properties": {
+    "tiers": {
+      "type": "object",
+      "patternProperties": {
+        "^[1-8]$": {
+          "type": "object",
+          "properties": {
+            "weapon_damage_min": {"type": "number"},
+            "weapon_damage_max": {"type": "number"},
+            "weapon_fire_rate_min": {"type": "number"},
+            "weapon_fire_rate_max": {"type": "number"},
+            "weapon_range_max_min": {"type": "number"},
+            "weapon_range_max_max": {"type": "number"},
+            "armor_hp_min": {"type": "integer"},
+            "armor_hp_max": {"type": "integer"},
+            "armor_resist_max": {"type": "number"},
+            "mobility_speed_mult_min": {"type": "number"},
+            "mobility_speed_mult_max": {"type": "number"},
+            "chassis_hp_min": {"type": "integer"},
+            "chassis_hp_max": {"type": "integer"},
+            "chassis_weight_cap_min": {"type": "number"},
+            "chassis_weight_cap_max": {"type": "number"},
+            "weight_range_min": {"type": "number"},
+            "weight_range_max": {"type": "number"},
+            "cost_range_min": {"type": "integer"},
+            "cost_range_max": {"type": "integer"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
