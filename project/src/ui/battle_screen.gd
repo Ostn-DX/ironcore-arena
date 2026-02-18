@@ -30,10 +30,6 @@ func _ready() -> void:
 	_start_test_battle()
 
 
-# Camera
-var camera: Camera2D = null
-
-
 func _setup_signals() -> void:
 	if SimulationManager:
 		SimulationManager.entity_moved.connect(_on_entity_moved)
