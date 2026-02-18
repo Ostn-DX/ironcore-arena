@@ -193,21 +193,16 @@ func unlock_campaign_node(node_id: String) -> void:
 func set_game_mode(mode: String) -> void:
 	game_mode = mode
 	if mode == "arcade":
-		_unlock_all_parts()
+		# Arcade: free purchases, unlimited credits
+		credits = 999999
+	else:
+		# Campaign: normal economy, give starter kit if new
+		if owned_parts.is_empty():
+			_give_starter_kit()
 
 func _unlock_all_parts() -> void:
-	## Give player 99 of every part for arcade sandbox mode
-	if not DataLoader:
-		return
-	
-	var all_parts: Array = DataLoader.get_all_parts()
-	for part in all_parts:
-		if part is Dictionary and part.has("id"):
-			owned_parts[part["id"]] = 99
-	
-	credits = 999999
-	parts_changed.emit()
-	print("Arcade mode: All parts unlocked!")
+	## DEPRECATED: Arcade mode now just sets credits high for free purchases
+	pass
 
 func is_arcade_mode() -> bool:
 	return game_mode == "arcade"

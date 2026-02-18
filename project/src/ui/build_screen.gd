@@ -66,7 +66,14 @@ func _load_shop() -> void:
 		if match_cat:
 			var name: String = part.get("name", "Unknown")
 			var cost: int = part.get("cost", 0)
-			shop_list.add_item(name + " - " + str(cost) + " CR")
+			
+			var display: String
+			if GameState.is_arcade_mode():
+				display = name + " - FREE"
+			else:
+				display = name + " - " + str(cost) + " CR"
+			
+			shop_list.add_item(display)
 			shop_list.set_item_metadata(shop_list.get_item_count() - 1, part)
 
 func _load_inventory() -> void:
@@ -136,10 +143,17 @@ func _on_action_pressed() -> void:
 	if action_button.text == "Purchase":
 		# Buy from shop
 		var cost: int = selected_part.get("cost", 0)
+		
+		# In arcade mode, everything is free
+		if GameState.is_arcade_mode():
+			cost = 0
+		
 		if GameState.spend_credits(cost):
 			GameState.add_part(selected_part.get("id", ""))
 			_load_inventory()
+			_load_shop()
 			_update_preview()
+			
 	elif action_button.text == "Equip":
 		# Equip to current bot
 		var category: String = selected_part.get("category", "")
