@@ -5,6 +5,7 @@ signal screen_changed(screen_name: String)
 
 enum Screen {
 	NONE,
+	MAIN_MENU,
 	BUILD,
 	BATTLE,
 	CAMPAIGN,
@@ -39,9 +40,13 @@ func _call_deferred_setup() -> void:
 			main.add_child(screen_container)
 	
 	# Register screens
+	_register_screen(Screen.MAIN_MENU, "res://scenes/main_menu.tscn")
 	_register_screen(Screen.BUILD, "res://scenes/build_screen.tscn")
 	_register_screen(Screen.BATTLE, "res://scenes/battle_screen.tscn")
 	_register_screen(Screen.CAMPAIGN, "res://scenes/campaign_screen.tscn")
+	
+	# Show main menu by default
+	show_main_menu()
 
 
 func _register_screen(screen: Screen, scene_path: String) -> void:
@@ -98,6 +103,9 @@ func _hide_current_screen() -> void:
 				screen_data["instance"].on_hide()
 
 
+func show_main_menu() -> void:
+	show_screen(Screen.MAIN_MENU)
+
 func show_build_screen() -> void:
 	show_screen(Screen.BUILD)
 
@@ -120,6 +128,7 @@ func get_current_screen_instance() -> Node:
 
 func _screen_to_string(screen: Screen) -> String:
 	match screen:
+		Screen.MAIN_MENU: return "main_menu"
 		Screen.BUILD: return "build"
 		Screen.BATTLE: return "battle"
 		Screen.CAMPAIGN: return "campaign"

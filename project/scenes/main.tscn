@@ -1,12 +1,12 @@
 [gd_scene load_steps=2 format=3 uid="uid://main_scene"]
 
-[ext_resource type="PackedScene" uid="uid://battle_screen" path="res://scenes/battle_screen.tscn" id="1_battle"]
+[ext_resource type="PackedScene" uid="uid://main_menu" path="res://scenes/main_menu.tscn" id="1_menu"]
 
 [node name="Main" type="Node"]
 
 [node name="ScreenManager" type="CanvasLayer" parent="."]
 
-[node name="BattleScreen" parent="ScreenManager" instance=ExtResource("1_battle")]
+[node name="MainMenu" parent="ScreenManager" instance=ExtResource("1_menu")]
 visible = true
 
 [node name="SimulationLayer" type="Node" parent="."]
