@@ -175,7 +175,7 @@ func _update_weight() -> void:
 			current_weight += part.get("weight", 0.0)
 
 func _update_display() -> void:
-	weight_bar.max_value = max_weight if max_weight > 0 else 100
+	weight_bar.max_value = max_weight if max_weight > 0.0 else 100.0
 	weight_bar.value = current_weight
 	
 	var status: String = "Weight: %.1f / %.1f kg" % [current_weight, max_weight]
@@ -221,7 +221,7 @@ func _update_details() -> void:
 	details_label.text = text
 	
 	# Update button visibility based on mode and selection
-	var category: String = selected_part.get("category", "")
+	var _category: String = selected_part.get("category", "")
 	var is_arcade: bool = GameState.is_arcade_mode()
 	
 	buy_btn.visible = not is_arcade
@@ -276,7 +276,7 @@ func _on_sell_pressed() -> void:
 	
 	var cost: int = selected_part.get("cost", 0)
 	if GameState.remove_part(selected_part.get("id", "")):
-		GameState.add_credits(cost / 2)
+		GameState.add_credits(cost / 2)  # Integer division intended
 		_update_display()
 		_load_parts()
 

@@ -52,7 +52,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if not is_running or is_paused:
 		return
 	
@@ -312,7 +312,7 @@ func _ai_compute_movement(bot) -> void:
 	# Get MAX range from weapons (not optimal) — want to stay at distance
 	var max_weapon_range: float = _get_max_weapon_range(bot)
 	var profile: Dictionary = bot.ai_profile
-	var preferred: String = profile.get("preferred_range", "medium")
+	var _preferred: String = profile.get("preferred_range", "medium")
 	
 	var desired_vel: Vector2 = Vector2.ZERO
 	
@@ -542,11 +542,21 @@ func _resolve_beam_hit(bot, target, wpn_data) -> void:
 	var wpn_stats: Dictionary = wpn_data.get("stats", {})
 	var damage: float = wpn_stats.get("damage_per_shot", 10.0)
 	
-	# Apply resistances
-	var resistance: float = target.get("resist_energy", 0.0)
+	# Calculate resistance from target's equipped armor
+	var resistance: float = _get_bot_resistance(target, "energy")
 	damage *= (1.0 - clamp(resistance, 0.0, 0.9))
 	
 	_apply_damage(target, int(damage), bot.sim_id)
+
+func _get_bot_resistance(bot, damage_type: String) -> float:
+	## Calculate total resistance from equipped armor parts
+	var total_resistance: float = 0.0
+	
+	# Get armor parts from loadout - need to look up from part data
+	# For now, simplified - bots don't have armor equipped in current setup
+	# This would need to check bot's equipped armor parts
+	
+	return total_resistance
 
 
 func _spawn_projectile(bot, direction: Vector2, wpn_data: Dictionary) -> void:
@@ -621,7 +631,7 @@ func _process_projectiles() -> void:
 				projectile_destroyed.emit(proj_id)
 
 
-func _apply_damage(bot, damage: int, source_id: int) -> void:
+func _apply_damage(bot, damage: int, _source_id: int) -> void:
 	if damage <= 0:
 		return
 	

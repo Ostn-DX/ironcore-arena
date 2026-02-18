@@ -192,12 +192,12 @@ func _create_projectile_visual(proj_id: int, position: Vector2, direction: Vecto
 	projectile_visuals[proj_id] = visual
 
 
-func _on_entity_moved(sim_id: int, position: Vector2, rotation: float) -> void:
+func _on_entity_moved(sim_id: int, pos: Vector2, rot: float) -> void:
 	if bot_visuals.has(sim_id):
 		var visual: Node2D = bot_visuals[sim_id]
-		visual.position = position
+		visual.position = pos
 		# Only rotate chassis, turret rotates separately toward target
-		visual.rotation_degrees = rotation
+		visual.rotation_degrees = rot
 		
 		# Update turret to face target
 		if SimulationManager.bots.has(sim_id):
@@ -206,8 +206,8 @@ func _on_entity_moved(sim_id: int, position: Vector2, rotation: float) -> void:
 			if turret and bot.target_id != -1 and SimulationManager.bots.has(bot.target_id):
 				var target = SimulationManager.bots[bot.target_id]
 				if target.is_alive:
-					var target_angle: float = rad_to_deg((target.position - position).angle())
-					turret.rotation_degrees = target_angle - rotation
+					var target_angle: float = rad_to_deg((target.position - pos).angle())
+					turret.rotation_degrees = target_angle - rot
 
 
 func _on_entity_damaged(sim_id: int, hp: int, max_hp: int) -> void:
@@ -227,7 +227,7 @@ func _on_entity_damaged(sim_id: int, hp: int, max_hp: int) -> void:
 				hp_bar.color = Color(0.9, 0.2, 0.2)
 
 
-func _on_entity_destroyed(sim_id: int, team: int) -> void:
+func _on_entity_destroyed(sim_id: int, _team: int) -> void:
 	if bot_visuals.has(sim_id):
 		var visual: Node2D = bot_visuals[sim_id]
 		
@@ -288,7 +288,7 @@ func _on_go_to_build() -> void:
 	get_tree().change_scene_to_file("res://scenes/build_screen.tscn")
 
 
-func _on_tick_processed(tick: int) -> void:
+func _on_tick_processed(_tick: int) -> void:
 	# Update projectile positions
 	for proj_id in SimulationManager.projectiles:
 		var proj = SimulationManager.projectiles[proj_id]

@@ -131,8 +131,8 @@ func resolve_hit(target_bot: Dictionary, rng: RandomNumberGenerator) -> Dictiona
 	
 	# Calculate damage with falloff
 	var actual_damage: float = damage
-	var dist: float = distance_traveled
-	var wpn_stats: Dictionary = {}  # Would need to pass this in properly
+	var _dist: float = distance_traveled
+	var _wpn_stats: Dictionary = {}  # Would need to pass this in properly
 	
 	# Apply resistances (simplified — would need target bot's armor data)
 	var resistance: float = 0.0
