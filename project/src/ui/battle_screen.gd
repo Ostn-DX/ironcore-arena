@@ -36,7 +36,7 @@ func _ready() -> void:
 func _setup_camera() -> void:
 	camera = Camera2D.new()
 	camera.anchor_mode = Camera2D.ANCHOR_MODE_FIXED_TOP_LEFT
-	camera.position = Vector2(400, 300)
+	camera.position = Vector2(640, 360)  # Center of 1280x720
 	arena_container.add_child(camera)
 
 
@@ -55,12 +55,12 @@ func _start_test_battle() -> void:
 	## Start a test battle with simple bots
 	_clear_visuals()
 	
-	# Get arena data
+	# Get arena data - 1280x720 arena
 	var arena_data: Dictionary = {
 		"id": "test_arena",
-		"size": {"width": 800, "height": 600},
-		"spawn_points_player": [{"x": 150, "y": 300}],
-		"spawn_points_enemy": [{"x": 650, "y": 300}],
+		"size": {"width": 1280, "height": 720},
+		"spawn_points_player": [{"x": 200, "y": 360}],  # Center left
+		"spawn_points_enemy": [{"x": 1080, "y": 360}],  # Center right
 		"obstacles": [],
 		"seed": 12345
 	}
@@ -232,14 +232,14 @@ func _on_battle_ended(result: String, tick_count: int) -> void:
 	# Show result label
 	var result_label: Label = Label.new()
 	result_label.text = "RESULT: " + result + "\nTicks: " + str(tick_count)
-	result_label.position = Vector2(350, 250)
+	result_label.position = Vector2(540, 300)  # Center of 1280x720
 	result_label.add_theme_font_size_override("font_size", 24)
 	add_child(result_label)
 	
 	# Restart button
 	var restart_btn: Button = Button.new()
 	restart_btn.text = "Restart Battle"
-	restart_btn.position = Vector2(360, 320)
+	restart_btn.position = Vector2(580, 380)
 	restart_btn.pressed.connect(_start_test_battle)
 	add_child(restart_btn)
 
