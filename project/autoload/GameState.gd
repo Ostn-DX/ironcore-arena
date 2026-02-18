@@ -239,9 +239,26 @@ func load_game() -> bool:
 	credits = data.get("credits", 500)
 	owned_parts = data.get("owned_parts", {})
 	part_hp = data.get("part_hp", {})
-	loadouts = data.get("loadouts", [])
-	active_loadout_ids = data.get("active_loadout_ids", [])
-	completed_arenas = data.get("completed_arenas", [])
+	
+	# Convert loaded arrays to typed arrays
+	var loaded_loadouts: Array = data.get("loadouts", [])
+	loadouts.clear()
+	for item in loaded_loadouts:
+		if item is Dictionary:
+			loadouts.append(item)
+	
+	var loaded_active_ids: Array = data.get("active_loadout_ids", [])
+	active_loadout_ids.clear()
+	for item in loaded_active_ids:
+		if item is String:
+			active_loadout_ids.append(item)
+	
+	var loaded_completed: Array = data.get("completed_arenas", [])
+	completed_arenas.clear()
+	for item in loaded_completed:
+		if item is String:
+			completed_arenas.append(item)
+	
 	campaign_progress = data.get("campaign_progress", {"main": []})
 	settings = data.get("settings", settings)
 	
