@@ -315,9 +315,8 @@ func _drag_end(screen_pos: Vector2) -> void:
 
 
 func _screen_to_world(screen_pos: Vector2) -> Vector2:
-	# Simple conversion assuming viewport fills screen
-	var viewport_rect: Rect2 = arena_viewport.get_visible_rect()
-	return screen_pos.clamp(Vector2.ZERO, viewport_rect.size)
+	# Simple conversion — arena is 1280x720
+	return screen_pos.clamp(Vector2.ZERO, Vector2(1280, 720))
 
 
 func on_show() -> void:
