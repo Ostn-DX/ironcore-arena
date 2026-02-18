@@ -1,4 +1,4 @@
-UTYextends SceneTree
+extends SceneTree
 ## Schema Validation Runner — validates all data files against JSON schemas.
 ## Usage: godot --headless --script res://tools/run_schema_validation.gd
 ## Exit 0 = all valid, Exit 1 = any invalid.
