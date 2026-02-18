@@ -37,10 +37,15 @@ const SLOT_COLORS: Dictionary = {
 
 
 func _ready() -> void:
+	print("BuildScreen _ready() starting")
 	_setup_ui()
+	print("BuildScreen _setup_ui() done, loading parts")
 	_load_parts()
+	print("BuildScreen _load_parts() done, creating default loadout")
 	_create_default_loadout()
+	print("BuildScreen _create_default_loadout() done, updating display")
 	_update_display()
+	print("BuildScreen _ready() completed")
 
 
 func _setup_ui() -> void:
