@@ -44,6 +44,7 @@ func _setup_signals() -> void:
 func _start_test_battle() -> void:
 	## Start a test battle with simple bots
 	_clear_visuals()
+	_clear_battle_ui()
 	
 	# Get arena data - 1280x720 arena
 	var arena_data: Dictionary = {
@@ -98,6 +99,15 @@ func _clear_visuals() -> void:
 		child.queue_free()
 	bot_visuals.clear()
 	projectile_visuals.clear()
+
+
+func _clear_battle_ui() -> void:
+	## Remove result labels and buttons from previous battle
+	for child in get_children():
+		if child is Label and child != $BattleHUD/Title and child != $BattleHUD/Instructions:
+			child.queue_free()
+		if child is Button:
+			child.queue_free()
 
 
 func _create_bot_visual(bot) -> void:

@@ -340,10 +340,15 @@ func _ai_compute_movement(bot) -> void:
 	# Apply acceleration
 	bot.velocity = bot.velocity.move_toward(desired_vel, bot.current_accel * DT)
 	
-	# Update rotation to face movement
-	if bot.velocity.length() > 1.0:
-		var target_rot: float = rad_to_deg(bot.velocity.angle())
-		bot.rotation = _lerp_angle_deg(bot.rotation, target_rot, bot.base_turn_rate * DT / 180.0)
+	# Update rotation - face target if has one, otherwise face movement direction
+	var target_rot: float = bot.rotation
+	if bot.target_id != -1 and bots.has(bot.target_id) and bots[bot.target_id].is_alive:
+		var target = bots[bot.target_id]
+		target_rot = rad_to_deg((target.position - bot.position).angle())
+	elif bot.velocity.length() > 1.0:
+		target_rot = rad_to_deg(bot.velocity.angle())
+	
+	bot.rotation = _lerp_angle_deg(bot.rotation, target_rot, bot.base_turn_rate * DT / 180.0)
 
 
 func _ai_move_to_position(bot, target_pos: Vector2) -> void:
