@@ -43,60 +43,36 @@ theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="MarginContainer/MainHBox/LeftPanel"]
 layout_mode = 2
-text = "PARTS SHOP"
+text = "CHASSIS"
 horizontal_alignment = 1
 
-[node name="CategoryTabs" type="TabBar" parent="MarginContainer/MainHBox/LeftPanel"]
-layout_mode = 2
-
-[node name="PartsList" type="ItemList" parent="MarginContainer/MainHBox/LeftPanel"]
+[node name="ChassisList" type="ItemList" parent="MarginContainer/MainHBox/LeftPanel"]
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="ChassisInfo" type="Label" parent="MarginContainer/MainHBox/LeftPanel"]
+layout_mode = 2
+text = "Select a chassis"
+autowrap_mode = 3
+
 [node name="CenterPanel" type="VBoxContainer" parent="MarginContainer/MainHBox"]
 layout_mode = 2
-size_flags_horizontal = 4
-custom_minimum_size = Vector2(400, 0)
+size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="MarginContainer/MainHBox/CenterPanel"]
 layout_mode = 2
-text = "BOT ASSEMBLY"
+text = "ARMOR"
 horizontal_alignment = 1
 
-[node name="NameEdit" type="LineEdit" parent="MarginContainer/MainHBox/CenterPanel"]
-layout_mode = 2
-placeholder_text = "Bot Name"
-text = "New Bot"
-
-[node name="SlotsContainer" type="VBoxContainer" parent="MarginContainer/MainHBox/CenterPanel"]
+[node name="ArmorList" type="ItemList" parent="MarginContainer/MainHBox/CenterPanel"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 10
 
-[node name="WeightLabel" type="Label" parent="MarginContainer/MainHBox/CenterPanel"]
+[node name="ArmorInfo" type="Label" parent="MarginContainer/MainHBox/CenterPanel"]
 layout_mode = 2
-text = "0.0 / 0.0 kg"
-horizontal_alignment = 1
-
-[node name="WeightBar" type="ProgressBar" parent="MarginContainer/MainHBox/CenterPanel"]
-layout_mode = 2
-
-[node name="ButtonRow" type="HBoxContainer" parent="MarginContainer/MainHBox/CenterPanel"]
-layout_mode = 2
-alignment = 1
-
-[node name="SaveBtn" type="Button" parent="MarginContainer/MainHBox/CenterPanel/ButtonRow"]
-layout_mode = 2
-text = "Save"
-
-[node name="TestBtn" type="Button" parent="MarginContainer/MainHBox/CenterPanel/ButtonRow"]
-layout_mode = 2
-text = "Test Battle"
-
-[node name="BackBtn" type="Button" parent="MarginContainer/MainHBox/CenterPanel/ButtonRow"]
-layout_mode = 2
-text = "Back"
+text = "Select armor"
+autowrap_mode = 3
 
 [node name="RightPanel" type="VBoxContainer" parent="MarginContainer/MainHBox"]
 layout_mode = 2
@@ -105,54 +81,40 @@ theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="MarginContainer/MainHBox/RightPanel"]
 layout_mode = 2
-text = "DETAILS"
+text = "WEAPON"
 horizontal_alignment = 1
 
-[node name="CreditsLabel" type="Label" parent="MarginContainer/MainHBox/RightPanel"]
-layout_mode = 2
-text = "Credits: 0"
-horizontal_alignment = 1
-
-[node name="DetailsPanel" type="Panel" parent="MarginContainer/MainHBox/RightPanel"]
+[node name="WeaponList" type="ItemList" parent="MarginContainer/MainHBox/RightPanel"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="DetailsLabel" type="Label" parent="MarginContainer/MainHBox/RightPanel/DetailsPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-text = "Select a part to view details"
+[node name="WeaponInfo" type="Label" parent="MarginContainer/MainHBox/RightPanel"]
+layout_mode = 2
+text = "Select a weapon"
 autowrap_mode = 3
 
-[node name="EquipBtn" type="Button" parent="MarginContainer/MainHBox/RightPanel"]
+[node name="BottomBar" type="HBoxContainer" parent="MarginContainer/MainHBox"]
 layout_mode = 2
-text = "Equip to Bot"
+alignment = 1
 
-[node name="RemoveBtn" type="Button" parent="MarginContainer/MainHBox/RightPanel"]
+[node name="WeightLabel" type="Label" parent="MarginContainer/MainHBox/BottomBar"]
 layout_mode = 2
-text = "Remove from Bot"
-visible = false
+text = "Weight: 0 / 0 kg"
 
-[node name="BuyBtn" type="Button" parent="MarginContainer/MainHBox/RightPanel"]
+[node name="CreditsLabel" type="Label" parent="MarginContainer/MainHBox/BottomBar"]
 layout_mode = 2
-text = "Buy"
+text = "Credits: 0"
 
-[node name="SellBtn" type="Button" parent="MarginContainer/MainHBox/RightPanel"]
+[node name="TestBtn" type="Button" parent="MarginContainer/MainHBox/BottomBar"]
 layout_mode = 2
-text = "Sell"
+text = "Test Battle"
 
-[connection signal="item_selected" from="MarginContainer/MainHBox/LeftPanel/PartsList" to="." method="_on_part_selected"]
-[connection signal="pressed" from="MarginContainer/MainHBox/CenterPanel/ButtonRow/SaveBtn" to="." method="_on_save_pressed"]
-[connection signal="pressed" from="MarginContainer/MainHBox/CenterPanel/ButtonRow/TestBtn" to="." method="_on_test_pressed"]
-[connection signal="pressed" from="MarginContainer/MainHBox/CenterPanel/ButtonRow/BackBtn" to="." method="_on_back_pressed"]
-[connection signal="pressed" from="MarginContainer/MainHBox/RightPanel/EquipBtn" to="." method="_on_equip_pressed"]
-[connection signal="pressed" from="MarginContainer/MainHBox/RightPanel/RemoveBtn" to="." method="_on_remove_pressed"]
-[connection signal="pressed" from="MarginContainer/MainHBox/RightPanel/BuyBtn" to="." method="_on_buy_pressed"]
-[connection signal="pressed" from="MarginContainer/MainHBox/RightPanel/SellBtn" to="." method="_on_sell_pressed"]
+[node name="BackBtn" type="Button" parent="MarginContainer/MainHBox/BottomBar"]
+layout_mode = 2
+text = "Back"
+
+[connection signal="item_selected" from="MarginContainer/MainHBox/LeftPanel/ChassisList" to="." method="_on_chassis_selected"]
+[connection signal="item_selected" from="MarginContainer/MainHBox/CenterPanel/ArmorList" to="." method="_on_armor_selected"]
+[connection signal="item_selected" from="MarginContainer/MainHBox/RightPanel/WeaponList" to="." method="_on_weapon_selected"]
+[connection signal="pressed" from="MarginContainer/MainHBox/BottomBar/TestBtn" to="." method="_on_test_pressed"]
+[connection signal="pressed" from="MarginContainer/MainHBox/BottomBar/BackBtn" to="." method="_on_back_pressed"]
