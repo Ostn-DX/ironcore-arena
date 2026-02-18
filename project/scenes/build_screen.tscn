@@ -43,18 +43,20 @@ theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="MarginContainer/MainHBox/LeftPanel"]
 layout_mode = 2
-text = "PARTS"
+text = "PARTS SHOP"
 horizontal_alignment = 1
+
+[node name="CategoryTabs" type="TabBar" parent="MarginContainer/MainHBox/LeftPanel"]
+layout_mode = 2
 
 [node name="PartsList" type="ItemList" parent="MarginContainer/MainHBox/LeftPanel"]
 layout_mode = 2
 size_flags_vertical = 3
-item_count = 1
-item_0/text = "Loading..."
 
 [node name="CenterPanel" type="VBoxContainer" parent="MarginContainer/MainHBox"]
 layout_mode = 2
 size_flags_horizontal = 4
+custom_minimum_size = Vector2(400, 0)
 theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="MarginContainer/MainHBox/CenterPanel"]
@@ -67,10 +69,10 @@ layout_mode = 2
 placeholder_text = "Bot Name"
 text = "New Bot"
 
-[node name="SlotsContainer" type="GridContainer" parent="MarginContainer/MainHBox/CenterPanel"]
+[node name="SlotsContainer" type="VBoxContainer" parent="MarginContainer/MainHBox/CenterPanel"]
 layout_mode = 2
 size_flags_vertical = 3
-columns = 3
+theme_override_constants/separation = 10
 
 [node name="WeightLabel" type="Label" parent="MarginContainer/MainHBox/CenterPanel"]
 layout_mode = 2
@@ -103,7 +105,7 @@ theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="MarginContainer/MainHBox/RightPanel"]
 layout_mode = 2
-text = "SHOP"
+text = "DETAILS"
 horizontal_alignment = 1
 
 [node name="CreditsLabel" type="Label" parent="MarginContainer/MainHBox/RightPanel"]
@@ -129,6 +131,15 @@ theme_override_constants/margin_bottom = 10
 text = "Select a part to view details"
 autowrap_mode = 3
 
+[node name="EquipBtn" type="Button" parent="MarginContainer/MainHBox/RightPanel"]
+layout_mode = 2
+text = "Equip to Bot"
+
+[node name="RemoveBtn" type="Button" parent="MarginContainer/MainHBox/RightPanel"]
+layout_mode = 2
+text = "Remove from Bot"
+visible = false
+
 [node name="BuyBtn" type="Button" parent="MarginContainer/MainHBox/RightPanel"]
 layout_mode = 2
 text = "Buy"
@@ -141,5 +152,7 @@ text = "Sell"
 [connection signal="pressed" from="MarginContainer/MainHBox/CenterPanel/ButtonRow/SaveBtn" to="." method="_on_save_pressed"]
 [connection signal="pressed" from="MarginContainer/MainHBox/CenterPanel/ButtonRow/TestBtn" to="." method="_on_test_pressed"]
 [connection signal="pressed" from="MarginContainer/MainHBox/CenterPanel/ButtonRow/BackBtn" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="MarginContainer/MainHBox/RightPanel/EquipBtn" to="." method="_on_equip_pressed"]
+[connection signal="pressed" from="MarginContainer/MainHBox/RightPanel/RemoveBtn" to="." method="_on_remove_pressed"]
 [connection signal="pressed" from="MarginContainer/MainHBox/RightPanel/BuyBtn" to="." method="_on_buy_pressed"]
 [connection signal="pressed" from="MarginContainer/MainHBox/RightPanel/SellBtn" to="." method="_on_sell_pressed"]
