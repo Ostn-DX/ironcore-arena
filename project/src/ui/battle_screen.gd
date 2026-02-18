@@ -160,7 +160,7 @@ func _create_bot_visual(bot) -> void:
 
 
 func _create_projectile_visual(proj_id: int, position: Vector2, direction: Vector2) -> void:
-	var visual: NodeRect = ColorRect.new()
+	var visual: ColorRect = ColorRect.new()
 	visual.size = Vector2(8, 4)
 	visual.position = position - Vector2(4, 2)
 	visual.rotation = direction.angle()
