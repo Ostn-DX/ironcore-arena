@@ -32,7 +32,7 @@ var weapons: Array[Dictionary] = []  # {part_id, data, next_fire_tick, heat, ove
 var weapon_cooldown_ticks: int = 0
 
 # Sensors
-var detection_range: float = 600.0  # Increased from 200 so bots can find each other
+var detection_range: float = 1200.0  # Increased so bots see each other across arena
 var accuracy_bonus: float = 0.0
 
 # AI state

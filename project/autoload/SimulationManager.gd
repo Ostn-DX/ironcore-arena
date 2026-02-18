@@ -309,36 +309,29 @@ func _ai_compute_movement(bot) -> void:
 	var dist: float = to_target.length()
 	var dir: Vector2 = to_target.normalized()
 	
-	# Get preferred range from weapons
-	var optimal_range: float = _get_optimal_range(bot)
+	# Get MAX range from weapons (not optimal) — want to stay at distance
+	var max_weapon_range: float = _get_max_weapon_range(bot)
 	var profile: Dictionary = bot.ai_profile
 	var preferred: String = profile.get("preferred_range", "medium")
 	
 	var desired_vel: Vector2 = Vector2.ZERO
 	
-	if preferred == "close":
-		if dist > optimal_range * 0.5:
-			desired_vel = dir * bot.current_speed
-		else:
-			desired_vel = Vector2.ZERO
-	elif preferred == "far":
-		if dist < optimal_range * 0.7:
-			desired_vel = -dir * bot.current_speed  # Kite back
-		elif dist > optimal_range:
-			desired_vel = dir * bot.current_speed
-		else:
-			desired_vel = Vector2.ZERO
-	else:  # medium
-		if dist > optimal_range * 1.2:
-			desired_vel = dir * bot.current_speed
-		elif dist < optimal_range * 0.8:
-			desired_vel = -dir * bot.current_speed
-		else:
-			# Strafe
-			var strafe_dir: Vector2 = Vector2(-dir.y, dir.x)
-			if bot.sim_id % 2 == 0:
-				strafe_dir = -strafe_dir
-			desired_vel = strafe_dir * bot.current_speed * 0.5
+	# All bots try to stay at max range (kiting behavior)
+	var ideal_dist: float = max_weapon_range * 0.9  # 90% of max range
+	var buffer: float = 50.0  # Dead zone buffer
+	
+	if dist > ideal_dist + buffer:
+		# Too far, move closer
+		desired_vel = dir * bot.current_speed
+	elif dist < ideal_dist - buffer:
+		# Too close, back up (kite)
+		desired_vel = -dir * bot.current_speed * 0.8  # Slower when backing up
+	else:
+		# In ideal range, strafe to avoid fire
+		var strafe_dir: Vector2 = Vector2(-dir.y, dir.x)
+		if bot.sim_id % 2 == 0:
+			strafe_dir = -strafe_dir
+		desired_vel = strafe_dir * bot.current_speed * 0.6
 	
 	# Apply acceleration
 	bot.velocity = bot.velocity.move_toward(desired_vel, bot.current_accel * DT)
@@ -352,6 +345,15 @@ func _ai_compute_movement(bot) -> void:
 		target_rot = rad_to_deg(bot.velocity.angle())
 	
 	bot.rotation = _lerp_angle_deg(bot.rotation, target_rot, bot.base_turn_rate * DT / 180.0)
+
+
+func _get_max_weapon_range(bot) -> float:
+	var max_range: float = 100.0  # Minimum fallback
+	for w in bot.weapons:
+		var wpn_data: Dictionary = w["data"]
+		var stats: Dictionary = wpn_data.get("stats", {})
+		max_range = max(max_range, stats.get("range_max", 100.0))
+	return max_range
 
 
 func _ai_move_to_position(bot, target_pos: Vector2) -> void:
@@ -517,8 +519,22 @@ func _fire_weapon(bot, weapon_slot, target) -> void:
 		# Instant hit
 		_resolve_beam_hit(bot, target, wpn_data)
 	else:
-		# Spawn projectile
-		var direction: Vector2 = (target.position - bot.position).normalized()
+		# Spawn projectile with accuracy spread
+		var base_direction: Vector2 = (target.position - bot.position).normalized()
+		
+		# Apply accuracy spread
+		var accuracy: float = wpn_stats.get("accuracy", 0.7)
+		accuracy += bot.accuracy_bonus
+		accuracy = clamp(accuracy, 0.1, 1.0)
+		
+		# Convert accuracy to max angle deviation (0.1 accuracy = 15 degrees, 1.0 = 0 degrees)
+		var max_spread_deg: float = (1.0 - accuracy) * 30.0  # Max 30 degrees spread
+		var spread_deg: float = rng.randf_range(-max_spread_deg, max_spread_deg)
+		var spread_rad: float = deg_to_rad(spread_deg)
+		
+		# Rotate direction by spread angle
+		var direction: Vector2 = base_direction.rotated(spread_rad)
+		
 		_spawn_projectile(bot, direction, wpn_data)
 
 
