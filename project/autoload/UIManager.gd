@@ -92,17 +92,24 @@ func show_screen(screen: Screen) -> void:
 
 
 func _hide_current_screen() -> void:
+	print("UIManager: Hiding current screen: ", _screen_to_string(current_screen))
 	if current_screen == Screen.NONE:
+		print("UIManager: No current screen to hide")
 		return
 	
 	if _screens.has(current_screen):
 		var screen_data: Dictionary = _screens[current_screen]
 		if screen_data["instance"] != null and is_instance_valid(screen_data["instance"]):
+			print("UIManager: Hiding instance of ", _screen_to_string(current_screen))
 			screen_data["instance"].hide()
 			screen_data["instance"].process_mode = Node.PROCESS_MODE_DISABLED
 			
 			if screen_data["instance"].has_method("on_hide"):
 				screen_data["instance"].on_hide()
+		else:
+			print("UIManager: No valid instance to hide")
+	else:
+		print("UIManager: Current screen not in _screens")
 
 
 func show_main_menu() -> void:
