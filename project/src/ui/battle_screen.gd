@@ -42,32 +42,35 @@ func _setup_signals() -> void:
 
 
 func _start_test_battle() -> void:
-	## Start a test battle with simple bots
+	## Start battle with player's active loadouts
 	_clear_visuals()
 	_clear_battle_ui()
+	
+	# Get player's active loadouts
+	var player_loadouts: Array = GameState.get_active_loadouts()
+	if player_loadouts.is_empty():
+		# Fallback to default if none active
+		player_loadouts = [{
+			"id": "player_bot",
+			"name": "Player Scout",
+			"chassis": "chassis_light_t1",
+			"weapons": ["wpn_mg_t1"],
+			"armor": [],
+			"mobility": ["mob_wheels_t1"],
+			"sensors": ["sen_basic_t1"],
+			"utilities": [],
+			"ai_profile": "ai_balanced"
+		}]
 	
 	# Get arena data - 1280x720 arena
 	var arena_data: Dictionary = {
 		"id": "test_arena",
 		"size": {"width": 1280, "height": 720},
-		"spawn_points_player": [{"x": 200, "y": 360}],  # Center left
-		"spawn_points_enemy": [{"x": 1080, "y": 360}],  # Center right
+		"spawn_points_player": [{"x": 200, "y": 360}],
+		"spawn_points_enemy": [{"x": 1080, "y": 360}],
 		"obstacles": [],
 		"seed": 12345
 	}
-	
-	# Player loadout
-	var player_loadouts: Array = [{
-		"id": "player_bot",
-		"name": "Player Scout",
-		"chassis": "chassis_light_t1",
-		"weapons": ["wpn_mg_t1"],
-		"armor": [],
-		"mobility": ["mob_wheels_t1"],
-		"sensors": ["sen_basic_t1"],
-		"utilities": [],
-		"ai_profile": "ai_balanced"
-	}]
 	
 	# Enemy loadout
 	var enemy_loadouts: Array = [{
@@ -272,6 +275,17 @@ func _on_battle_ended(result: String, tick_count: int) -> void:
 	restart_btn.position = Vector2(580, 380)
 	restart_btn.pressed.connect(_start_test_battle)
 	add_child(restart_btn)
+	
+	# Build button
+	var build_btn: Button = Button.new()
+	build_btn.text = "Edit Bot"
+	build_btn.position = Vector2(580, 420)
+	build_btn.pressed.connect(_on_go_to_build)
+	add_child(build_btn)
+
+
+func _on_go_to_build() -> void:
+	UIManager.show_build_screen()
 
 
 func _on_tick_processed(tick: int) -> void:
