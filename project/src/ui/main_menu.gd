@@ -1,9 +1,6 @@
 extends Control
 ## MainMenu — entry point with campaign, arcade, settings, instructions, exit
 
-@onready var title_label: Label = $TitleLabel
-@onready var button_container: VBoxContainer = $ButtonContainer
-
 func _ready() -> void:
 	_setup_ui()
 
@@ -56,19 +53,19 @@ func _setup_ui() -> void:
 	add_child(vbox)
 	
 	# Create buttons
-	_create_button("Campaign", _on_campaign_pressed)
-	_create_button("Arcade Battle", _on_arcade_pressed)
-	_create_button("Instructions", _on_instructions_pressed)
-	_create_button("Settings", _on_settings_pressed)
-	_create_button("Exit", _on_exit_pressed)
+	_create_button("Campaign", _on_campaign_pressed, vbox)
+	_create_button("Arcade Battle", _on_arcade_pressed, vbox)
+	_create_button("Instructions", _on_instructions_pressed, vbox)
+	_create_button("Settings", _on_settings_pressed, vbox)
+	_create_button("Exit", _on_exit_pressed, vbox)
 
-func _create_button(text: String, callback: Callable) -> void:
+func _create_button(btn_text: String, callback: Callable, container: VBoxContainer) -> void:
 	var btn: Button = Button.new()
-	btn.text = text
+	btn.text = btn_text
 	btn.custom_minimum_size = Vector2(200, 50)
 	btn.add_theme_font_size_override("font_size", 20)
 	btn.pressed.connect(callback)
-	$ButtonContainer.add_child(btn)
+	container.add_child(btn)
 
 func _on_campaign_pressed() -> void:
 	print("Campaign pressed - calling show_build_screen")
