@@ -87,9 +87,11 @@ func _start_test_battle() -> void:
 	
 	SimulationManager.start_battle(arena_data, player_loadouts, enemy_loadouts, false)
 	battle_active = true
+	print("Battle started, bots count: ", SimulationManager.bots.size())
 	
 	# Create visual representations for existing bots
 	for bot_id in SimulationManager.bots:
+		print("Creating visual for bot: ", bot_id)
 		_create_bot_visual(SimulationManager.bots[bot_id])
 
 
@@ -103,6 +105,7 @@ func _clear_visuals() -> void:
 
 
 func _create_bot_visual(bot) -> void:
+	print("Creating bot visual at position: ", bot.position, " team: ", bot.team)
 	var visual: Node2D = Node2D.new()
 	visual.position = bot.position
 	visual.rotation_degrees = bot.rotation
