@@ -203,7 +203,10 @@ func _load_parts() -> void:
 
 
 func _create_default_loadout() -> void:
-	# Start with a basic chassis
+	# Start with a basic chassis if DataLoader is ready
+	if not DataLoader:
+		return
+	
 	var starter_chassis: Dictionary = DataLoader.get_part("chassis_light_t1")
 	if not starter_chassis.is_empty():
 		_equip_part(starter_chassis)
@@ -325,8 +328,9 @@ func _update_display() -> void:
 	weight_bar.max_value = max_weight if max_weight > 0 else 100
 	weight_bar.value = current_weight
 	
+	# Update weight bar text (built-in label)
 	var weight_text: String = "%.1f / %.1f kg" % [current_weight, max_weight]
-	weight_bar.get_child(0).text = weight_text if weight_bar.get_child_count() > 0 else ""
+	weight_bar.tooltip_text = weight_text
 	
 	# Color based on weight
 	if current_weight > max_weight:
@@ -458,7 +462,7 @@ func _on_sell_part(part_id: String) -> void:
 		return
 	
 	var cost: int = part.get("cost", 0)
-	var sell_price: int = cost / 2
+	var sell_price: int = cost / 2  # Integer division is intended
 	
 	if GameState.remove_part(part_id):
 		GameState.add_credits(sell_price)
