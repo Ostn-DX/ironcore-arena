@@ -544,12 +544,13 @@ func _on_test_battle() -> void:
 	GameState.add_loadout(current_loadout.duplicate())
 	GameState.set_active_loadouts([current_loadout["id"]])
 	
-	# Go to battle
-	UIManager.show_battle_screen()
+	# Go to battle directly
+	get_tree().change_scene_to_file("res://scenes/battle_screen.tscn")
 
 
 func _on_back_to_campaign() -> void:
-	UIManager.show_campaign_screen()
+	# Go back to main menu since we don't have campaign map yet
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 
 func on_show() -> void:

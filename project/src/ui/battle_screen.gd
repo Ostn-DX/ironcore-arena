@@ -285,7 +285,7 @@ func _on_battle_ended(result: String, tick_count: int) -> void:
 
 
 func _on_go_to_build() -> void:
-	UIManager.show_build_screen()
+	get_tree().change_scene_to_file("res://scenes/build_screen.tscn")
 
 
 func _on_tick_processed(tick: int) -> void:
