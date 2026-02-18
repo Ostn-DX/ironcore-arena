@@ -58,6 +58,10 @@ func _physics_process(delta: float) -> void:
 	
 	# Run one simulation tick per physics frame
 	_run_tick()
+	
+	# Debug: print every 60 ticks (1 second)
+	if current_tick % 60 == 0:
+		print("Tick: ", current_tick, " Bots: ", bots.size())
 
 
 func start_battle(arena_data: Dictionary, player_loadouts: Array, enemy_loadouts: Array, 

@@ -245,7 +245,7 @@ func _on_tick_processed(tick: int) -> void:
 			projectile_visuals[proj_id].position = proj.position - Vector2(4, 2)
 
 
-func _gui_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if not battle_active:
 		return
 	
