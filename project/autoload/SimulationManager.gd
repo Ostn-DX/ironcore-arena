@@ -690,7 +690,11 @@ func _setup_arena(arena_data: Dictionary) -> void:
 	var size: Dictionary = arena_data.get("size", {"width": 800, "height": 600})
 	arena_size = Vector2(size.get("width", 800), size.get("height", 600))
 	
-	obstacles = arena_data.get("obstacles", [])
+	obstacles.clear()
+	var loaded_obstacles: Array = arena_data.get("obstacles", [])
+	for obs in loaded_obstacles:
+		if obs is Dictionary:
+			obstacles.append(obs)
 	
 	player_spawn_points.clear()
 	for sp in arena_data.get("spawn_points_player", []):
