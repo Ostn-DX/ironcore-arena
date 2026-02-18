@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://battle_screen"]
 
-[ext_resource type="Script" path="res://src/ui/battle_screen.gd" id="1"]
+[ext_resource type="Script" path="res://src/ui/battle_screen.gd" id="1_battle"]
 
 [node name="BattleScreen" type="Control"]
 layout_mode = 3
@@ -9,4 +9,72 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+script = ExtResource("1_battle")
+
+[node name="ArenaViewport" type="SubViewportContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="ArenaViewport" type="SubViewport" parent="ArenaViewport"]
+handle_input_locally = false
+size = Vector2i(800, 600)
+render_target_update_mode = 4
+
+[node name="ArenaContainer" type="Node2D" parent="ArenaViewport/ArenaViewport"]
+
+[node name="Background" type="ColorRect" parent="ArenaViewport/ArenaViewport/ArenaContainer"]
+offset_right = 800.0
+offset_bottom = 600.0
+color = Color(0.1, 0.1, 0.15, 1.0)
+
+[node name="Bots" type="Node2D" parent="ArenaViewport/ArenaViewport/ArenaContainer"]
+
+[node name="Projectiles" type="Node2D" parent="ArenaViewport/ArenaViewport/ArenaContainer"]
+
+[node name="BattleHUD" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+
+[node name="Panel" type="Panel" parent="BattleHUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="BattleHUD"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_right = 100.0
+offset_bottom = 30.0
+grow_horizontal = 2
+text = "IRONCORE ARENA"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Instructions" type="Label" parent="BattleHUD"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -25.0
+offset_right = 200.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Drag your bot (blue) to move, drag to enemy to focus fire"
+horizontal_alignment = 1
