@@ -112,11 +112,14 @@ func _clear_battle_ui() -> void:
 
 func _create_bot_visual(bot) -> void:
 	print("Creating bot visual at position: ", bot.position, " team: ", bot.team)
+	
+	# Main visual container
 	var visual: Node2D = Node2D.new()
 	visual.position = bot.position
 	visual.rotation_degrees = bot.rotation
+	visual.name = "Bot_%d" % bot.sim_id
 	
-	# Bot body (circle)
+	# Bot body (chassis)
 	var body: ColorRect = ColorRect.new()
 	body.size = Vector2(bot.radius * 2, bot.radius * 2)
 	body.position = Vector2(-bot.radius, -bot.radius)
@@ -129,12 +132,25 @@ func _create_bot_visual(bot) -> void:
 	
 	visual.add_child(body)
 	
-	# Direction indicator
-	var dir_indicator: ColorRect = ColorRect.new()
-	dir_indicator.size = Vector2(bot.radius * 1.5, 4)
-	dir_indicator.position = Vector2(0, -2)
-	dir_indicator.color = Color.WHITE
-	visual.add_child(dir_indicator)
+	# Turret (separate node that rotates independently)
+	var turret: Node2D = Node2D.new()
+	turret.name = "Turret"
+	
+	# Turret base
+	var turret_base: ColorRect = ColorRect.new()
+	turret_base.size = Vector2(bot.radius * 1.2, bot.radius * 1.2)
+	turret_base.position = Vector2(-bot.radius * 0.6, -bot.radius * 0.6)
+	turret_base.color = Color(0.4, 0.4, 0.4)
+	turret.add_child(turret_base)
+	
+	# Gun barrel
+	var barrel: ColorRect = ColorRect.new()
+	barrel.size = Vector2(bot.radius * 1.8, 6)
+	barrel.position = Vector2(0, -3)
+	barrel.color = Color(0.6, 0.6, 0.6)
+	turret.add_child(barrel)
+	
+	visual.add_child(turret)
 	
 	# HP bar background
 	var hp_bg: ColorRect = ColorRect.new()
@@ -177,7 +193,18 @@ func _on_entity_moved(sim_id: int, position: Vector2, rotation: float) -> void:
 	if bot_visuals.has(sim_id):
 		var visual: Node2D = bot_visuals[sim_id]
 		visual.position = position
+		# Only rotate chassis, turret rotates separately toward target
 		visual.rotation_degrees = rotation
+		
+		# Update turret to face target
+		if SimulationManager.bots.has(sim_id):
+			var bot = SimulationManager.bots[sim_id]
+			var turret = visual.get_node_or_null("Turret")
+			if turret and bot.target_id != -1 and SimulationManager.bots.has(bot.target_id):
+				var target = SimulationManager.bots[bot.target_id]
+				if target.is_alive:
+					var target_angle: float = rad_to_deg((target.position - position).angle())
+					turret.rotation_degrees = target_angle - rotation
 
 
 func _on_entity_damaged(sim_id: int, hp: int, max_hp: int) -> void:

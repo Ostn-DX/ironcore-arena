@@ -59,9 +59,12 @@ func _physics_process(delta: float) -> void:
 	# Run one simulation tick per physics frame
 	_run_tick()
 	
-	# Debug: print every 60 ticks (1 second)
-	if current_tick % 60 == 0:
-		print("Tick: ", current_tick, " Bots: ", bots.size())
+	# Debug: print bot states every 2 seconds
+	if current_tick % 120 == 0:
+		for bot_id in bots:
+			var bot = bots[bot_id]
+			if bot.is_alive:
+				print("Bot ", bot_id, " pos:", bot.position, " target:", bot.target_id, " vel:", bot.velocity)
 
 
 func start_battle(arena_data: Dictionary, player_loadouts: Array, enemy_loadouts: Array, 
@@ -205,10 +208,10 @@ func _process_commands() -> void:
 
 func _get_command_duration(cmd_type: String) -> int:
 	match cmd_type:
-		"move": return 120  # 2 seconds
-		"follow": return 240  # 4 seconds
-		"focus": return 240  # 4 seconds
-	return 60
+		"move": return 360  # 6 seconds (was 2)
+		"follow": return 480  # 8 seconds
+		"focus": return 480  # 8 seconds
+	return 180
 
 
 func _process_ai() -> void:
