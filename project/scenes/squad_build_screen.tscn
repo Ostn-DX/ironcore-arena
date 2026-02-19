@@ -1,0 +1,125 @@
+[gd_scene load_steps=2 format=3 uid="uid://squad_build_screen"]
+
+[ext_resource type="Script" path="res://src/ui/squad_build_screen.gd" id="1_squad"]
+
+[node name="SquadBuildScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_squad")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.08, 0.12, 1.0)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="MainVBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+text = "SQUAD BUILDER"
+horizontal_alignment = 1
+
+[node name="TopRow" type="HBoxContainer" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="BotListPanel" type="VBoxContainer" parent="MarginContainer/MainVBox/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/MainVBox/TopRow/BotListPanel"]
+layout_mode = 2
+text = "YOUR BOTS"
+horizontal_alignment = 1
+
+[node name="BotList" type="ItemList" parent="MarginContainer/MainVBox/TopRow/BotListPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+select_mode = 1
+
+[node name="AddBotBtn" type="Button" parent="MarginContainer/MainVBox/TopRow/BotListPanel"]
+layout_mode = 2
+text = "Add Bot"
+
+[node name="RemoveBotBtn" type="Button" parent="MarginContainer/MainVBox/TopRow/BotListPanel"]
+layout_mode = 2
+text = "Remove Bot"
+
+[node name="PartsPanel" type="VBoxContainer" parent="MarginContainer/MainVBox/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChassisLabel" type="Label" parent="MarginContainer/MainVBox/TopRow/PartsPanel"]
+layout_mode = 2
+text = "CHASSIS"
+horizontal_alignment = 1
+
+[node name="ChassisList" type="ItemList" parent="MarginContainer/MainVBox/TopRow/PartsPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ArmorLabel" type="Label" parent="MarginContainer/MainVBox/TopRow/PartsPanel"]
+layout_mode = 2
+text = "ARMOR"
+horizontal_alignment = 1
+
+[node name="ArmorList" type="ItemList" parent="MarginContainer/MainVBox/TopRow/PartsPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="WeaponLabel" type="Label" parent="MarginContainer/MainVBox/TopRow/PartsPanel"]
+layout_mode = 2
+text = "WEAPON / HEAL"
+horizontal_alignment = 1
+
+[node name="WeaponList" type="ItemList" parent="MarginContainer/MainVBox/TopRow/PartsPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BottomBar" type="HBoxContainer" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="TeamWeightLabel" type="Label" parent="MarginContainer/MainVBox/BottomBar"]
+layout_mode = 2
+text = "Team Weight: 0 / 500 kg"
+
+[node name="TestBattleBtn" type="Button" parent="MarginContainer/MainVBox/BottomBar"]
+layout_mode = 2
+text = "Test Battle"
+
+[node name="BackBtn" type="Button" parent="MarginContainer/MainVBox/BottomBar"]
+layout_mode = 2
+text = "Back"
+
+[connection signal="item_selected" from="MarginContainer/MainVBox/TopRow/BotListPanel/BotList" to="." method="_on_bot_selected"]
+[connection signal="pressed" from="MarginContainer/MainVBox/TopRow/BotListPanel/AddBotBtn" to="." method="_on_add_bot"]
+[connection signal="pressed" from="MarginContainer/MainVBox/TopRow/BotListPanel/RemoveBotBtn" to="." method="_on_remove_bot"]
+[connection signal="item_selected" from="MarginContainer/MainVBox/TopRow/PartsPanel/ChassisList" to="." method="_on_chassis_selected"]
+[connection signal="item_selected" from="MarginContainer/MainVBox/TopRow/PartsPanel/ArmorList" to="." method="_on_armor_selected"]
+[connection signal="item_selected" from="MarginContainer/MainVBox/TopRow/PartsPanel/WeaponList" to="." method="_on_weapon_selected"]
+[connection signal="pressed" from="MarginContainer/MainVBox/BottomBar/TestBattleBtn" to="." method="_on_test_battle"]
+[connection signal="pressed" from="MarginContainer/MainVBox/BottomBar/BackBtn" to="." method="_on_back"]
