@@ -33,10 +33,10 @@ func _setup_shop_buttons() -> void:
 	for child in shop_buttons.get_children():
 		child.queue_free()
 	
-	for category in ["Chassis", "Plating", "Components"]:
+	for category in ["Chassis", "Armor", "Weapon/Heal"]:
 		var btn: Button = Button.new()
 		btn.text = category
-		btn.pressed.connect(_on_shop_category.bind(category.to_lower()))
+		btn.pressed.connect(_on_shop_category.bind(category.to_lower().replace("/", "_")))
 		shop_buttons.add_child(btn)
 
 func _on_shop_category(category: String) -> void:
@@ -58,9 +58,9 @@ func _load_shop() -> void:
 		match selected_shop_category:
 			"chassis":
 				match_cat = (part_cat == "chassis")
-			"plating":
+			"armor":
 				match_cat = (part_cat == "armor")
-			"components":
+			"weapon_heal":
 				match_cat = (part_cat == "weapon" or part_cat == "utility")
 		
 		if match_cat:
@@ -180,7 +180,7 @@ func _on_action_pressed() -> void:
 			"armor":
 				current_bot["armor"] = part_id
 			"weapon", "utility":
-				current_bot["weapon"] = part_id
+				current_bot["weapon"] = part_id  # Weapon or heal gun
 		
 		_update_bot_display()
 
