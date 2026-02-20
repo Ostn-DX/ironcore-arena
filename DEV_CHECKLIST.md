@@ -27,8 +27,8 @@
 
 ## PHASE 5: POLISH [IN PROGRESS]
 - [x] 17. Sound effects ✅ COMPLETE
-- [ ] 18. Visual effects ← NEXT TASK
-- [ ] 19. Balance testing
+- [x] 18. Visual effects ✅ COMPLETE
+- [ ] 19. Balance testing ← NEXT TASK
 
 ---
 CURRENT TASK: #17 — Sound effects
