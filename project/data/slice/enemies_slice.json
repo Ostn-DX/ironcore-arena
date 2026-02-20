@@ -1,44 +1,62 @@
 [
   {
-    "id": "enemy_scout_t1",
-    "display_name": "Scrapyard Scout",
-    "bot_loadout": "enemy_bot_scout_t1",
+    "id": "enemy_trainee_scout",
+    "name": "Trainee Scout",
+    "tier": 1,
+    "chassis": "chassis_light_t1",
+    "plating": "arm_plate_t1",
+    "weapon": "wpn_mg_t1",
+    "ai_profile": "ai_trainee",
+    "description": "Basic training unit with balanced behavior"
+  },
+  {
+    "id": "enemy_scrapper_fighter",
+    "name": "Scrapper Fighter",
+    "tier": 1,
+    "chassis": "chassis_medium_t1",
+    "plating": "arm_plate_t1",
+    "weapon": "wpn_cannon_t1",
     "ai_profile": "ai_aggressive",
-    "color_tint": "#CC4444"
+    "description": "Aggressive melee-range fighter from the Graveyard"
   },
   {
-    "id": "enemy_fighter_t1",
-    "display_name": "Pit Fighter",
-    "bot_loadout": "enemy_bot_fighter_t1",
-    "ai_profile": "ai_balanced",
-    "color_tint": "#CC8844"
+    "id": "enemy_salvager_scout",
+    "name": "Salvager Scout",
+    "tier": 1,
+    "chassis": "chassis_light_t1",
+    "plating": "arm_plate_t1",
+    "weapon": "wpn_mg_t1",
+    "ai_profile": "ai_flanker",
+    "description": "Flanking specialist that uses cover to ambush"
   },
   {
-    "id": "enemy_tank_t1",
-    "display_name": "Iron Wall",
-    "bot_loadout": "enemy_bot_tank_t1",
+    "id": "enemy_hunter_tank",
+    "name": "Hunter Tank",
+    "tier": 1,
+    "chassis": "chassis_heavy_t1",
+    "plating": "arm_heavy_t1",
+    "weapon": "wpn_launcher_t1",
     "ai_profile": "ai_defensive",
-    "color_tint": "#8844CC"
+    "description": "Heavy anchor unit that holds position"
   },
   {
-    "id": "enemy_sniper_t2",
-    "display_name": "Long Shot",
-    "bot_loadout": "enemy_bot_sniper_t2",
-    "ai_profile": "ai_sniper",
-    "color_tint": "#4488CC"
-  },
-  {
-    "id": "enemy_brawler_t2",
-    "display_name": "Crusher",
-    "bot_loadout": "enemy_bot_brawler_t2",
+    "id": "enemy_raider_fighter",
+    "name": "Raider Fighter",
+    "tier": 1,
+    "chassis": "chassis_medium_t1",
+    "plating": "arm_plate_t1",
+    "weapon": "wpn_shotgun_t1",
     "ai_profile": "ai_brawler",
-    "color_tint": "#CC4488"
+    "description": "Close-range brawler that coordinates with tanks"
   },
   {
-    "id": "enemy_support_t2",
-    "display_name": "Field Medic",
-    "bot_loadout": "enemy_bot_support_t2",
-    "ai_profile": "ai_support",
-    "color_tint": "#44CC88"
+    "id": "enemy_executioner_sniper",
+    "name": "Executioner Sniper",
+    "tier": 2,
+    "chassis": "chassis_medium_t2",
+    "plating": "arm_plate_t2",
+    "weapon": "wpn_beam_t2",
+    "ai_profile": "ai_sniper",
+    "description": "Long-range precision threat that punishes mistakes"
   }
 ]

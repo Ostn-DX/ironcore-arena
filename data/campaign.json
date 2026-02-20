@@ -1,0 +1,190 @@
+{
+  "version": "1.0.0",
+  "campaigns": {
+    "main": {
+      "id": "main",
+      "name": "Ironcore Championship",
+      "description": "Fight your way through the arena circuit to become the ultimate champion.",
+      "tiers": [
+        {
+          "tier": 0,
+          "name": "Rookie Circuit",
+          "arenas": ["roxtan_park"],
+          "unlock_requirement": "none"
+        },
+        {
+          "tier": 1,
+          "name": "Amateur League",
+          "arenas": ["torys_junkyard"],
+          "unlock_requirement": "complete_previous"
+        },
+        {
+          "tier": 2,
+          "name": "Pro Circuit",
+          "arenas": ["chrometek_rally"],
+          "unlock_requirement": "complete_previous"
+        },
+        {
+          "tier": 3,
+          "name": "Championship",
+          "arenas": ["metalmash_2057"],
+          "unlock_requirement": "complete_previous"
+        }
+      ]
+    }
+  },
+  "arena_configs": {
+    "roxtan_park": {
+      "difficulty": "easy",
+      "enemy_count": 1,
+      "enemy_loadouts": [
+        {
+          "id": "rookie_bot",
+          "name": "Rookie Scout",
+          "chassis": "akaumin_dl2_100",
+          "weapons": ["raptor_dt_01"],
+          "armor": ["santrin_auro"],
+          "mobility": ["mob_wheels_t1"],
+          "sensors": ["sen_basic_t1"],
+          "ai_profile": "ai_defensive"
+        }
+      ],
+      "obstacles": [],
+      "tips": [
+        "Drag your blue bot to move around the arena.",
+        "Drag from your bot to an enemy to attack.",
+        "Stay at range to avoid taking damage."
+      ]
+    },
+    "torys_junkyard": {
+      "difficulty": "medium",
+      "enemy_count": 2,
+      "enemy_loadouts": [
+        {
+          "id": "junk_scout",
+          "name": "Junkyard Scout",
+          "chassis": "akaumin_dl2_100",
+          "weapons": ["raptor_dt_01"],
+          "armor": ["santrin_auro"],
+          "mobility": ["mob_wheels_t1"],
+          "ai_profile": "ai_balanced"
+        },
+        {
+          "id": "junk_fighter",
+          "name": "Junkyard Fighter",
+          "chassis": "torq_mk1",
+          "weapons": ["piranha_smg"],
+          "armor": ["steel_guard"],
+          "mobility": ["mob_wheels_t1"],
+          "ai_profile": "ai_aggressive"
+        }
+      ],
+      "obstacles": [
+        {"type": "barrier", "x": 350, "y": 225, "width": 60, "height": 60},
+        {"type": "barrier", "x": 350, "y": 375, "width": 60, "height": 60}
+      ],
+      "tips": [
+        "Use obstacles for cover.",
+        "Focus fire on one enemy at a time.",
+        "Tier 2 components are now available in the shop."
+      ]
+    },
+    "chrometek_rally": {
+      "difficulty": "hard",
+      "enemy_count": 3,
+      "enemy_loadouts": [
+        {
+          "id": "chrome_striker",
+          "name": "Chrometek Striker",
+          "chassis": "speedster_v2",
+          "weapons": ["piranha_smg"],
+          "armor": ["nano_fiber_mesh"],
+          "mobility": ["mob_wheels_t1"],
+          "ai_profile": "ai_aggressive"
+        },
+        {
+          "id": "chrome_tank",
+          "name": "Chrometek Tank",
+          "chassis": "torq_mk1",
+          "weapons": ["thunder_cannon"],
+          "armor": ["titanium_weave"],
+          "mobility": ["mob_wheels_t1"],
+          "ai_profile": "ai_defensive"
+        },
+        {
+          "id": "chrome_sniper",
+          "name": "Chrometek Sniper",
+          "chassis": "speedster_v2",
+          "weapons": ["viper_sniper"],
+          "armor": ["nano_fiber_mesh"],
+          "mobility": ["mob_wheels_t1"],
+          "ai_profile": "ai_balanced"
+        }
+      ],
+      "obstacles": [
+        {"type": "cover", "x": 400, "y": 250, "width": 80, "height": 40},
+        {"type": "cover", "x": 400, "y": 350, "width": 80, "height": 40},
+        {"type": "barrier", "x": 250, "y": 150, "width": 40, "height": 40},
+        {"type": "barrier", "x": 250, "y": 450, "width": 40, "height": 40}
+      ],
+      "tips": [
+        "Take out the sniper first - it deals the most damage.",
+        "Use speed to kite the tank.",
+        "Tier 3 components are now available."
+      ]
+    },
+    "metalmash_2057": {
+      "difficulty": "expert",
+      "enemy_count": 4,
+      "enemy_loadouts": [
+        {
+          "id": "boss_juggernaut",
+          "name": "The Juggernaut",
+          "chassis": "heavy_titan_x",
+          "weapons": ["dragon_blaster", "thunder_cannon"],
+          "armor": ["imperium_plate", "imperium_plate"],
+          "mobility": ["mob_wheels_t1"],
+          "sensors": ["sen_basic_t1"],
+          "ai_profile": "ai_aggressive",
+          "is_boss": true
+        },
+        {
+          "id": "mash_striker",
+          "name": "MetalMash Striker",
+          "chassis": "speedster_v2",
+          "weapons": ["piranha_smg"],
+          "armor": ["nano_fiber_mesh"],
+          "ai_profile": "ai_aggressive"
+        },
+        {
+          "id": "mash_guard",
+          "name": "MetalMash Guard",
+          "chassis": "torq_mk1",
+          "weapons": ["thunder_cannon"],
+          "armor": ["steel_guard"],
+          "ai_profile": "ai_defensive"
+        },
+        {
+          "id": "mash_sniper",
+          "name": "MetalMash Sniper",
+          "chassis": "speedster_v2",
+          "weapons": ["viper_sniper"],
+          "armor": ["nano_fiber_mesh"],
+          "ai_profile": "ai_balanced"
+        }
+      ],
+      "obstacles": [
+        {"type": "cover", "x": 450, "y": 275, "width": 100, "height": 50},
+        {"type": "barrier", "x": 300, "y": 200, "width": 50, "height": 50},
+        {"type": "barrier", "x": 300, "y": 400, "width": 50, "height": 50},
+        {"type": "barrier", "x": 600, "y": 200, "width": 50, "height": 50},
+        {"type": "barrier", "x": 600, "y": 400, "width": 50, "height": 50}
+      ],
+      "tips": [
+        "This is the championship match!",
+        "The Juggernaut is heavily armored - bring your best weapons.",
+        "Use the cover to avoid the boss's devastating attacks."
+      ]
+    }
+  }
+}

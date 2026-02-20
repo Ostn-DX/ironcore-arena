@@ -12,9 +12,12 @@
     "spawn_points_player": [{"x": 100, "y": 200}],
     "spawn_points_enemy": [{"x": 500, "y": 200}],
     "waves": [
-      {"spawn_tick": 0, "enemies": ["enemy_scout_t1"]}
+      {"spawn_tick": 0, "enemies": ["enemy_trainee_scout"]}
     ],
-    "victory_condition": "eliminate"
+    "victory_condition": "eliminate",
+    "theme": "clean_grey",
+    "music": "training",
+    "description": "Basic training facility for new commanders"
   },
   {
     "id": "arena_iron_graveyard",
@@ -26,17 +29,21 @@
     "time_limit": 300,
     "size": {"width": 800, "height": 600},
     "obstacles": [
-      {"type": "cover", "x": 350, "y": 250, "width": 100, "height": 40},
-      {"type": "cover", "x": 350, "y": 310, "width": 100, "height": 40},
+      {"type": "cover", "x": 250, "y": 200, "width": 80, "height": 30},
+      {"type": "cover", "x": 470, "y": 200, "width": 80, "height": 30},
+      {"type": "cover", "x": 360, "y": 350, "width": 80, "height": 30},
       {"type": "wall", "x": 0, "y": 0, "width": 20, "height": 600},
       {"type": "wall", "x": 780, "y": 0, "width": 20, "height": 600}
     ],
     "spawn_points_player": [{"x": 100, "y": 200}, {"x": 100, "y": 400}],
     "spawn_points_enemy": [{"x": 700, "y": 200}, {"x": 700, "y": 400}],
     "waves": [
-      {"spawn_tick": 0, "enemies": ["enemy_fighter_t1", "enemy_scout_t1"]}
+      {"spawn_tick": 0, "enemies": ["enemy_scrapper_fighter", "enemy_salvager_scout"]}
     ],
-    "victory_condition": "eliminate"
+    "victory_condition": "eliminate",
+    "theme": "rust_orange",
+    "music": "industrial",
+    "description": "Salvage yard where scrappers fight for scrap"
   },
   {
     "id": "arena_kill_grid",
@@ -48,20 +55,23 @@
     "time_limit": 360,
     "size": {"width": 1000, "height": 700},
     "obstacles": [
-      {"type": "hazard_mine", "x": 400, "y": 300, "width": 16, "height": 16, "damage": 40, "trigger_radius": 30},
+      {"type": "hazard_mine", "x": 350, "y": 250, "width": 16, "height": 16, "damage": 40, "trigger_radius": 30},
       {"type": "hazard_mine", "x": 500, "y": 350, "width": 16, "height": 16, "damage": 40, "trigger_radius": 30},
-      {"type": "hazard_mine", "x": 600, "y": 250, "width": 16, "height": 16, "damage": 40, "trigger_radius": 30},
-      {"type": "hazard_mine", "x": 450, "y": 450, "width": 16, "height": 16, "damage": 40, "trigger_radius": 30},
-      {"type": "wall", "x": 250, "y": 100, "width": 20, "height": 200},
-      {"type": "wall", "x": 730, "y": 400, "width": 20, "height": 200},
+      {"type": "hazard_mine", "x": 650, "y": 250, "width": 16, "height": 16, "damage": 40, "trigger_radius": 30},
+      {"type": "hazard_mine", "x": 500, "y": 500, "width": 16, "height": 16, "damage": 40, "trigger_radius": 30},
+      {"type": "wall", "x": 200, "y": 100, "width": 20, "height": 150},
+      {"type": "wall", "x": 780, "y": 450, "width": 20, "height": 150},
       {"type": "cover", "x": 480, "y": 150, "width": 60, "height": 30}
     ],
     "spawn_points_player": [{"x": 100, "y": 250}, {"x": 100, "y": 450}],
-    "spawn_points_enemy": [{"x": 900, "y": 200}, {"x": 900, "y": 400}, {"x": 900, "y": 550}],
+    "spawn_points_enemy": [{"x": 900, "y": 200}, {"x": 900, "y": 350}, {"x": 900, "y": 550}],
     "waves": [
-      {"spawn_tick": 0, "enemies": ["enemy_tank_t1", "enemy_fighter_t1"]},
-      {"spawn_tick": 600, "enemies": ["enemy_sniper_t2"]}
+      {"spawn_tick": 0, "enemies": ["enemy_hunter_tank", "enemy_raider_fighter"]},
+      {"spawn_tick": 600, "enemies": ["enemy_executioner_sniper"]}
     ],
-    "victory_condition": "eliminate"
+    "victory_condition": "eliminate",
+    "theme": "tech_dark",
+    "music": "intense",
+    "description": "Death trap with mines and snipers"
   }
 ]
