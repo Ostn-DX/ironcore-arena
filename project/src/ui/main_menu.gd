@@ -34,26 +34,33 @@ var title_tween: Tween = null
 
 
 func _ready() -> void:
+	_apply_styled_theme()
 	_setup_ui()
 	_update_button_visibility()
 	_animate_title()
+
+
+func _apply_styled_theme() -> void:
+	## Apply the generated UI theme
+	var theme_gen: UIThemeGenerator = UIThemeGenerator.new()
+	var theme: Theme = theme_gen.generate_theme()
+	self.theme = theme
 
 
 func _setup_ui() -> void:
 	## Setup the main menu UI
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	
-	# Background
-	var bg: ColorRect = ColorRect.new()
+	# Background with generated texture
+	var bg: TextureRect = TextureRect.new()
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	bg.color = Color(0.05, 0.05, 0.08, 1.0)
-	add_child(bg)
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	
-	# Background pattern (grid)
-	var grid: ColorRect = ColorRect.new()
-	grid.set_anchors_preset(Control.PRESET_FULL_RECT)
-	grid.color = Color(0.08, 0.08, 0.12, 0.5)
-	add_child(grid)
+	# Generate or load background
+	var theme_gen: UIThemeGenerator = UIThemeGenerator.new()
+	var bg_texture: Texture2D = theme_gen.generate_menu_background()
+	bg.texture = bg_texture
+	add_child(bg)
 	
 	# Title container
 	var title_container: Control = Control.new()
@@ -104,15 +111,15 @@ func _setup_ui() -> void:
 	add_child(button_container)
 	
 	# Continue button (only if save exists)
-	continue_btn = _create_menu_button("Continue", _on_continue)
+	continue_btn = _create_menu_button("Continue", _on_continue, true)
 	button_container.add_child(continue_btn)
 	
 	# New Campaign
-	new_campaign_btn = _create_menu_button("New Campaign", _on_new_campaign)
+	new_campaign_btn = _create_menu_button("New Campaign", _on_new_campaign, true)
 	button_container.add_child(new_campaign_btn)
 	
 	# Arcade Mode
-	arcade_btn = _create_menu_button("Arcade Mode", _on_arcade)
+	arcade_btn = _create_menu_button("Arcade Mode", _on_arcade, false)
 	button_container.add_child(arcade_btn)
 	
 	# Shop
@@ -164,13 +171,31 @@ func _setup_ui() -> void:
 	add_child(version_label)
 
 
-func _create_menu_button(text: String, callback: Callable) -> Button:
+func _create_menu_button(text: String, callback: Callable, is_primary: bool = false) -> Button:
 	## Create a styled menu button
 	var btn: Button = Button.new()
 	btn.text = text
-	btn.size = Vector2(200, 40)
+	btn.custom_minimum_size = Vector2(220, 45)
+	btn.size = Vector2(220, 45)
+	
+	# Style based on importance
+	if is_primary:
+		btn.add_theme_color_override("font_color", Color(1, 1, 1))
+		btn.add_theme_font_size_override("font_size", 20)
+	else:
+		btn.add_theme_font_size_override("font_size", 18)
+	
+	# Connect signals
 	btn.pressed.connect(callback)
+	btn.mouse_entered.connect(_on_button_hover)
+	
 	return btn
+
+
+func _on_button_hover() -> void:
+	## Play hover sound
+	if AudioManager:
+		AudioManager.play_ui_hover()
 
 
 func _update_button_visibility() -> void:
