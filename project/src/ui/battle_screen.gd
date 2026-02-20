@@ -15,6 +15,9 @@ var projectiles_container: Node2D = null
 # HUD
 @onready var hud: Control = $BattleHUD
 
+# Results Screen
+var results_screen: ResultsScreen = null
+
 # Visual representations
 var bot_visuals: Dictionary = {}  # sim_id -> Node2D
 var projectile_visuals: Dictionary = {}  # proj_id -> Node2D
@@ -26,7 +29,10 @@ var drag_start_pos: Vector2 = Vector2.ZERO
 
 # UI Elements
 var countdown_label: Label = null
-var result_panel: Control = null
+
+# Stored results for display
+var _last_result: BattleManager.BattleResult = null
+var _last_rewards: Dictionary = {}
 
 
 func _ready() -> void:
@@ -71,6 +77,15 @@ func _setup_ui() -> void:
     countdown_label.size = Vector2(200, 200)
     countdown_label.visible = false
     add_child(countdown_label)
+    
+    # Create ResultsScreen
+    var results_scene: PackedScene = preload("res://scenes/results_screen.tscn")
+    results_screen = results_scene.instantiate()
+    results_screen.continue_pressed.connect(_on_results_continue)
+    results_screen.restart_pressed.connect(_on_results_restart)
+    results_screen.edit_loadout_pressed.connect(_on_results_edit)
+    results_screen.next_arena_pressed.connect(_on_results_next)
+    add_child(results_screen)
 
 
 func _setup_arena(arena_data: Dictionary) -> void:
@@ -166,10 +181,9 @@ func _clear_visuals() -> void:
 
 
 func _clear_battle_ui() -> void:
-    ## Remove result panels from previous battle
-    if result_panel:
-        result_panel.queue_free()
-        result_panel = null
+    ## Hide results screen
+    if results_screen:
+        results_screen.hide_results()
     
     if countdown_label:
         countdown_label.visible = false
@@ -214,13 +228,19 @@ func _on_countdown_tick(seconds_left: int) -> void:
 
 func _on_battle_ended(result: BattleManager.BattleResult) -> void:
     print("BattleScreen: Battle ended - Victory: %s, Grade: %s" % [result.victory, result.get_grade()])
-    _show_result_screen(result)
+    _last_result = result
+    # Wait for rewards before showing results
 
 
 func _on_rewards_calculated(rewards: Dictionary) -> void:
     print("BattleScreen: Rewards - Credits: %d (Base: %d, Bonus: %d)" % [
         rewards["credits"], rewards["base_credits"], rewards["bonus_credits"]
     ])
+    _last_rewards = rewards
+    
+    # Show results screen with both result and rewards
+    if _last_result:
+        _show_result_screen(_last_result, rewards)
 
 
 # ============================================================================
@@ -412,78 +432,37 @@ func _update_hud() -> void:
 # RESULT SCREEN
 # ============================================================================
 
-func _show_result_screen(result: BattleManager.BattleResult) -> void:
-    # Create result panel
-    result_panel = Control.new()
-    result_panel.name = "ResultPanel"
-    result_panel.set_anchors_preset(Control.PRESET_CENTER)
-    result_panel.size = Vector2(400, 300)
-    result_panel.position = Vector2(440, 210)  # Center of 1280x720
-    
-    # Background
-    var bg: Panel = Panel.new()
-    bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-    result_panel.add_child(bg)
-    
-    # Result text
-    var result_title: Label = Label.new()
-    result_title.text = "VICTORY!" if result.victory else "DEFEAT"
-    result_title.add_theme_font_size_override("font_size", 32)
-    result_title.position = Vector2(100, 20)
-    result_title.size = Vector2(200, 40)
-    result_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    result_title.modulate = Color(0.2, 0.9, 0.2) if result.victory else Color(0.9, 0.2, 0.2)
-    result_panel.add_child(result_title)
-    
-    # Grade
-    var grade_label: Label = Label.new()
-    grade_label.text = "Grade: %s" % result.get_grade()
-    grade_label.add_theme_font_size_override("font_size", 24)
-    grade_label.position = Vector2(100, 70)
-    grade_label.size = Vector2(200, 30)
-    grade_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    result_panel.add_child(grade_label)
-    
-    # Time
-    var time_label: Label = Label.new()
-    var minutes: int = int(result.completion_time) / 60
-    var seconds: int = int(result.completion_time) % 60
-    time_label.text = "Time: %02d:%02d / %02d:%02d" % [
-        minutes, seconds,
-        int(result.par_time) / 60, int(result.par_time) % 60
-    ]
-    time_label.position = Vector2(100, 110)
-    time_label.size = Vector2(200, 25)
-    time_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    result_panel.add_child(time_label)
-    
-    # Stats
-    var stats_label: Label = Label.new()
-    stats_label.text = "Enemies Destroyed: %d\nPlayer Bots Lost: %d" % [
-        result.enemy_bots_destroyed,
-        result.player_bots_lost
-    ]
-    stats_label.position = Vector2(100, 150)
-    stats_label.size = Vector2(200, 50)
-    stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    result_panel.add_child(stats_label)
-    
-    # Buttons
-    var restart_btn: Button = Button.new()
-    restart_btn.text = "Restart Battle"
-    restart_btn.position = Vector2(50, 220)
-    restart_btn.size = Vector2(120, 40)
-    restart_btn.pressed.connect(_start_test_battle)
-    result_panel.add_child(restart_btn)
-    
-    var build_btn: Button = Button.new()
-    build_btn.text = "Edit Bot"
-    build_btn.position = Vector2(230, 220)
-    build_btn.size = Vector2(120, 40)
-    build_btn.pressed.connect(_on_go_to_build)
-    result_panel.add_child(build_btn)
-    
-    add_child(result_panel)
+func _show_result_screen(result: BattleManager.BattleResult, rewards: Dictionary) -> void:
+    ## Show the dedicated results screen
+    if results_screen:
+        results_screen.show_results(result, rewards)
+
+
+func _on_results_continue() -> void:
+    ## Continue button pressed (retry if lost, continue if won)
+    if _last_result and _last_result.victory:
+        # Go to campaign/arena select
+        print("BattleScreen: Continue to next arena")
+        # TODO: Navigate to next arena
+    else:
+        # Retry same arena
+        _start_test_battle()
+
+
+func _on_results_restart() -> void:
+    ## Restart current battle
+    _start_test_battle()
+
+
+func _on_results_edit() -> void:
+    ## Edit loadout button pressed
+    _on_go_to_build()
+
+
+func _on_results_next() -> void:
+    ## Next arena button pressed
+    print("BattleScreen: Next arena requested")
+    # TODO: Load next arena in campaign
 
 
 # ============================================================================
