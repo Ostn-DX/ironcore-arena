@@ -3,9 +3,9 @@
     "id": "arena_boot_camp",
     "name": "Boot Camp",
     "tier": 1,
-    "weight_cap": 50,
+    "weight_cap": 80,
     "entry_fee": 0,
-    "reward_credits": 50,
+    "reward_credits": 100,
     "time_limit": 300,
     "size": {"width": 600, "height": 400},
     "obstacles": [],
@@ -23,9 +23,9 @@
     "id": "arena_iron_graveyard",
     "name": "Iron Graveyard",
     "tier": 1,
-    "weight_cap": 70,
+    "weight_cap": 100,
     "entry_fee": 50,
-    "reward_credits": 150,
+    "reward_credits": 200,
     "time_limit": 300,
     "size": {"width": 800, "height": 600},
     "obstacles": [
@@ -49,9 +49,9 @@
     "id": "arena_kill_grid",
     "name": "Kill Grid",
     "tier": 2,
-    "weight_cap": 90,
-    "entry_fee": 100,
-    "reward_credits": 300,
+    "weight_cap": 130,
+    "entry_fee": 150,
+    "reward_credits": 400,
     "time_limit": 360,
     "size": {"width": 1000, "height": 700},
     "obstacles": [
@@ -66,8 +66,7 @@
     "spawn_points_player": [{"x": 100, "y": 250}, {"x": 100, "y": 450}],
     "spawn_points_enemy": [{"x": 900, "y": 200}, {"x": 900, "y": 350}, {"x": 900, "y": 550}],
     "waves": [
-      {"spawn_tick": 0, "enemies": ["enemy_hunter_tank", "enemy_raider_fighter"]},
-      {"spawn_tick": 600, "enemies": ["enemy_executioner_sniper"]}
+      {"spawn_tick": 0, "enemies": ["enemy_hunter_tank", "enemy_raider_fighter"]}
     ],
     "victory_condition": "eliminate",
     "theme": "tech_dark",
@@ -78,9 +77,9 @@
     "id": "arena_the_gauntlet",
     "name": "The Gauntlet",
     "tier": 2,
-    "weight_cap": 100,
-    "entry_fee": 200,
-    "reward_credits": 450,
+    "weight_cap": 150,
+    "entry_fee": 300,
+    "reward_credits": 600,
     "time_limit": 420,
     "size": {"width": 1200, "height": 500},
     "obstacles": [
@@ -98,8 +97,7 @@
     "spawn_points_enemy": [{"x": 1100, "y": 150}, {"x": 1100, "y": 250}, {"x": 1100, "y": 350}],
     "waves": [
       {"spawn_tick": 0, "enemies": ["enemy_hunter_tank", "enemy_scrapper_fighter"]},
-      {"spawn_tick": 300, "enemies": ["enemy_salvager_scout", "enemy_raider_fighter"]},
-      {"spawn_tick": 900, "enemies": ["enemy_executioner_sniper"]}
+      {"spawn_tick": 400, "enemies": ["enemy_executioner_sniper"]}
     ],
     "victory_condition": "eliminate",
     "theme": "industrial_blue",
@@ -110,9 +108,9 @@
     "id": "arena_champions_pit",
     "name": "Champion's Pit",
     "tier": 3,
-    "weight_cap": 120,
+    "weight_cap": 200,
     "entry_fee": 500,
-    "reward_credits": 1000,
+    "reward_credits": 1200,
     "time_limit": 600,
     "size": {"width": 900, "height": 900},
     "obstacles": [
