@@ -1,10 +1,12 @@
 extends Control
 ## BattleScreen — arena view, HUD, command input.
+## Works with BattleManager to display battle state and handle player input.
 
 @onready var arena_container: Node2D = $ArenaContainer
 @onready var bots_container: Node2D = $ArenaContainer/Bots
 @onready var projectiles_container: Node2D = $ArenaContainer/Projectiles
 @onready var hud: Control = $BattleHUD
+@onready var battle_manager: BattleManager = $BattleManager
 
 # Visual representations
 var bot_visuals: Dictionary = {}  # sim_id -> Node2D
@@ -18,365 +20,524 @@ var selected_bot_id: int = -1
 var is_dragging: bool = false
 var drag_start_pos: Vector2 = Vector2.ZERO
 
-# Battle state
-var battle_active: bool = false
+# UI Elements
+var countdown_label: Label = null
+var result_panel: Control = null
 
 
 func _ready() -> void:
-	_setup_signals()
-	
-	# Start test battle after short delay
-	await get_tree().create_timer(0.5).timeout
-	_start_test_battle()
+    # Give BattleManager reference to this screen
+    battle_manager.battle_screen = self
+    
+    _setup_signals()
+    _setup_ui()
+    
+    # Start test battle after short delay
+    await get_tree().create_timer(0.5).timeout
+    _start_test_battle()
 
 
 func _setup_signals() -> void:
-	if SimulationManager:
-		SimulationManager.entity_moved.connect(_on_entity_moved)
-		SimulationManager.entity_damaged.connect(_on_entity_damaged)
-		SimulationManager.entity_destroyed.connect(_on_entity_destroyed)
-		SimulationManager.projectile_spawned.connect(_on_projectile_spawned)
-		SimulationManager.projectile_destroyed.connect(_on_projectile_destroyed)
-		SimulationManager.battle_ended.connect(_on_battle_ended)
-		SimulationManager.tick_processed.connect(_on_tick_processed)
+    # BattleManager signals
+    if battle_manager:
+        battle_manager.battle_started.connect(_on_battle_started)
+        battle_manager.battle_state_changed.connect(_on_battle_state_changed)
+        battle_manager.countdown_tick.connect(_on_countdown_tick)
+        battle_manager.battle_ended.connect(_on_battle_ended)
+        battle_manager.rewards_calculated.connect(_on_rewards_calculated)
+    
+    # SimulationManager signals (for visual updates)
+    if SimulationManager:
+        SimulationManager.entity_moved.connect(_on_entity_moved)
+        SimulationManager.entity_damaged.connect(_on_entity_damaged)
+        SimulationManager.entity_destroyed.connect(_on_entity_destroyed)
+        SimulationManager.projectile_spawned.connect(_on_projectile_spawned)
+        SimulationManager.projectile_destroyed.connect(_on_projectile_destroyed)
+        SimulationManager.tick_processed.connect(_on_tick_processed)
+
+
+func _setup_ui() -> void:
+    # Create countdown label (hidden by default)
+    countdown_label = Label.new()
+    countdown_label.name = "CountdownLabel"
+    countdown_label.text = "3"
+    countdown_label.add_theme_font_size_override("font_size", 72)
+    countdown_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    countdown_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+    countdown_label.position = Vector2(540, 260)
+    countdown_label.size = Vector2(200, 200)
+    countdown_label.visible = false
+    add_child(countdown_label)
 
 
 func _start_test_battle() -> void:
-	## Start battle with player's active loadouts
-	_clear_visuals()
-	_clear_battle_ui()
-	
-	# Get player's active loadouts
-	var player_loadouts: Array = GameState.get_active_loadouts()
-	if player_loadouts.is_empty():
-		# Fallback to default if none active
-		player_loadouts = [{
-			"id": "player_bot",
-			"name": "Player Scout",
-			"chassis": "chassis_light_t1",
-			"weapons": ["wpn_mg_t1"],
-			"armor": [],
-			"mobility": ["mob_wheels_t1"],
-			"sensors": ["sen_basic_t1"],
-			"utilities": [],
-			"ai_profile": "ai_balanced"
-		}]
-	
-	# Get arena data - 1280x720 arena
-	var arena_data: Dictionary = {
-		"id": "test_arena",
-		"size": {"width": 1280, "height": 720},
-		"spawn_points_player": [{"x": 200, "y": 360}],
-		"spawn_points_enemy": [{"x": 1080, "y": 360}],
-		"obstacles": [],
-		"seed": 12345
-	}
-	
-	# Enemy loadout
-	var enemy_loadouts: Array = [{
-		"id": "enemy_bot",
-		"name": "Enemy Scout",
-		"chassis": "chassis_light_t1",
-		"weapons": ["wpn_mg_t1"],
-		"armor": [],
-		"mobility": ["mob_wheels_t1"],
-		"sensors": ["sen_basic_t1"],
-		"utilities": [],
-		"ai_profile": "ai_aggressive"
-	}]
-	
-	SimulationManager.start_battle(arena_data, player_loadouts, enemy_loadouts, false)
-	battle_active = true
-	print("Battle started, bots count: ", SimulationManager.bots.size())
-	
-	# Create visual representations for existing bots
-	for bot_id in SimulationManager.bots:
-		print("Creating visual for bot: ", bot_id)
-		_create_bot_visual(SimulationManager.bots[bot_id])
+    ## Start battle with player's active loadouts using BattleManager
+    _clear_visuals()
+    _clear_battle_ui()
+    
+    # Get player's active loadouts
+    var player_loadouts: Array = GameState.get_active_loadouts()
+    if player_loadouts.is_empty():
+        # Fallback to default if none active
+        player_loadouts = _get_default_loadout()
+    
+    # Setup battle with first arena
+    var success: bool = battle_manager.setup_battle("roxtan_park", player_loadouts)
+    if success:
+        battle_manager.start_battle()
+    else:
+        push_error("BattleScreen: Failed to setup battle")
+
+
+func _get_default_loadout() -> Array[Dictionary]:
+    return [{
+        "id": "player_bot",
+        "name": "Player Scout",
+        "chassis": "akaumin_dl2_100",
+        "weapons": ["raptor_dt_01"],
+        "armor": ["santrin_auro"],
+        "mobility": ["mob_wheels_t1"],
+        "sensors": ["sen_basic_t1"],
+        "utilities": [],
+        "ai_profile": "ai_balanced"
+    }]
 
 
 func _clear_visuals() -> void:
-	for child in bots_container.get_children():
-		child.queue_free()
-	for child in projectiles_container.get_children():
-		child.queue_free()
-	bot_visuals.clear()
-	projectile_visuals.clear()
+    for child in bots_container.get_children():
+        child.queue_free()
+    for child in projectiles_container.get_children():
+        child.queue_free()
+    bot_visuals.clear()
+    projectile_visuals.clear()
 
 
 func _clear_battle_ui() -> void:
-	## Remove result labels and buttons from previous battle
-	for child in get_children():
-		if child is Label and child != $BattleHUD/Title and child != $BattleHUD/Instructions:
-			child.queue_free()
-		if child is Button:
-			child.queue_free()
+    ## Remove result panels from previous battle
+    if result_panel:
+        result_panel.queue_free()
+        result_panel = null
+    
+    if countdown_label:
+        countdown_label.visible = false
 
+
+# ============================================================================
+# BATTLEMANAGER SIGNAL HANDLERS
+# ============================================================================
+
+func _on_battle_started(arena_id: String) -> void:
+    print("BattleScreen: Battle started in arena: %s" % arena_id)
+    var arena_data: Dictionary = battle_manager.get_current_arena()
+    
+    # Update title
+    var title_label: Label = $BattleHUD/Title
+    if title_label:
+        title_label.text = arena_data.get("name", "IRONCORE ARENA")
+
+
+func _on_battle_state_changed(new_state: BattleManager.BattleState, _old_state: BattleManager.BattleState) -> void:
+    match new_state:
+        BattleManager.BattleState.COUNTDOWN:
+            countdown_label.visible = true
+        BattleManager.BattleState.ACTIVE:
+            countdown_label.visible = false
+            # Create initial visuals for existing bots
+            for bot_id in SimulationManager.bots:
+                _create_bot_visual(SimulationManager.bots[bot_id])
+        BattleManager.BattleState.ENDED:
+            countdown_label.visible = false
+
+
+func _on_countdown_tick(seconds_left: int) -> void:
+    countdown_label.text = str(seconds_left)
+    countdown_label.modulate = Color(1, 1, 1, 1)
+    
+    # Animate
+    var tween: Tween = create_tween()
+    tween.tween_property(countdown_label, "scale", Vector2(1.2, 1.2), 0.1)
+    tween.tween_property(countdown_label, "scale", Vector2(1.0, 1.0), 0.1)
+
+
+func _on_battle_ended(result: BattleManager.BattleResult) -> void:
+    print("BattleScreen: Battle ended - Victory: %s, Grade: %s" % [result.victory, result.get_grade()])
+    _show_result_screen(result)
+
+
+func _on_rewards_calculated(rewards: Dictionary) -> void:
+    print("BattleScreen: Rewards - Credits: %d (Base: %d, Bonus: %d)" % [
+        rewards["credits"], rewards["base_credits"], rewards["bonus_credits"]
+    ])
+
+
+# ============================================================================
+# VISUAL CREATION
+# ============================================================================
 
 func _create_bot_visual(bot) -> void:
-	print("Creating bot visual at position: ", bot.position, " team: ", bot.team)
-	
-	# Main visual container
-	var visual: Node2D = Node2D.new()
-	visual.position = bot.position
-	visual.rotation_degrees = bot.rotation
-	visual.name = "Bot_%d" % bot.sim_id
-	
-	# Bot body (chassis)
-	var body: ColorRect = ColorRect.new()
-	body.size = Vector2(bot.radius * 2, bot.radius * 2)
-	body.position = Vector2(-bot.radius, -bot.radius)
-	
-	# Color by team
-	if bot.team == 0:
-		body.color = Color(0.2, 0.6, 1.0)  # Blue for player
-	else:
-		body.color = Color(1.0, 0.3, 0.3)  # Red for enemy
-	
-	visual.add_child(body)
-	
-	# Turret (separate node that rotates independently)
-	var turret: Node2D = Node2D.new()
-	turret.name = "Turret"
-	
-	# Turret base
-	var turret_base: ColorRect = ColorRect.new()
-	turret_base.size = Vector2(bot.radius * 1.2, bot.radius * 1.2)
-	turret_base.position = Vector2(-bot.radius * 0.6, -bot.radius * 0.6)
-	turret_base.color = Color(0.4, 0.4, 0.4)
-	turret.add_child(turret_base)
-	
-	# Gun barrel
-	var barrel: ColorRect = ColorRect.new()
-	barrel.size = Vector2(bot.radius * 1.8, 6)
-	barrel.position = Vector2(0, -3)
-	barrel.color = Color(0.6, 0.6, 0.6)
-	turret.add_child(barrel)
-	
-	visual.add_child(turret)
-	
-	# HP bar background
-	var hp_bg: ColorRect = ColorRect.new()
-	hp_bg.size = Vector2(bot.radius * 2, 6)
-	hp_bg.position = Vector2(-bot.radius, -bot.radius - 12)
-	hp_bg.color = Color(0.2, 0.2, 0.2)
-	visual.add_child(hp_bg)
-	
-	# HP bar fill
-	var hp_fill: ColorRect = ColorRect.new()
-	hp_fill.size = Vector2(bot.radius * 2, 6)
-	hp_fill.position = Vector2(-bot.radius, -bot.radius - 12)
-	hp_fill.color = Color(0.2, 0.9, 0.2)
-	hp_fill.name = "HPBar"
-	visual.add_child(hp_fill)
-	
-	# Bot ID label
-	var label: Label = Label.new()
-	label.text = str(bot.sim_id)
-	label.position = Vector2(-10, bot.radius + 5)
-	label.add_theme_font_size_override("font_size", 12)
-	visual.add_child(label)
-	
-	bots_container.add_child(visual)
-	bot_visuals[bot.sim_id] = visual
+    if bot_visuals.has(bot.sim_id):
+        return  # Already exists
+    
+    # Main visual container
+    var visual: Node2D = Node2D.new()
+    visual.position = bot.position
+    visual.rotation_degrees = bot.rotation
+    visual.name = "Bot_%d" % bot.sim_id
+    
+    # Bot body (chassis)
+    var body: ColorRect = ColorRect.new()
+    body.size = Vector2(bot.radius * 2, bot.radius * 2)
+    body.position = Vector2(-bot.radius, -bot.radius)
+    
+    # Color by team
+    if bot.team == 0:
+        body.color = Color(0.2, 0.6, 1.0)  # Blue for player
+    else:
+        body.color = Color(1.0, 0.3, 0.3)  # Red for enemy
+    
+    visual.add_child(body)
+    
+    # Turret (separate node that rotates independently)
+    var turret: Node2D = Node2D.new()
+    turret.name = "Turret"
+    
+    # Turret base
+    var turret_base: ColorRect = ColorRect.new()
+    turret_base.size = Vector2(bot.radius * 1.2, bot.radius * 1.2)
+    turret_base.position = Vector2(-bot.radius * 0.6, -bot.radius * 0.6)
+    turret_base.color = Color(0.4, 0.4, 0.4)
+    turret.add_child(turret_base)
+    
+    # Gun barrel
+    var barrel: ColorRect = ColorRect.new()
+    barrel.size = Vector2(bot.radius * 1.8, 6)
+    barrel.position = Vector2(0, -3)
+    barrel.color = Color(0.6, 0.6, 0.6)
+    turret.add_child(barrel)
+    
+    visual.add_child(turret)
+    
+    # HP bar background
+    var hp_bg: ColorRect = ColorRect.new()
+    hp_bg.size = Vector2(bot.radius * 2, 6)
+    hp_bg.position = Vector2(-bot.radius, -bot.radius - 12)
+    hp_bg.color = Color(0.2, 0.2, 0.2)
+    visual.add_child(hp_bg)
+    
+    # HP bar fill
+    var hp_fill: ColorRect = ColorRect.new()
+    hp_fill.size = Vector2(bot.radius * 2, 6)
+    hp_fill.position = Vector2(-bot.radius, -bot.radius - 12)
+    hp_fill.color = Color(0.2, 0.9, 0.2)
+    hp_fill.name = "HPBar"
+    visual.add_child(hp_fill)
+    
+    # Bot ID label
+    var label: Label = Label.new()
+    label.text = str(bot.sim_id)
+    label.position = Vector2(-10, bot.radius + 5)
+    label.add_theme_font_size_override("font_size", 12)
+    visual.add_child(label)
+    
+    bots_container.add_child(visual)
+    bot_visuals[bot.sim_id] = visual
 
 
 func _create_projectile_visual(proj_id: int, position: Vector2, direction: Vector2) -> void:
-	var visual: ColorRect = ColorRect.new()
-	visual.size = Vector2(8, 4)
-	visual.position = position - Vector2(4, 2)
-	visual.rotation = direction.angle()
-	visual.color = Color(1.0, 0.8, 0.2)
-	
-	projectiles_container.add_child(visual)
-	projectile_visuals[proj_id] = visual
+    var visual: ColorRect = ColorRect.new()
+    visual.size = Vector2(8, 4)
+    visual.position = position - Vector2(4, 2)
+    visual.rotation = direction.angle()
+    visual.color = Color(1.0, 0.8, 0.2)
+    
+    projectiles_container.add_child(visual)
+    projectile_visuals[proj_id] = visual
 
+
+# ============================================================================
+# SIMULATION SIGNAL HANDLERS (Visual Updates)
+# ============================================================================
 
 func _on_entity_moved(sim_id: int, pos: Vector2, rot: float) -> void:
-	if bot_visuals.has(sim_id):
-		var visual: Node2D = bot_visuals[sim_id]
-		visual.position = pos
-		# Only rotate chassis, turret rotates separately toward target
-		visual.rotation_degrees = rot
-		
-		# Update turret to face target
-		if SimulationManager.bots.has(sim_id):
-			var bot = SimulationManager.bots[sim_id]
-			var turret = visual.get_node_or_null("Turret")
-			if turret and bot.target_id != -1 and SimulationManager.bots.has(bot.target_id):
-				var target = SimulationManager.bots[bot.target_id]
-				if target.is_alive:
-					var target_angle: float = rad_to_deg((target.position - pos).angle())
-					turret.rotation_degrees = target_angle - rot
+    if bot_visuals.has(sim_id):
+        var visual: Node2D = bot_visuals[sim_id]
+        visual.position = pos
+        visual.rotation_degrees = rot
+        
+        # Update turret to face target
+        if SimulationManager.bots.has(sim_id):
+            var bot = SimulationManager.bots[sim_id]
+            var turret = visual.get_node_or_null("Turret")
+            if turret and bot.target_id != -1 and SimulationManager.bots.has(bot.target_id):
+                var target = SimulationManager.bots[bot.target_id]
+                if target.is_alive:
+                    var target_angle: float = rad_to_deg((target.position - pos).angle())
+                    turret.rotation_degrees = target_angle - rot
 
 
 func _on_entity_damaged(sim_id: int, hp: int, max_hp: int) -> void:
-	if bot_visuals.has(sim_id):
-		var visual: Node2D = bot_visuals[sim_id]
-		var hp_bar: ColorRect = visual.get_node_or_null("HPBar")
-		if hp_bar:
-			var hp_pct: float = float(hp) / float(max_hp)
-			hp_bar.size.x = visual.get_child(0).size.x * hp_pct
-			
-			# Color change based on HP
-			if hp_pct > 0.5:
-				hp_bar.color = Color(0.2, 0.9, 0.2)
-			elif hp_pct > 0.25:
-				hp_bar.color = Color(0.9, 0.9, 0.2)
-			else:
-				hp_bar.color = Color(0.9, 0.2, 0.2)
+    if bot_visuals.has(sim_id):
+        var visual: Node2D = bot_visuals[sim_id]
+        var hp_bar: ColorRect = visual.get_node_or_null("HPBar")
+        if hp_bar:
+            var hp_pct: float = float(hp) / float(max_hp)
+            var max_width: float = visual.get_child(0).size.x
+            hp_bar.size.x = max_width * hp_pct
+            
+            # Color change based on HP
+            if hp_pct > 0.5:
+                hp_bar.color = Color(0.2, 0.9, 0.2)
+            elif hp_pct > 0.25:
+                hp_bar.color = Color(0.9, 0.9, 0.2)
+            else:
+                hp_bar.color = Color(0.9, 0.2, 0.2)
 
 
 func _on_entity_destroyed(sim_id: int, _team: int) -> void:
-	if bot_visuals.has(sim_id):
-		var visual: Node2D = bot_visuals[sim_id]
-		
-		# Visual effect for destruction
-		var explosion: ColorRect = ColorRect.new()
-		explosion.size = Vector2(40, 40)
-		explosion.position = visual.position - Vector2(20, 20)
-		explosion.color = Color(1.0, 0.5, 0.0, 0.8)
-		arena_container.add_child(explosion)
-		
-		# Fade out
-		var tween: Tween = create_tween()
-		tween.tween_property(explosion, "modulate:a", 0.0, 0.5)
-		tween.tween_callback(explosion.queue_free)
-		
-		# Remove bot visual
-		visual.queue_free()
-		bot_visuals.erase(sim_id)
+    if bot_visuals.has(sim_id):
+        var visual: Node2D = bot_visuals[sim_id]
+        
+        # Visual effect for destruction
+        var explosion: ColorRect = ColorRect.new()
+        explosion.size = Vector2(40, 40)
+        explosion.position = visual.position - Vector2(20, 20)
+        explosion.color = Color(1.0, 0.5, 0.0, 0.8)
+        arena_container.add_child(explosion)
+        
+        # Fade out
+        var tween: Tween = create_tween()
+        tween.tween_property(explosion, "modulate:a", 0.0, 0.5)
+        tween.tween_callback(explosion.queue_free)
+        
+        # Remove bot visual
+        visual.queue_free()
+        bot_visuals.erase(sim_id)
 
 
 func _on_projectile_spawned(proj_id: int, position: Vector2, direction: Vector2) -> void:
-	_create_projectile_visual(proj_id, position, direction)
+    _create_projectile_visual(proj_id, position, direction)
 
 
 func _on_projectile_destroyed(proj_id: int) -> void:
-	if projectile_visuals.has(proj_id):
-		projectile_visuals[proj_id].queue_free()
-		projectile_visuals.erase(proj_id)
-
-
-func _on_battle_ended(result: String, tick_count: int) -> void:
-	battle_active = false
-	print("Battle ended: ", result, " in ", tick_count, " ticks")
-	
-	# Show result label
-	var result_label: Label = Label.new()
-	result_label.text = "RESULT: " + result + "\nTicks: " + str(tick_count)
-	result_label.position = Vector2(540, 300)  # Center of 1280x720
-	result_label.add_theme_font_size_override("font_size", 24)
-	add_child(result_label)
-	
-	# Restart button
-	var restart_btn: Button = Button.new()
-	restart_btn.text = "Restart Battle"
-	restart_btn.position = Vector2(580, 380)
-	restart_btn.pressed.connect(_start_test_battle)
-	add_child(restart_btn)
-	
-	# Build button
-	var build_btn: Button = Button.new()
-	build_btn.text = "Edit Bot"
-	build_btn.position = Vector2(580, 420)
-	build_btn.pressed.connect(_on_go_to_build)
-	add_child(build_btn)
-
-
-func _on_go_to_build() -> void:
-	get_tree().change_scene_to_file("res://scenes/build_screen.tscn")
+    if projectile_visuals.has(proj_id):
+        projectile_visuals[proj_id].queue_free()
+        projectile_visuals.erase(proj_id)
 
 
 func _on_tick_processed(_tick: int) -> void:
-	# Update projectile positions
-	for proj_id in SimulationManager.projectiles:
-		var proj = SimulationManager.projectiles[proj_id]
-		if projectile_visuals.has(proj_id):
-			projectile_visuals[proj_id].position = proj.position - Vector2(4, 2)
+    # Update projectile positions
+    for proj_id in SimulationManager.projectiles:
+        var proj = SimulationManager.projectiles[proj_id]
+        if projectile_visuals.has(proj_id):
+            projectile_visuals[proj_id].position = proj.position - Vector2(4, 2)
+    
+    # Update HUD with battle info
+    _update_hud()
 
+
+func _update_hud() -> void:
+    ## Update HUD elements with current battle state
+    var summary: Dictionary = battle_manager.get_battle_summary()
+    
+    # Could update specific HUD labels here
+    # For now, the instructions label shows basic info
+    var instructions: Label = $BattleHUD/Instructions
+    if instructions and battle_manager.is_battle_active():
+        instructions.text = "%s | Time: %s | Enemies: %d/%d" % [
+            summary["arena_name"],
+            summary["time"],
+            summary["enemy_alive"],
+            summary["enemy_total"]
+        ]
+
+
+# ============================================================================
+# RESULT SCREEN
+# ============================================================================
+
+func _show_result_screen(result: BattleManager.BattleResult) -> void:
+    # Create result panel
+    result_panel = Control.new()
+    result_panel.name = "ResultPanel"
+    result_panel.set_anchors_preset(Control.PRESET_CENTER)
+    result_panel.size = Vector2(400, 300)
+    result_panel.position = Vector2(440, 210)  # Center of 1280x720
+    
+    # Background
+    var bg: Panel = Panel.new()
+    bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+    result_panel.add_child(bg)
+    
+    # Result text
+    var result_title: Label = Label.new()
+    result_title.text = "VICTORY!" if result.victory else "DEFEAT"
+    result_title.add_theme_font_size_override("font_size", 32)
+    result_title.position = Vector2(100, 20)
+    result_title.size = Vector2(200, 40)
+    result_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    result_title.modulate = Color(0.2, 0.9, 0.2) if result.victory else Color(0.9, 0.2, 0.2)
+    result_panel.add_child(result_title)
+    
+    # Grade
+    var grade_label: Label = Label.new()
+    grade_label.text = "Grade: %s" % result.get_grade()
+    grade_label.add_theme_font_size_override("font_size", 24)
+    grade_label.position = Vector2(100, 70)
+    grade_label.size = Vector2(200, 30)
+    grade_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    result_panel.add_child(grade_label)
+    
+    # Time
+    var time_label: Label = Label.new()
+    var minutes: int = int(result.completion_time) / 60
+    var seconds: int = int(result.completion_time) % 60
+    time_label.text = "Time: %02d:%02d / %02d:%02d" % [
+        minutes, seconds,
+        int(result.par_time) / 60, int(result.par_time) % 60
+    ]
+    time_label.position = Vector2(100, 110)
+    time_label.size = Vector2(200, 25)
+    time_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    result_panel.add_child(time_label)
+    
+    # Stats
+    var stats_label: Label = Label.new()
+    stats_label.text = "Enemies Destroyed: %d\nPlayer Bots Lost: %d" % [
+        result.enemy_bots_destroyed,
+        result.player_bots_lost
+    ]
+    stats_label.position = Vector2(100, 150)
+    stats_label.size = Vector2(200, 50)
+    stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    result_panel.add_child(stats_label)
+    
+    # Buttons
+    var restart_btn: Button = Button.new()
+    restart_btn.text = "Restart Battle"
+    restart_btn.position = Vector2(50, 220)
+    restart_btn.size = Vector2(120, 40)
+    restart_btn.pressed.connect(_start_test_battle)
+    result_panel.add_child(restart_btn)
+    
+    var build_btn: Button = Button.new()
+    build_btn.text = "Edit Bot"
+    build_btn.position = Vector2(230, 220)
+    build_btn.size = Vector2(120, 40)
+    build_btn.pressed.connect(_on_go_to_build)
+    result_panel.add_child(build_btn)
+    
+    add_child(result_panel)
+
+
+# ============================================================================
+# INPUT HANDLING
+# ============================================================================
 
 func _input(event: InputEvent) -> void:
-	if not battle_active:
-		return
-	
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				_drag_start(event.position)
-			else:
-				_drag_end(event.position)
+    if not battle_manager.is_battle_active():
+        return
+    
+    if event is InputEventMouseButton:
+        if event.button_index == MOUSE_BUTTON_LEFT:
+            if event.pressed:
+                _drag_start(event.position)
+            else:
+                _drag_end(event.position)
 
 
 func _drag_start(screen_pos: Vector2) -> void:
-	# Convert to world position
-	var world_pos: Vector2 = _screen_to_world(screen_pos)
-	
-	# Find bot under cursor
-	for bot_id in SimulationManager.bots:
-		var bot = SimulationManager.bots[bot_id]
-		if bot.team != 0:  # Only player bots
-			continue
-		if not bot.is_alive:
-			continue
-		
-		if world_pos.distance_to(bot.position) < bot.radius * 1.5:
-			selected_bot_id = bot_id
-			is_dragging = true
-			drag_start_pos = screen_pos
-			print("Selected bot: ", bot_id)
-			return
+    # Convert to world position
+    var world_pos: Vector2 = _screen_to_world(screen_pos)
+    
+    # Find player bot under cursor
+    for bot_id in SimulationManager.bots:
+        var bot = SimulationManager.bots[bot_id]
+        if bot.team != 0:  # Only player bots
+            continue
+        if not bot.is_alive:
+            continue
+        
+        if world_pos.distance_to(bot.position) < bot.radius * 1.5:
+            selected_bot_id = bot_id
+            is_dragging = true
+            drag_start_pos = screen_pos
+            print("Selected bot: ", bot_id)
+            return
 
 
 func _drag_end(screen_pos: Vector2) -> void:
-	if not is_dragging or selected_bot_id == -1:
-		is_dragging = false
-		selected_bot_id = -1
-		return
-	
-	var world_pos: Vector2 = _screen_to_world(screen_pos)
-	
-	# Determine command type based on what we dragged to
-	var command_type: String = "move"
-	var target: Variant = world_pos
-	
-	# Check if dragged to a bot
-	for bot_id in SimulationManager.bots:
-		if bot_id == selected_bot_id:
-			continue
-		var bot = SimulationManager.bots[bot_id]
-		if not bot.is_alive:
-			continue
-		
-		if world_pos.distance_to(bot.position) < bot.radius * 2.0:
-			if bot.team == 0:
-				command_type = "follow"
-				target = bot_id
-			else:
-				command_type = "focus"
-				target = bot_id
-			break
-	
-	# Issue command
-	SimulationManager.issue_command(selected_bot_id, command_type, target)
-	print("Issued command: ", command_type, " to ", target)
-	
-	is_dragging = false
-	selected_bot_id = -1
+    if not is_dragging or selected_bot_id == -1:
+        is_dragging = false
+        selected_bot_id = -1
+        return
+    
+    var world_pos: Vector2 = _screen_to_world(screen_pos)
+    
+    # Determine command type based on what we dragged to
+    var command_type: String = "move"
+    var target: Variant = world_pos
+    
+    # Check if dragged to a bot
+    for bot_id in SimulationManager.bots:
+        if bot_id == selected_bot_id:
+            continue
+        var bot = SimulationManager.bots[bot_id]
+        if not bot.is_alive:
+            continue
+        
+        if world_pos.distance_to(bot.position) < bot.radius * 2.0:
+            if bot.team == 0:
+                command_type = "follow"
+                target = bot_id
+            else:
+                command_type = "focus"
+                target = bot_id
+            break
+    
+    # Issue command through SimulationManager
+    SimulationManager.issue_command(selected_bot_id, command_type, target)
+    print("Issued command: ", command_type, " to ", target)
+    
+    is_dragging = false
+    selected_bot_id = -1
 
 
 func _screen_to_world(screen_pos: Vector2) -> Vector2:
-	# Simple conversion — arena is 1280x720
-	return screen_pos.clamp(Vector2.ZERO, Vector2(1280, 720))
+    # Simple conversion — arena is 1280x720
+    return screen_pos.clamp(Vector2.ZERO, Vector2(1280, 720))
+
+
+func _on_go_to_build() -> void:
+    battle_manager.end_battle_early()
+    get_tree().change_scene_to_file("res://scenes/build_screen.tscn")
+
+
+# ============================================================================
+# PUBLIC METHODS
+# ============================================================================
+
+func start_campaign_battle(arena_id: String) -> void:
+    ## Start a specific campaign battle
+    _clear_visuals()
+    _clear_battle_ui()
+    
+    var player_loadouts: Array = GameState.get_active_loadouts()
+    if player_loadouts.is_empty():
+        player_loadouts = _get_default_loadout()
+    
+    var success: bool = battle_manager.setup_battle(arena_id, player_loadouts)
+    if success:
+        battle_manager.start_battle()
+    else:
+        push_error("BattleScreen: Failed to setup campaign battle")
 
 
 func on_show() -> void:
-	visible = true
-	if not battle_active:
-		_start_test_battle()
+    visible = true
+    if battle_manager.is_battle_ended() or battle_manager.current_state == BattleManager.BattleState.SETUP:
+        _start_test_battle()
 
 
 func on_hide() -> void:
-	visible = false
-	SimulationManager.stop_battle()
-	battle_active = false
+    visible = false
+    battle_manager.end_battle_early()
