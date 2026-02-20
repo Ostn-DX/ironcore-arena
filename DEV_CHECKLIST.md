@@ -20,15 +20,15 @@
 - [x] 12. Save/Load (JSON persistence) ✅ COMPLETE
 - [x] 13. Tier progression (unlock arenas) ✅ COMPLETE
 
-## PHASE 4: SCENE FLOW [IN PROGRESS]
-- [ ] 14. Main menu - NEXT
-- [ ] 15. Scene transitions
-- [ ] 16. Battle HUD
+## PHASE 4: SCENE FLOW ✅ COMPLETE
+- [x] 14. Main menu ✅ COMPLETE
+- [x] 15. Scene transitions ✅ COMPLETE
+- [x] 16. Battle HUD ✅ COMPLETE
 
-## PHASE 5: POLISH [NOT STARTED]
-- [ ] 17. Sound effects
+## PHASE 5: POLISH [IN PROGRESS]
+- [ ] 17. Sound effects - NEXT
 - [ ] 18. Visual effects
 - [ ] 19. Balance testing
 
 ---
-🚧 IN PROGRESS: Phase 3 complete, starting Phase 4 🚧
+🚧 IN PROGRESS: Phase 4 complete, starting Phase 5 🚧
