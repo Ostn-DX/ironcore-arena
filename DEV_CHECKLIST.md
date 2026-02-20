@@ -8,9 +8,9 @@
 - [x] 4. BotAI system
 - [x] 5. Builder UI foundation
 
-## PHASE 2: BATTLE SYSTEM [NEXT]
-- [ ] 6. BattleManager (spawn, combat loop)
-- [ ] 7. Arena scene (top-down, boundaries)
+## PHASE 2: BATTLE SYSTEM [IN PROGRESS]
+- [x] 6. BattleManager (spawn, combat loop) ✅ COMPLETE
+- [ ] 7. Arena scene (top-down, boundaries) ← NEXT TASK
 - [ ] 8. Win/Loss detection
 - [ ] 9. Results screen (rewards, stats)
 
