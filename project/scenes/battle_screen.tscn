@@ -15,17 +15,6 @@ script = ExtResource("1_battle")
 [node name="BattleManager" type="Node" parent="."]
 script = ExtResource("2_battle_mgr")
 
-[node name="ArenaContainer" type="Node2D" parent="."]
-
-[node name="Background" type="ColorRect" parent="ArenaContainer"]
-offset_right = 1280.0
-offset_bottom = 720.0
-color = Color(0.08, 0.08, 0.12, 1.0)
-
-[node name="Bots" type="Node2D" parent="ArenaContainer"]
-
-[node name="Projectiles" type="Node2D" parent="ArenaContainer"]
-
 [node name="BattleHUD" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 10

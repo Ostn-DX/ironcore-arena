@@ -1,19 +1,23 @@
 extends Control
 ## BattleScreen — arena view, HUD, command input.
-## Works with BattleManager to display battle state and handle player input.
+## Works with BattleManager and Arena to display battles.
 
-@onready var arena_container: Node2D = $ArenaContainer
-@onready var bots_container: Node2D = $ArenaContainer/Bots
-@onready var projectiles_container: Node2D = $ArenaContainer/Projectiles
-@onready var hud: Control = $BattleHUD
 @onready var battle_manager: BattleManager = $BattleManager
+
+# Arena container (Arena scene will be instantiated here)
+var arena: Arena = null
+var arena_container: Node2D = null
+
+# Bot and projectile containers (created under Arena)
+var bots_container: Node2D = null
+var projectiles_container: Node2D = null
+
+# HUD
+@onready var hud: Control = $BattleHUD
 
 # Visual representations
 var bot_visuals: Dictionary = {}  # sim_id -> Node2D
 var projectile_visuals: Dictionary = {}  # proj_id -> Node2D
-
-# Camera
-var camera: Camera2D = null
 
 # Input state
 var selected_bot_id: int = -1
@@ -39,12 +43,11 @@ func _ready() -> void:
 
 func _setup_signals() -> void:
     # BattleManager signals
-    if battle_manager:
-        battle_manager.battle_started.connect(_on_battle_started)
-        battle_manager.battle_state_changed.connect(_on_battle_state_changed)
-        battle_manager.countdown_tick.connect(_on_countdown_tick)
-        battle_manager.battle_ended.connect(_on_battle_ended)
-        battle_manager.rewards_calculated.connect(_on_rewards_calculated)
+    battle_manager.battle_started.connect(_on_battle_started)
+    battle_manager.battle_state_changed.connect(_on_battle_state_changed)
+    battle_manager.countdown_tick.connect(_on_countdown_tick)
+    battle_manager.battle_ended.connect(_on_battle_ended)
+    battle_manager.rewards_calculated.connect(_on_rewards_calculated)
     
     # SimulationManager signals (for visual updates)
     if SimulationManager:
@@ -70,6 +73,53 @@ func _setup_ui() -> void:
     add_child(countdown_label)
 
 
+func _setup_arena(arena_data: Dictionary) -> void:
+    ## Create and setup the arena
+    _clear_arena()
+    
+    # Create container for arena positioning
+    arena_container = Node2D.new()
+    arena_container.name = "ArenaContainer"
+    add_child(arena_container)
+    
+    # Move container to center of screen based on arena size
+    var dims: Array = arena_data.get("dimensions", [800, 600])
+    var arena_size: Vector2 = Vector2(dims[0], dims[1])
+    var screen_size: Vector2 = Vector2(1280, 720)
+    
+    # Center the arena in the battle screen
+    arena_container.position = (screen_size - arena_size) / 2
+    
+    # Instance arena scene
+    var arena_scene: PackedScene = preload("res://scenes/arena.tscn")
+    arena = arena_scene.instantiate()
+    arena_container.add_child(arena)
+    
+    # Setup arena with data
+    arena.setup(arena_data)
+    
+    # Create bot and projectile containers under arena
+    bots_container = Node2D.new()
+    bots_container.name = "Bots"
+    arena.add_child(bots_container)
+    
+    projectiles_container = Node2D.new()
+    projectiles_container.name = "Projectiles"
+    arena.add_child(projectiles_container)
+    
+    print("BattleScreen: Arena setup complete, size: ", arena_size)
+
+
+func _clear_arena() -> void:
+    ## Remove existing arena and containers
+    if arena_container:
+        arena_container.queue_free()
+        arena_container = null
+    arena = null
+    bots_container = null
+    projectiles_container = null
+
+
 func _start_test_battle() -> void:
     ## Start battle with player's active loadouts using BattleManager
     _clear_visuals()
@@ -78,12 +128,13 @@ func _start_test_battle() -> void:
     # Get player's active loadouts
     var player_loadouts: Array = GameState.get_active_loadouts()
     if player_loadouts.is_empty():
-        # Fallback to default if none active
         player_loadouts = _get_default_loadout()
     
     # Setup battle with first arena
     var success: bool = battle_manager.setup_battle("roxtan_park", player_loadouts)
     if success:
+        # Setup arena visuals before starting battle
+        _setup_arena(battle_manager.current_arena_data)
         battle_manager.start_battle()
     else:
         push_error("BattleScreen: Failed to setup battle")
@@ -104,10 +155,12 @@ func _get_default_loadout() -> Array[Dictionary]:
 
 
 func _clear_visuals() -> void:
-    for child in bots_container.get_children():
-        child.queue_free()
-    for child in projectiles_container.get_children():
-        child.queue_free()
+    if bots_container:
+        for child in bots_container.get_children():
+            child.queue_free()
+    if projectiles_container:
+        for child in projectiles_container.get_children():
+            child.queue_free()
     bot_visuals.clear()
     projectile_visuals.clear()
 
@@ -175,6 +228,8 @@ func _on_rewards_calculated(rewards: Dictionary) -> void:
 # ============================================================================
 
 func _create_bot_visual(bot) -> void:
+    if not bots_container:
+        return
     if bot_visuals.has(bot.sim_id):
         return  # Already exists
     
@@ -244,6 +299,9 @@ func _create_bot_visual(bot) -> void:
 
 
 func _create_projectile_visual(proj_id: int, position: Vector2, direction: Vector2) -> void:
+    if not projectiles_container:
+        return
+    
     var visual: ColorRect = ColorRect.new()
     visual.size = Vector2(8, 4)
     visual.position = position - Vector2(4, 2)
@@ -298,16 +356,17 @@ func _on_entity_destroyed(sim_id: int, _team: int) -> void:
         var visual: Node2D = bot_visuals[sim_id]
         
         # Visual effect for destruction
-        var explosion: ColorRect = ColorRect.new()
-        explosion.size = Vector2(40, 40)
-        explosion.position = visual.position - Vector2(20, 20)
-        explosion.color = Color(1.0, 0.5, 0.0, 0.8)
-        arena_container.add_child(explosion)
-        
-        # Fade out
-        var tween: Tween = create_tween()
-        tween.tween_property(explosion, "modulate:a", 0.0, 0.5)
-        tween.tween_callback(explosion.queue_free)
+        if arena:
+            var explosion: ColorRect = ColorRect.new()
+            explosion.size = Vector2(40, 40)
+            explosion.position = visual.position - Vector2(20, 20)
+            explosion.color = Color(1.0, 0.5, 0.0, 0.8)
+            arena.add_child(explosion)
+            
+            # Fade out
+            var tween: Tween = create_tween()
+            tween.tween_property(explosion, "modulate:a", 0.0, 0.5)
+            tween.tween_callback(explosion.queue_free)
         
         # Remove bot visual
         visual.queue_free()
@@ -339,8 +398,6 @@ func _update_hud() -> void:
     ## Update HUD elements with current battle state
     var summary: Dictionary = battle_manager.get_battle_summary()
     
-    # Could update specific HUD labels here
-    # For now, the instructions label shows basic info
     var instructions: Label = $BattleHUD/Instructions
     if instructions and battle_manager.is_battle_active():
         instructions.text = "%s | Time: %s | Enemies: %d/%d" % [
@@ -446,8 +503,11 @@ func _input(event: InputEvent) -> void:
 
 
 func _drag_start(screen_pos: Vector2) -> void:
-    # Convert to world position
-    var world_pos: Vector2 = _screen_to_world(screen_pos)
+    if not arena_container:
+        return
+    
+    # Convert screen position to local arena position
+    var world_pos: Vector2 = _screen_to_arena(screen_pos)
     
     # Find player bot under cursor
     for bot_id in SimulationManager.bots:
@@ -471,7 +531,7 @@ func _drag_end(screen_pos: Vector2) -> void:
         selected_bot_id = -1
         return
     
-    var world_pos: Vector2 = _screen_to_world(screen_pos)
+    var world_pos: Vector2 = _screen_to_arena(screen_pos)
     
     # Determine command type based on what we dragged to
     var command_type: String = "move"
@@ -502,9 +562,13 @@ func _drag_end(screen_pos: Vector2) -> void:
     selected_bot_id = -1
 
 
-func _screen_to_world(screen_pos: Vector2) -> Vector2:
-    # Simple conversion — arena is 1280x720
-    return screen_pos.clamp(Vector2.ZERO, Vector2(1280, 720))
+func _screen_to_arena(screen_pos: Vector2) -> Vector2:
+    ## Convert screen coordinates to arena local coordinates
+    if not arena_container:
+        return screen_pos
+    
+    # Account for arena container offset
+    return screen_pos - arena_container.position
 
 
 func _on_go_to_build() -> void:
@@ -527,6 +591,7 @@ func start_campaign_battle(arena_id: String) -> void:
     
     var success: bool = battle_manager.setup_battle(arena_id, player_loadouts)
     if success:
+        _setup_arena(battle_manager.current_arena_data)
         battle_manager.start_battle()
     else:
         push_error("BattleScreen: Failed to setup campaign battle")
