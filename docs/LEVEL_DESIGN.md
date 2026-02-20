@@ -210,13 +210,29 @@ Sniper AI: ai_sniper
 
 ```
 Boot Camp (Tutorial)
-    ↓ [Win 1 match]
+    ↓ [Win]
 Iron Graveyard (Cover/Flanking)
-    ↓ [Win 2 matches + 500 CR]
-Kill Grid (Hazards/Advanced)
-    ↓ [Win 3 matches + Tier 2]
-[Tier 2 Arenas Unlock]
+    ↓ [Win + 150 CR]
+Kill Grid (Hazards/3v1)
+    ↓ [Win + 300 CR]
+The Gauntlet (Chokepoints/Waves)
+    ↓ [Win + 450 CR]
+Champion's Pit (Boss Battle)
+    ↓ [Win + 1000 CR]
+[Campaign Complete - Tier 3 Unlocked]
 ```
+
+---
+
+## ARENA SUMMARY (5 Total)
+
+| # | Arena | Tier | Size | Enemies | Difficulty | Teaching |
+|---|-------|------|------|---------|------------|----------|
+| 1 | Boot Camp | 1 | 600×400 | 1 Scout | ⭐ | Basic controls |
+| 2 | Iron Graveyard | 1 | 800×600 | 2 bots | ⭐⭐ | Cover/flanking |
+| 3 | Kill Grid | 2 | 1000×700 | 3 bots + mines | ⭐⭐⭐⭐ | Hazards |
+| 4 | The Gauntlet | 2 | 1200×500 | 5 bots (waves) | ⭐⭐⭐⭐ | Positioning |
+| 5 | Champion's Pit | 3 | 900×900 | Boss + 4 bots | ⭐⭐⭐⭐⭐ | Everything |
 
 ---
 
