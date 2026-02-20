@@ -14,9 +14,9 @@
 - [x] Launcher ✅ GENERATED
 
 #### Arena Tileset (1 theme)
-- [ ] Training Grounds floor tiles
-- [ ] Wall tiles
-- [ ] Spawn markers
+- [x] Training Grounds floor tiles ✅ GENERATED
+- [x] Wall tiles ✅ GENERATED
+- [x] Spawn markers ✅ GENERATED
 
 #### UI
 - [ ] Main menu styled background
@@ -24,12 +24,15 @@
 
 ### Completed
 - SpriteGenerator tool created
+- TilesetGenerator tool created
 - MVP sprites generated programmatically
 - 3 chassis types (scout, fighter, tank)
-- 6 weapon types (including extras)
+- 6 weapon types
+- Training Grounds tileset complete
 
 ### Notes
 - Using procedural/generated sprites for MVP
 - Final art can replace these later
 - Focus on readable silhouettes
 - All sprites saved to assets/sprites/
+- All tiles saved to assets/tilesets/
