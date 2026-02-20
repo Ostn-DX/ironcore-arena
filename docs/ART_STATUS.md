@@ -4,14 +4,14 @@
 ### Priority: MUST HAVE (MVP)
 
 #### Chassis Sprites (3 types × 1 tier)
-- [ ] Scout (40x40px) - Gray
-- [ ] Fighter (48x48px) - Gray  
-- [ ] Tank (56x56px) - Gray
+- [x] Scout (40x40px) - Gray ✅ GENERATED
+- [x] Fighter (48x48px) - Gray ✅ GENERATED
+- [x] Tank (56x56px) - Gray ✅ GENERATED
 
 #### Weapon Sprites (3 types)
-- [ ] Machine gun
-- [ ] Cannon
-- [ ] Launcher
+- [x] Machine gun ✅ GENERATED
+- [x] Cannon ✅ GENERATED
+- [x] Launcher ✅ GENERATED
 
 #### Arena Tileset (1 theme)
 - [ ] Training Grounds floor tiles
@@ -22,10 +22,14 @@
 - [ ] Main menu styled background
 - [ ] Button styling
 
-### In Progress
-Creating placeholder/prototype sprites for MVP...
+### Completed
+- SpriteGenerator tool created
+- MVP sprites generated programmatically
+- 3 chassis types (scout, fighter, tank)
+- 6 weapon types (including extras)
 
 ### Notes
 - Using procedural/generated sprites for MVP
 - Final art can replace these later
 - Focus on readable silhouettes
+- All sprites saved to assets/sprites/
