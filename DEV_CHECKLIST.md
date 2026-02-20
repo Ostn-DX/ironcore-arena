@@ -14,14 +14,14 @@
 - [x] 8. Win/Loss detection ✅ COMPLETE
 - [x] 9. Results screen (rewards, stats) ✅ COMPLETE
 
-## PHASE 3: ECONOMY & PROGRESSION [IN PROGRESS]
+## PHASE 3: ECONOMY & PROGRESSION ✅ COMPLETE
 - [x] 10. GameState autoload (credits, tier) ✅ COMPLETE
-- [ ] 11. Shop system (buy components) ← NEXT TASK
-- [ ] 12. Save/Load (JSON persistence)
-- [ ] 13. Tier progression (unlock arenas)
+- [x] 11. Shop system (buy components) ✅ COMPLETE
+- [x] 12. Save/Load (JSON persistence) ✅ COMPLETE
+- [x] 13. Tier progression (unlock arenas) ✅ COMPLETE
 
-## PHASE 4: SCENE FLOW
-- [ ] 14. Main menu
+## PHASE 4: SCENE FLOW [NEXT]
+- [ ] 14. Main menu ← NEXT TASK
 - [ ] 15. Scene transitions
 - [ ] 16. Battle HUD
 
@@ -31,5 +31,5 @@
 - [ ] 19. Balance testing
 
 ---
-CURRENT TASK: #11 — Shop system (buy components)
+CURRENT TASK: #14 — Main menu
 STATUS: Starting now
