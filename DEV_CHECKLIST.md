@@ -10,8 +10,8 @@
 
 ## PHASE 2: BATTLE SYSTEM [IN PROGRESS]
 - [x] 6. BattleManager (spawn, combat loop) ✅ COMPLETE
-- [x] 7. Arena scene (top-down, boundaries) ✅ COMPLETE - Spawn markers, themes, camera bounds
-- [ ] 8. Win/Loss detection - Basic implementation done, needs integration testing
+- [x] 7. Arena scene (top-down, boundaries) ✅ COMPLETE
+- [x] 8. Win/Loss detection ✅ COMPLETE - Victory/defeat/draw/timeout, stats tracking
 - [ ] 9. Results screen (rewards, stats) - Basic scene exists, needs full integration
 
 ## PHASE 3: ECONOMY & PROGRESSION [NOT STARTED]
