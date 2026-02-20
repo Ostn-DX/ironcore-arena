@@ -6,13 +6,22 @@ signal credits_changed(new_amount: int)
 signal parts_changed()
 signal loadouts_changed()
 signal arena_completed(arena_id: String)
+signal arena_unlocked(arena_id: String)
 signal campaign_progress_changed()
+signal tier_changed(new_tier: int)
 
 # Player economy
 var credits: int = 500:
 	set(value):
 		credits = maxi(0, value)
 		credits_changed.emit(credits)
+
+# Player tier (unlocks new arenas and components)
+var current_tier: int = 0:
+	set(value):
+		if value != current_tier:
+			current_tier = value
+			tier_changed.emit(current_tier)
 
 # Owned parts: part_id -> quantity
 var owned_parts: Dictionary = {}
@@ -25,6 +34,7 @@ var loadouts: Array[Dictionary] = []
 
 # Progress
 var completed_arenas: Array[String] = []
+var unlocked_arenas: Array[String] = ["roxtan_park"]  # Start with first arena unlocked
 var campaign_progress: Dictionary = {"main": []}
 
 # Current active loadout IDs for battle
@@ -172,10 +182,76 @@ func get_active_loadouts() -> Array[Dictionary]:
 	return result
 
 
+func unlock_arena(arena_id: String) -> void:
+	## Unlock an arena for play
+	if not unlocked_arenas.has(arena_id):
+		unlocked_arenas.append(arena_id)
+		arena_unlocked.emit(arena_id)
+		print("GameState: Arena unlocked - ", arena_id)
+
+
+func is_arena_unlocked(arena_id: String) -> bool:
+	return unlocked_arenas.has(arena_id)
+
+
+func get_unlocked_arenas() -> Array[String]:
+	return unlocked_arenas.duplicate()
+
+
+func get_arenas_by_tier(tier: int) -> Array[String]:
+	## Get arena IDs available at a specific tier
+	var arenas: Array[String] = []
+	var all_arenas: Array = DataLoader.get_all_arenas() if DataLoader else []
+	
+	for arena in all_arenas:
+		if arena is Dictionary and arena.get("tier", 0) == tier:
+			arenas.append(arena.get("id", ""))
+	
+	return arenas
+
+
+func advance_tier() -> void:
+	## Advance to next tier and unlock new content
+	var new_tier: int = current_tier + 1
+	
+	# Unlock arenas for this tier
+	var tier_arenas: Array[String] = get_arenas_by_tier(new_tier)
+	for arena_id in tier_arenas:
+		unlock_arena(arena_id)
+		print("GameState: Unlocked tier %d arena - %s" % [new_tier, arena_id])
+	
+	current_tier = new_tier
+	print("GameState: Advanced to tier ", current_tier)
+
+
+def can_advance_tier() -> bool:
+	## Check if player can advance to next tier
+	# Must complete all arenas in current tier
+	var current_tier_arenas: Array[String] = get_arenas_by_tier(current_tier)
+	
+	for arena_id in current_tier_arenas:
+		if not is_arena_completed(arena_id):
+			return false
+	
+	return true
+
+
+func get_next_unlocked_arena() -> String:
+	## Get the next unlocked arena that hasn't been completed
+	for arena_id in unlocked_arenas:
+		if not is_arena_completed(arena_id):
+			return arena_id
+	return ""
+
+
 func complete_arena(arena_id: String) -> void:
 	if not completed_arenas.has(arena_id):
 		completed_arenas.append(arena_id)
 		arena_completed.emit(arena_id)
+		
+		# Check for tier advancement
+		if can_advance_tier():
+			advance_tier()
 
 
 func is_arena_completed(arena_id: String) -> bool:
@@ -218,11 +294,13 @@ func save_game() -> void:
 	var save_data: Dictionary = {
 		"version": CURRENT_VERSION,
 		"credits": credits,
+		"current_tier": current_tier,
 		"owned_parts": owned_parts,
 		"part_hp": part_hp,
 		"loadouts": loadouts,
 		"active_loadout_ids": active_loadout_ids,
 		"completed_arenas": completed_arenas,
+		"unlocked_arenas": unlocked_arenas,
 		"campaign_progress": campaign_progress,
 		"settings": settings
 	}
@@ -262,6 +340,7 @@ func load_game() -> bool:
 	var version: String = data.get("version", "0.0.0")
 	
 	credits = data.get("credits", 500)
+	current_tier = data.get("current_tier", 0)
 	owned_parts = data.get("owned_parts", {})
 	part_hp = data.get("part_hp", {})
 	
@@ -283,6 +362,12 @@ func load_game() -> bool:
 	for item in loaded_completed:
 		if item is String:
 			completed_arenas.append(item)
+	
+	var loaded_unlocked: Array = data.get("unlocked_arenas", ["roxtan_park"])
+	unlocked_arenas.clear()
+	for item in loaded_unlocked:
+		if item is String:
+			unlocked_arenas.append(item)
 	
 	campaign_progress = data.get("campaign_progress", {"main": []})
 	settings = data.get("settings", settings)
