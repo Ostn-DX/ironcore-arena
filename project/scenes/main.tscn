@@ -1,12 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://main_scene"]
+[gd_scene load_steps=3 format=3 uid="uid://main_scene"]
 
-[ext_resource type="PackedScene" uid="uid://main_menu" path="res://scenes/main_menu.tscn" id="1_menu"]
+[ext_resource type="Script" path="res://src/managers/scene_flow_manager.gd" id="1_flow_mgr"]
+[ext_resource type="PackedScene" uid="uid://main_menu" path="res://scenes/main_menu.tscn" id="2_menu"]
 
 [node name="Main" type="Node"]
+script = ExtResource("1_flow_mgr")
 
 [node name="ScreenManager" type="CanvasLayer" parent="."]
 
-[node name="MainMenu" parent="ScreenManager" instance=ExtResource("1_menu")]
+[node name="MainMenu" parent="ScreenManager" instance=ExtResource("2_menu")]
 visible = true
 
 [node name="SimulationLayer" type="Node" parent="."]

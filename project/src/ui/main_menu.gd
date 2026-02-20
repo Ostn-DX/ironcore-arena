@@ -1,137 +1,297 @@
 extends Control
-## MainMenu — entry point with campaign, arcade, settings, instructions, exit
+class_name MainMenu
+## MainMenu — entry point for the game.
+## Provides navigation to all game modes and features.
+
+signal start_campaign_pressed
+signal start_arcade_pressed
+signal continue_pressed
+signal shop_pressed
+signal builder_pressed
+signal settings_pressed
+signal credits_pressed
+signal quit_pressed
+
+# UI Elements
+var title_label: Label = null
+var subtitle_label: Label = null
+var button_container: VBoxContainer = null
+var version_label: Label = null
+var save_info_label: Label = null
+
+# Menu buttons
+var continue_btn: Button = null
+var new_campaign_btn: Button = null
+var arcade_btn: Button = null
+var shop_btn: Button = null
+var builder_btn: Button = null
+var settings_btn: Button = null
+var credits_btn: Button = null
+var quit_btn: Button = null
+
+# Animation
+var title_tween: Tween = null
+
 
 func _ready() -> void:
-	print("MainMenu _ready() called")
 	_setup_ui()
-	print("MainMenu _setup_ui() completed")
+	_update_button_visibility()
+	_animate_title()
+
 
 func _setup_ui() -> void:
-	# Dark background
+	## Setup the main menu UI
+	set_anchors_preset(Control.PRESET_FULL_RECT)
+	
+	# Background
 	var bg: ColorRect = ColorRect.new()
-	bg.color = Color(0.05, 0.05, 0.08)
-	bg.anchor_right = 1.0
-	bg.anchor_bottom = 1.0
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.color = Color(0.05, 0.05, 0.08, 1.0)
 	add_child(bg)
 	
-	# Title
-	var title: Label = Label.new()
-	title.name = "TitleLabel"
-	title.text = "IRONCORE ARENA"
-	title.anchor_left = 0.5
-	title.anchor_right = 0.5
-	title.offset_top = 80
-	title.offset_left = -200
-	title.offset_right = 200
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 48)
-	add_child(title)
+	# Background pattern (grid)
+	var grid: ColorRect = ColorRect.new()
+	grid.set_anchors_preset(Control.PRESET_FULL_RECT)
+	grid.color = Color(0.08, 0.08, 0.12, 0.5)
+	add_child(grid)
+	
+	# Title container
+	var title_container: Control = Control.new()
+	title_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	title_container.position = Vector2(0, 80)
+	title_container.size = Vector2(1280, 200)
+	add_child(title_container)
+	
+	# Main title
+	title_label = Label.new()
+	title_label.text = "IRONCORE"
+	title_label.add_theme_font_size_override("font_size", 96)
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title_label.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	title_label.position = Vector2(0, 0)
+	title_label.size = Vector2(1280, 100)
+	
+	# Title styling
+	title_label.modulate = Color(0.9, 0.9, 0.95)
+	title_container.add_child(title_label)
 	
 	# Subtitle
-	var subtitle: Label = Label.new()
-	subtitle.text = "Bot Arena 4 - Spiritual Successor"
-	subtitle.anchor_left = 0.5
-	subtitle.anchor_right = 0.5
-	subtitle.offset_top = 140
-	subtitle.offset_left = -150
-	subtitle.offset_right = 150
-	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.add_theme_font_size_override("font_size", 16)
-	subtitle.modulate = Color(0.7, 0.7, 0.7)
-	add_child(subtitle)
+	subtitle_label = Label.new()
+	subtitle_label.text = "ARENA"
+	subtitle_label.add_theme_font_size_override("font_size", 48)
+	subtitle_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	subtitle_label.position = Vector2(0, 90)
+	subtitle_label.size = Vector2(1280, 60)
+	subtitle_label.modulate = Color(0.6, 0.7, 0.9)
+	title_container.add_child(subtitle_label)
+	
+	# Tagline
+	var tagline: Label = Label.new()
+	tagline.text = "Build. Battle. Dominate."
+	tagline.add_theme_font_size_override("font_size", 18)
+	tagline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tagline.position = Vector2(0, 155)
+	tagline.size = Vector2(1280, 30)
+	tagline.modulate = Color(0.5, 0.5, 0.5)
+	title_container.add_child(tagline)
 	
 	# Button container
-	var vbox: VBoxContainer = VBoxContainer.new()
-	vbox.name = "ButtonContainer"
-	vbox.anchor_left = 0.5
-	vbox.anchor_top = 0.5
-	vbox.anchor_right = 0.5
-	vbox.anchor_bottom = 0.5
-	vbox.offset_left = -100
-	vbox.offset_top = -100
-	vbox.offset_right = 100
-	vbox.offset_bottom = 200
-	vbox.add_theme_constant_override("separation", 15)
-	add_child(vbox)
+	button_container = VBoxContainer.new()
+	button_container.set_anchors_preset(Control.PRESET_CENTER)
+	button_container.position = Vector2(540, 320)
+	button_container.size = Vector2(200, 300)
+	button_container.theme_override_constants/separation = 10
+	add_child(button_container)
 	
-	# Create buttons
-	_create_button("Campaign", _on_campaign_pressed, vbox)
-	_create_button("Arcade Battle", _on_arcade_pressed, vbox)
-	_create_button("Instructions", _on_instructions_pressed, vbox)
-	_create_button("Settings", _on_settings_pressed, vbox)
-	_create_button("Exit", _on_exit_pressed, vbox)
+	# Continue button (only if save exists)
+	continue_btn = _create_menu_button("Continue", _on_continue)
+	button_container.add_child(continue_btn)
+	
+	# New Campaign
+	new_campaign_btn = _create_menu_button("New Campaign", _on_new_campaign)
+	button_container.add_child(new_campaign_btn)
+	
+	# Arcade Mode
+	arcade_btn = _create_menu_button("Arcade Mode", _on_arcade)
+	button_container.add_child(arcade_btn)
+	
+	# Shop
+	shop_btn = _create_menu_button("Component Shop", _on_shop)
+	button_container.add_child(shop_btn)
+	
+	# Builder
+	builder_btn = _create_menu_button("Bot Builder", _on_builder)
+	button_container.add_child(builder_btn)
+	
+	# Separator
+	var separator: Control = Control.new()
+	separator.custom_minimum_size = Vector2(0, 10)
+	button_container.add_child(separator)
+	
+	# Settings
+	settings_btn = _create_menu_button("Settings", _on_settings)
+	button_container.add_child(settings_btn)
+	
+	# Credits
+	credits_btn = _create_menu_button("Credits", _on_credits)
+	button_container.add_child(credits_btn)
+	
+	# Separator
+	var separator2: Control = Control.new()
+	separator2.custom_minimum_size = Vector2(0, 10)
+	button_container.add_child(separator2)
+	
+	# Quit
+	quit_btn = _create_menu_button("Quit Game", _on_quit)
+	button_container.add_child(quit_btn)
+	
+	# Save info label
+	save_info_label = Label.new()
+	save_info_label.position = Vector2(20, 680)
+	save_info_label.size = Vector2(400, 30)
+	save_info_label.add_theme_font_size_override("font_size", 14)
+	save_info_label.modulate = Color(0.4, 0.4, 0.4)
+	add_child(save_info_label)
+	
+	# Version label
+	version_label = Label.new()
+	version_label.text = "v0.1.0"
+	version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	version_label.position = Vector2(1100, 680)
+	version_label.size = Vector2(160, 30)
+	version_label.add_theme_font_size_override("font_size", 14)
+	version_label.modulate = Color(0.4, 0.4, 0.4)
+	add_child(version_label)
 
-func _create_button(btn_text: String, callback: Callable, container: VBoxContainer) -> void:
-	print("Creating button: ", btn_text)
+
+func _create_menu_button(text: String, callback: Callable) -> Button:
+	## Create a styled menu button
 	var btn: Button = Button.new()
-	btn.text = btn_text
-	btn.custom_minimum_size = Vector2(200, 50)
-	btn.add_theme_font_size_override("font_size", 20)
+	btn.text = text
+	btn.size = Vector2(200, 40)
 	btn.pressed.connect(callback)
-	btn.pressed.connect(func(): print("Button pressed: ", btn_text))
-	container.add_child(btn)
-	print("Button added: ", btn_text)
+	return btn
 
-func _on_campaign_pressed() -> void:
-	print("Campaign pressed - going to build screen")
-	GameState.set_game_mode("campaign")
-	# Direct scene change instead of UIManager
-	get_tree().change_scene_to_file("res://scenes/build_screen.tscn")
 
-func _on_arcade_pressed() -> void:
-	print("Arcade Battle pressed - going to build screen")
-	GameState.set_game_mode("arcade")
-	# Direct scene change instead of UIManager
-	get_tree().change_scene_to_file("res://scenes/build_screen.tscn")
+func _update_button_visibility() -> void:
+	## Update which buttons are visible based on save state
+	var has_save: bool = _has_save_file()
+	
+	if continue_btn:
+		continue_btn.visible = has_save
+	
+	if save_info_label:
+		if has_save:
+			var progress: String = _get_save_progress_summary()
+			save_info_label.text = "Save found: " + progress
+		else:
+			save_info_label.text = "No save file - Start a new campaign"
 
-func _on_instructions_pressed() -> void:
-	print("Instructions pressed")
-	_show_instructions()
 
-func _on_settings_pressed() -> void:
-	print("Settings pressed")
-	_show_settings()
+func _has_save_file() -> bool:
+	## Check if a save file exists
+	return FileAccess.file_exists("user://ironcore_save.json")
 
-func _on_exit_pressed() -> void:
-	print("Exit pressed")
+
+func _get_save_progress_summary() -> String:
+	## Get a brief summary of save progress
+	if not GameState:
+		return "Unknown"
+	
+	var tier: int = GameState.current_tier
+	var credits: int = GameState.credits
+	var completed: int = GameState.completed_arenas.size()
+	
+	return "Tier %d | %d CR | %d arenas" % [tier + 1, credits, completed]
+
+
+func _animate_title() -> void:
+	## Animate the title
+	title_tween = create_tween()
+	title_tween.set_loops()
+	title_tween.tween_property(title_label, "modulate", Color(1.0, 1.0, 1.0, 1.0), 2.0)
+	title_tween.tween_property(title_label, "modulate", Color(0.9, 0.9, 0.95, 1.0), 2.0)
+
+
+# ============================================================================
+# BUTTON HANDLERS
+# ============================================================================
+
+func _on_continue() -> void:
+	## Continue existing campaign
+	print("MainMenu: Continue campaign")
+	if GameState:
+		GameState.set_game_mode("campaign")
+	continue_pressed.emit()
+
+
+func _on_new_campaign() -> void:
+	## Start new campaign
+	print("MainMenu: New campaign")
+	
+	# Confirm if save exists
+	if _has_save_file():
+		# In a real implementation, show a confirmation dialog
+		print("MainMenu: Warning - overwriting existing save")
+		if GameState:
+			GameState.delete_save()
+			GameState.set_game_mode("campaign")
+	else:
+		if GameState:
+			GameState.set_game_mode("campaign")
+	
+	start_campaign_pressed.emit()
+
+
+func _on_arcade() -> void:
+	## Start arcade mode
+	print("MainMenu: Arcade mode")
+	if GameState:
+		GameState.set_game_mode("arcade")
+	start_arcade_pressed.emit()
+
+
+func _on_shop() -> void:
+	## Open shop
+	print("MainMenu: Open shop")
+	shop_pressed.emit()
+
+
+func _on_builder() -> void:
+	## Open builder
+	print("MainMenu: Open builder")
+	builder_pressed.emit()
+
+
+func _on_settings() -> void:
+	## Open settings
+	print("MainMenu: Open settings")
+	settings_pressed.emit()
+
+
+func _on_credits() -> void:
+	## Show credits
+	print("MainMenu: Show credits")
+	credits_pressed.emit()
+
+
+func _on_quit() -> void:
+	## Quit game
+	print("MainMenu: Quit game")
+	quit_pressed.emit()
 	get_tree().quit()
 
-func _show_instructions() -> void:
-	var popup: AcceptDialog = AcceptDialog.new()
-	popup.title = "How to Play"
-	popup.dialog_text = """IRONCORE ARENA - Instructions
 
-BUILD YOUR BOT:
-- Buy parts from the shop
-- Equip chassis, weapons, armor, mobility
-- Watch your weight limit!
+# ============================================================================
+# PUBLIC API
+# ============================================================================
 
-BATTLE:
-- Bots fight automatically
-- Drag your bot to move
-- Drag to enemy to focus fire
-- Destroy all enemies to win
-
-TIPS:
-- Stay at max weapon range
-- Use cover and positioning
-- Upgrade parts as you earn credits
-
-Good luck, commander!"""
-	popup.size = Vector2(500, 400)
-	add_child(popup)
-	popup.popup_centered()
-
-func _show_settings() -> void:
-	var popup: AcceptDialog = AcceptDialog.new()
-	popup.title = "Settings"
-	popup.dialog_text = "Settings will be implemented in a future update."
-	popup.size = Vector2(400, 200)
-	add_child(popup)
-	popup.popup_centered()
-
-func on_show() -> void:
+func show_menu() -> void:
+	## Show the main menu
 	visible = true
+	_update_button_visibility()
 
-func on_hide() -> void:
+
+func hide_menu() -> void:
+	## Hide the main menu
 	visible = false
