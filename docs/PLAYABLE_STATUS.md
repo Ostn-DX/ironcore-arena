@@ -43,12 +43,13 @@
 
 ## 🎯 MVP Content Status
 
-### Playable Arenas: 2/2 ✅
+### Playable Arenas: 3/3 ✅
 
 | Arena | Tier | Status | Size | Weight Limit |
 |-------|------|--------|------|--------------|
-| Roxtan Park | 1 | ✅ Playable | 600x400 | 120 |
-| Tory's Junkyard | 2 | ✅ Playable | 700x450 | 150 |
+| Boot Camp | 1 | ✅ Playable | 600x400 | 50 |
+| Iron Graveyard | 1 | ✅ Playable | 800x600 | 70 |
+| Kill Grid | 2 | ✅ Playable | 1000x700 | 90 |
 
 ### Available Components
 

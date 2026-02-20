@@ -128,7 +128,7 @@ func _start_test_battle() -> void:
 	if player_loadouts.is_empty():
 		player_loadouts = _get_default_loadout()
 	
-	if battle_manager.setup_battle("arena_training", player_loadouts):
+	if battle_manager.setup_battle("arena_boot_camp", player_loadouts):
 		_setup_arena(battle_manager.current_arena_data)
 		battle_manager.start_battle()
 

@@ -1,7 +1,7 @@
 [
   {
-    "id": "arena_training",
-    "name": "Training Pit",
+    "id": "arena_boot_camp",
+    "name": "Boot Camp",
     "tier": 1,
     "weight_cap": 50,
     "entry_fee": 0,
@@ -17,8 +17,8 @@
     "victory_condition": "eliminate"
   },
   {
-    "id": "arena_scrapyard",
-    "name": "Scrapyard Ring",
+    "id": "arena_iron_graveyard",
+    "name": "Iron Graveyard",
     "tier": 1,
     "weight_cap": 70,
     "entry_fee": 50,
@@ -39,8 +39,8 @@
     "victory_condition": "eliminate"
   },
   {
-    "id": "arena_minefield",
-    "name": "The Minefield",
+    "id": "arena_kill_grid",
+    "name": "Kill Grid",
     "tier": 2,
     "weight_cap": 90,
     "entry_fee": 100,

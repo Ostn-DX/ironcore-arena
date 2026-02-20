@@ -20,7 +20,7 @@ var screen_stack: Array[Control] = []
 @onready var screen_manager: CanvasLayer = $ScreenManager
 
 # Current arena for battles
-var _next_arena_id: String = "arena_training"
+var _next_arena_id: String = "arena_boot_camp"
 
 func _ready() -> void:
 	_setup_signals()
