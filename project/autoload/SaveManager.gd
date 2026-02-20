@@ -65,3 +65,7 @@ func trigger_autosave_now() -> void:
 
 func set_autosave_enabled(enabled: bool) -> void:
 	autosave_enabled = enabled
+
+func _has_save() -> bool:
+	## Check if a save file exists
+	return FileAccess.file_exists("user://ironcore_save.json")

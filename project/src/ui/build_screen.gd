@@ -1,5 +1,10 @@
 extends Control
 ## BuildScreen — Bot Arena 3 style with Shop, Inventory, My Bots
+## WIRED UP: Signals connected to SceneFlowManager
+
+signal back_pressed
+signal test_battle_pressed
+signal start_campaign_pressed
 
 var selected_shop_category: String = ""
 var selected_part: Dictionary = {}
@@ -21,6 +26,8 @@ var current_bot: Dictionary = {
 @onready var bot_name_edit: LineEdit = $MarginContainer/VBox/TopRow/MyBotsPanel/BotNameEdit
 @onready var weight_label: Label = $MarginContainer/VBox/BottomBar/WeightLabel
 @onready var credits_label: Label = $MarginContainer/VBox/BottomBar/CreditsLabel
+@onready var test_btn: Button = $MarginContainer/VBox/BottomBar/TestBtn
+@onready var back_btn: Button = $MarginContainer/VBox/BottomBar/BackBtn
 
 func _ready() -> void:
 	_setup_shop_buttons()
@@ -28,6 +35,33 @@ func _ready() -> void:
 	_load_my_bots()
 	_update_bot_display()
 	_update_preview()
+	
+	; Connect button signals
+	back_btn.pressed.connect(_on_back_pressed)
+	test_btn.pressed.connect(_on_test_pressed)
+	
+	print("BuildScreen: Ready")
+
+func on_show() -> void:
+	; Called when screen becomes visible
+	_load_inventory()
+	_load_my_bots()
+	_update_bot_display()
+	visible = true
+
+func on_hide() -> void:
+	; Called when screen is hidden
+	visible = false
+
+func _on_back_pressed() -> void:
+	print("BuildScreen: Back pressed")
+	back_pressed.emit()
+
+func _on_test_pressed() -> void:
+	print("BuildScreen: Test battle pressed")
+	; Save current bot before battle
+	_save_current_bot()
+	test_battle_pressed.emit()
 
 func _setup_shop_buttons() -> void:
 	for child in shop_buttons.get_children():

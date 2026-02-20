@@ -1,6 +1,9 @@
 extends Control
 ## BattleScreen — arena view, HUD, command input.
 ## OPTIMIZED: Removed debug prints, cached lookups, streamlined visual updates
+## WIRED UP: Proper signal flow to SceneFlowManager
+
+signal battle_ended(result: Dictionary)
 
 @onready var battle_manager: BattleManager = $BattleManager
 
@@ -39,8 +42,18 @@ func _ready() -> void:
 	_setup_signals()
 	_setup_ui()
 	
-	await get_tree().create_timer(0.5).timeout
+	# Don't auto-start battle here - wait for on_show
+	print("BattleScreen: Ready")
+
+func on_show() -> void:
+	# Called when screen becomes visible
+	visible = true
 	_start_test_battle()
+
+func on_hide() -> void:
+	# Called when screen is hidden
+	visible = false
+	battle_manager.end_battle_early()
 
 func _setup_signals() -> void:
 	battle_manager.battle_started.connect(_on_battle_started)
@@ -174,6 +187,15 @@ func _on_countdown_tick(seconds_left: int) -> void:
 
 func _on_battle_ended(result: BattleManager.BattleResult) -> void:
 	_last_result = result
+	
+	# Emit signal for SceneFlowManager
+	var result_dict: Dictionary = {
+		"victory": result.victory if result else false,
+		"grade": result.grade if result else "F",
+		"time_seconds": result.time_seconds if result else 0.0,
+		"arena_id": "arena_training"
+	}
+	battle_ended.emit(result_dict)
 
 func _on_rewards_calculated(rewards: Dictionary) -> void:
 	_last_rewards = rewards
