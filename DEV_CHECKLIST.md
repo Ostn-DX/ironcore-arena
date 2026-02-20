@@ -10,8 +10,8 @@
 
 ## PHASE 2: BATTLE SYSTEM [IN PROGRESS]
 - [x] 6. BattleManager (spawn, combat loop) ✅ COMPLETE
-- [ ] 7. Arena scene (top-down, boundaries) ← NEXT TASK
-- [ ] 8. Win/Loss detection
+- [x] 7. Arena scene (top-down, boundaries) ✅ COMPLETE
+- [ ] 8. Win/Loss detection ← NEXT TASK
 - [ ] 9. Results screen (rewards, stats)
 
 ## PHASE 3: ECONOMY & PROGRESSION
@@ -31,5 +31,5 @@
 - [ ] 19. Balance testing
 
 ---
-CURRENT TASK: #6 — BattleManager
+CURRENT TASK: #8 — Win/Loss detection
 STATUS: Starting now
