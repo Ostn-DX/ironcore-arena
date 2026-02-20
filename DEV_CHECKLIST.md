@@ -25,9 +25,9 @@
 - [x] 15. Scene transitions ✅ COMPLETE
 - [x] 16. Battle HUD ✅ COMPLETE
 
-## PHASE 5: POLISH [NEXT]
-- [ ] 17. Sound effects ← NEXT TASK
-- [ ] 18. Visual effects
+## PHASE 5: POLISH [IN PROGRESS]
+- [x] 17. Sound effects ✅ COMPLETE
+- [ ] 18. Visual effects ← NEXT TASK
 - [ ] 19. Balance testing
 
 ---
