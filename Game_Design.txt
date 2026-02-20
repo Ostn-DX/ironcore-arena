@@ -1,0 +1,942 @@
+BOT ARENA 3 — COMPLETE ENGINEERING & SYSTEM RECONSTRUCTION SPECIFICATION
+1. Historical + Technical Context
+1.1 Original Release Environment
+1.1.1 Platform Specification
+Bot Arena 3 was developed for Adobe Flash Player 9/10, released on February 27, 2007 by independent developer Luke Haillay operating under the pseudonym “TheWaste” (Armor Games) . The game emerged during the mature phase of Flash’s dominance as a web gaming platform, following the widespread adoption of Flash Player 9 (June 2006) which introduced ActionScript 3.0 and the AVM2 virtual machine with substantial performance improvements over AVM1. However, many developers continued using ActionScript 2.0 for backward compatibility, and the specific version employed in Bot Arena 3 remains unconfirmed in available sources [INFERRED from era practices].
+The target resolution of 550×400 pixels represents the standard Flash stage dimensions of the period, optimized for the then-dominant 1024×768 display resolution while accommodating browser chrome and portal advertising banners (Armor Games) . This fixed aspect ratio (11:8) eliminated responsive design considerations but created legacy compatibility constraints for modern reconstruction.
+1.1.2 Distribution and Reach
+The game deployed through multi-portal syndication: Kongregate (primary host with API integration for achievements and leaderboards), Armor Games (curated presentation with 1.27+ million plays recorded), Newgrounds (core community access), and numerous secondary aggregation sites (Armor Games) . This distribution strategy maximized audience reach without independent hosting infrastructure, with platform-specific branding and feature integration creating fragmented but substantial player communities. The final documented update occurred November 17, 2007, approximately nine months after initial release, indicating sustained post-launch support (Kongregate) .
+1.1.3 Development Context
+The independent/solo development context fundamentally shaped architectural decisions. Without studio backing or dedicated art/audio teams, the design prioritized systems depth over content breadth: a small set of combinable components (chassis, plating, weapons) generating exponential build variety through hierarchical assembly. The 902.8 KB compressed SWF size with 13 total frames (플래시아크) reflects efficient asset utilization and procedural generation where possible, with vector-based bot graphics providing infinite scalability without bitmap memory costs.
+1.2 Flash Runtime Constraints
+1.2.1 Execution Model and Threading
+Flash Player operated as a single-threaded virtual machine with frame-based cooperative multitasking. All game logic—input processing, AI evaluation, physics simulation, collision detection, and rendering—executed sequentially within a single onEnterFrame callback or Event.ENTER_FRAME handler [1.2.1]. This architectural constraint imposed a hard real-time requirement: all computation for a given frame must complete within the frame budget (33.3 ms for 30 FPS, 16.7 ms for 60 FPS) or visible stutter would result.
+The ActionScript execution model differed substantially between versions:
+AS2 (AVM1): Interpreted bytecode with prototype-based object orientation, higher memory overhead, and garbage collection pauses
+AS3 (AVM2): Compiled bytecode with class-based object orientation, type safety, and improved performance characteristics
+Bot Arena 3’s observed frame stability during 10+ entity combat with projectiles suggests optimization patterns consistent with either careful AS2 engineering or AS3 adoption [INFERRED from performance requirements].
+1.2.2 Memory Architecture
+Flash Player 9 imposed practical heap limits of 100–200 MB depending on browser configuration and platform, with non-deterministic garbage collection creating potential frame-time spikes. This necessitated explicit object pooling strategies for frequently instantiated objects: projectiles, damage numbers, hit effects, and temporary UI elements. The memory budget allocation likely divided as: ~20–40 MB runtime objects, ~10–20 MB texture/audio assets, with remainder for system overhead [1.2.3].
+The SharedObject API provided local save storage with 100 KB practical limit, requiring compact serialization of component inventory, credit totals, progression flags, and build configurations. Save data validation through version flags or checksums [INFERRED] prevented corruption from incompatible versions.
+1.2.3 Rendering Pipeline
+The CPU-based rasterization pipeline operated without GPU acceleration, compositing vector graphics and bitmaps through the DisplayList hierarchy. Each DisplayObject incurred per-frame transformation matrix calculations, motivating:
+Bitmap caching for static backgrounds and UI elements
+Vector graphics for bot chassis with simple geometric shapes
+Minimal DisplayObject creation/destruction during gameplay through object pooling
+The target frame rate of 24–30 FPS [1.5.1] balanced visual smoothness against computational headroom, with 24 FPS (traditional film standard) potentially employed for reduced CPU load and 30 FPS preferred for interactive responsiveness.
+1.2.4 Input Latency
+Mouse and keyboard events propagated through OS → browser → plugin container → Flash runtime before application handling, introducing 1–2 frame inherent latency (33–67 ms at 30 FPS). Bot Arena 3’s click-and-drag control scheme (Armor Games) was designed around this constraint: the visual feedback of dragged bot following cursor masks perceived delay, while AI override provides predictive compensation for movement commands. The “mouse only” specification eliminates keyboard complexity but introduces precision challenges for rapid multi-bot selection [1.2.5].
+1.3 Probable Engine Architecture
+1.3.1 Entity-Component with Display List Integration
+Bot Arena 3 employed a hybrid architectural pattern: entity-component composition for game logic combined with Flash’s native DisplayObject hierarchy for rendering. Core game objects (bots, projectiles, UI elements) likely extended MovieClip or Sprite, gaining automatic rendering, event handling, and coordinate transformation. The component assembly structure—chassis → plating → weapon—directly mirrors this hierarchy, with addChild() operations establishing transform inheritance [1.3.1].
+The parallel logical and visual representation pattern separated BotLogic (simulation state) from BotSprite (presentation), with frame-synchronized updates enabling visual effects (damage flash, recoil animation) without simulation corruption.
+1.3.2 Centralized Game Loop with Fixed Timestep
+A root-level onEnterFrame handler propagated updates through registered subsystems with fixed timestep implementation (30 FPS target with delta-time clamping). The update sequence:
+This sequencing minimizes latency between player action and visual feedback, with input processed at frame start and rendering at frame end [1.3.2].
+1.3.3 Event-Driven State Management
+Screen transitions (menu → shop → builder → battle) implemented through custom Event subclasses with explicit entry/exit handlers. State persistence utilized SharedObject for local save storage, with serialization of:
+Component inventory (owned chassis/plating/weapon IDs)
+Credit totals (current, session, lifetime)
+Progression flags (highest tier cleared, challenge completions)
+Saved build configurations (component references per bot slot)
+The loose coupling between subsystems enabled by event dispatch allowed modular extension: new components integrate without core combat logic modification [1.3.3].
+1.3.4 Object Pooling for Performance
+Critical optimization for transient entities:
+Pool exhaustion handling: allocation fallback (create new if pool empty) with aggressive return scheduling (immediate return on effect completion) [1.3.4].
+1.4 Likely Programming Paradigms
+1.4.1 Object Orientation Approach
+Prototype-based (AS2) or class-based (AS3) organization with GameObject base class extending MovieClip/Sprite. The composition pattern for bot assembly—container references to component instances rather than deep inheritance—enabled runtime flexibility for the construction system [1.4.1].
+1.4.2 Observer Pattern
+Event-driven communication through EventDispatcher infrastructure:
+BattleEvent.VICTORY / BattleEvent.DEFEAT → progression update
+EconomyEvent.PURCHASE → UI refresh, save persistence
+DamageEvent.APPLY → health bar update, death check
+This pattern decoupled producers from consumers, enabling responsive UI without explicit polling [1.4.2].
+1.4.3 Factory Pattern
+Centralized instantiation through manager classes:
+
+// Pseudocode reconstruction
+class BotFactory {
+    public static function createBot(config:BotConfig):Bot {
+        var bot:Bot = pool.acquire();
+        bot.chassis = ComponentDatabase.getChassis(config.chassisId);
+        bot.plating = ComponentDatabase.getPlating(config.platingId);
+        bot.weapon = ComponentDatabase.getWeapon(config.weaponId);
+        bot.validateAssembly();
+        bot.calculateDerivedStats();
+        return bot;
+    }
+}
+Factory abstraction enabled data-driven balance adjustments without recompilation [1.4.3].
+1.4.4 Singleton Pattern
+Manager class global access:
+Risk accepted: tight coupling, testing complexity, state reset challenges—for development velocity in single-developer context [1.4.4].
+1.5 Performance Limits of Era
+The collision detection system employed simplified geometric primitives: circle-circle for bot-bot and projectile-bot (radius from chassis size), AABB for obstacle boundaries. No penetration depth calculation—simple boolean contact detection with immediate separation response [1.5.3].
+
+2. Core Game Architecture Model
+2.1 Formal State Machine Definition
+The complete game state space S comprises 12 primary states with explicit transition guards and actions. The following deterministic finite automaton captures all verified and inferred states:
+State Set S:
+2.2 Input States
+Input processing maintains orthogonal state tracking independent of game mode:
+Drag threshold: 5–8 pixels [INFERRED] before INPUT_DRAG activation, preventing accidental drags on clicks.
+2.3 Economy States
+Credit constraint enforcement: Hard prevention of purchases exceeding available funds—no debt mechanics observed [2.3.4].
+2.4 Battle States
+Sub-state machine per bot (within B₂): IDLE → ACQUIRING → AIMING → FIRING → COOLDOWN → IDLE, with MOVING override.
+2.5 Progression States
+2.6 Unlock States
+Observation: Community sources suggest U₁ from game start for standard components—no hidden discovery phase, with tier gating primary restriction [2.6].
+2.7 Failure States
+2.8 State Transition Logic
+Formal transition specification with predicate-action pairs:
+
+TRANSITION(S₃: BUILDER → S₅: BATTLE_LOADING):
+  PREDICATE: ValidTeamComposition() ∧ SelectedArenaAvailable() ∧ 
+             W_team ≤ W_arena_max
+  ACTION:   SerializeTeamConfig(), CacheBuildState(), 
+            LoadArenaData(selected_arena_id)
+  GUARD:    team_complete_count ≥ 1
+
+TRANSITION(S₆: BATTLE_ACTIVE → S₈: RESULTS):
+  PREDICATE: ∀(enemy ∈ enemy_team): enemy.HP ≤ 0 ∨ 
+             ∀(player ∈ player_team): player.HP ≤ 0
+  ACTION:   StopSimulationClock(), CalculateRewards(), 
+            EvaluateUnlocks(), PersistSave()
+  SUBTYPE:  VICTORY if enemies destroyed, DEFEAT if players destroyed
+
+TRANSITION(S₈: RESULTS → S₉: PROGRESSION_CHECK):
+  PREDICATE: AnimationComplete() ∧ InputConfirm()
+  ACTION:   UpdateProgressionFlags(), CheckTierAdvancement()
+
+3. Entity System Design
+3.1 Bot Entity
+The Bot entity serves as primary simulation agent, aggregating component contributions and managing runtime state across construction and combat phases.
+3.1.1 Core Variables
+3.1.2 Stat Ranges and Derivation
+Maximum Health:
+
+Additive stacking with no diminishing returns. Typical range: 80 (minimal) to 350 (heavy tank) [3.1.2].
+Effective Speed (weight penalty formula) [INFERRED]:
+
+Quadratic penalty ensures: 50% capacity → ~82% speed, 100% capacity → 50% speed (floor), >100% → immobilization (build invalid).
+3.1.3 Update Logic
+
+PROCEDURE Bot.Update(deltaTime):
+  IF state_enum == DESTROYED: RETURN
+  
+  // Cooldown management
+  IF cooldown_timer > 0:
+    cooldown_timer = MAX(0, cooldown_timer - deltaTime)
+  
+  // State machine evaluation
+  SWITCH state_enum:
+    CASE IDLE:
+      IF target_valid AND InWeaponRange(target): 
+        state_enum = ATTACKING
+      ELSE IF has_movement_command:
+        state_enum = MOVING
+        move_target = command_position
+    
+    CASE MOVING:
+      UpdatePosition(deltaTime)
+      IF ArrivedAtTarget(): 
+        state_enum = IDLE
+      ELSE IF target_valid AND InWeaponRange(target) AND CanAttack:
+        state_enum = ATTACKING
+    
+    CASE ATTACKING:
+      IF NOT target_valid OR target_destroyed:
+        state_enum = IDLE
+      ELSE IF NOT InWeaponRange(target):
+        state_enum = MOVING
+      ELSE IF cooldown_timer <= 0:
+        FireWeapon()
+        cooldown_timer = weapon.fire_interval
+        state_enum = COOLDOWN
+    
+    CASE COOLDOWN:
+      IF cooldown_timer <= 0:
+        state_enum = IDLE
+  
+  // Continuous updates
+  IF target_id != NULL AND NOT ValidateTarget(target_id):
+    target_id = NULL
+  
+  IF AI_enabled AND NOT player_override_active:
+    AI.Evaluate(this)
+3.1.4 Interactions
+3.1.5 Lifecycle Events
+3.2 Weapon Entity
+Weapons exist in inventory definition (persistent data) and mounted instance (runtime state) manifestations.
+3.2.1 Core Variables (Definition)
+Verified Weapon Instances (Armor Games) :
+3.2.2 Accuracy Falloff Model [INFERRED]
+
+Minimum 50% accuracy floor prevents complete ineffectiveness at range edge.
+3.2.3 Update Logic and Firing Authorization
+
+PROCEDURE Weapon.Update(owner_bot, delta_time):
+  // Authorization check
+  IF CanFire(owner_bot):
+    target = owner_bot.target_id
+    IF target == NULL: RETURN FALSE
+    
+    distance = Distance(owner_bot.position, target.position)
+    IF distance > range_maximum: RETURN FALSE
+    
+    // Accuracy roll
+    accuracy = CalculateAccuracy(distance, owner_bot.facing_angle, target)
+    IF Random(0,1) <= accuracy:
+      damage = Random(damage_min, damage_max)
+      ApplyDamage(target, damage, owner_bot)
+      SpawnHitEffect(target.position)
+    
+    // Visual feedback regardless of hit
+    SpawnProjectileVisual(owner_bot, target, hit_success)
+    RETURN TRUE
+
+FUNCTION CalculateAccuracy(distance, facing_error, target):
+  acc = accuracy_rating
+  
+  // Range falloff
+  IF distance > range_optimal:
+    falloff = (distance - range_optimal) / (range_maximum - range_optimal)
+    acc *= (1.0 - 0.5 * falloff)
+  
+  // Facing penalty [INFERRED]
+  IF facing_error > 15 degrees:
+    acc *= 0.5
+  
+  RETURN clamp(acc, 0.05, 1.0)  // 5% minimum hit chance
+3.3 Chassis Entity
+Foundation of bot construction determining core mobility and capacity.
+3.3.1 Core Variables
+Verified Chassis Instances (Armor Games) :
+3.3.2 Weight Validation
+
+Violation sets status = IMMOBILIZED (build-time rejection, not runtime).
+3.4 Plating/Armor Entity
+Intermediate component layer providing defensive bonuses and weapon mounting surface.
+3.4.1 Core Variables
+Verified Plating Instances (Armor Games) :
+3.4.2 Damage Mitigation Formula
+
+Applied after accuracy roll, before HP decrement. No degradation or location-based variation confirmed [3.4.2].
+3.5 Projectile Entity
+Transient combat object with deterministic physics.
+3.5.1 Core Variables
+3.5.2 Kinematic Update
+
+PROCEDURE Projectile.Update(delta_time):
+  // Integration
+  position += velocity * delta_time
+  lifetime -= delta_time
+  
+  // Termination checks
+  IF lifetime <= 0 OR OutOfBounds(position):
+    DestroyProjectile()
+    RETURN
+  
+  // Collision query
+  FOR bot IN spatial_query(position, collision_radius):
+    IF bot.team != owner.team AND NOT has_collided:
+      ApplyDamage(bot, damage_value, owner)
+      SpawnImpactEffect(position)
+      has_collided = TRUE
+      DestroyProjectile()
+      RETURN  // Single hit per projectile
+3.6 UI Element Entities
+3.7 Economy Token Entities
+3.8 Arena Entity
+Verified Tournament Arenas (Armor Games) :
+
+4. Bot Construction System
+4.1 Component Slot Architecture
+Strict hierarchical mounting with type-enforced compatibility:
+
+Bot (logical container)
+└── Chassis (root physical, required, exactly 1)
+    └── Plating[0] (required, exactly 1 per confirmed builds)
+        └── Weapon[0] (optional, 0–1)
+Mount Sequence Validation (Armor Games) :
+Visual Attachment: Coordinate transform inheritance through addChild() chain. Weapon position computed as:
+
+Where  is 2D rotation matrix,  are local attachment offsets.
+4.2 Weight Calculations
+4.2.1 Total Weight Formula [CONFIRMED]
+
+4.2.2 Team Weight Aggregation
+
+Typical team size: 1–5 bots [INFERRED from UI constraints and speedrun strategies].
+4.2.3 Arena Limit Enforcement [CONFIRMED]
+
+Hard constraint—battle start button disabled with explicit error feedback on violation.
+4.2.4 Weight-Speed Relationship [INFERRED from speedrun optimization]
+Formula reconstruction:
+
+4.3 Stat Aggregation Formulas
+4.4 Constraint Rules
+Hard Constraints (enforced, prevent invalid states):
+Soft Constraints (guidance, not enforced):
+Cost budget: Recommended spending limit based on credit reserves
+Role coverage: Balanced team vs. specialized composition
+Counter-building: Anticipating enemy configurations from prior attempts
+4.5 Formula Models
+4.6 Edge Cases
+4.7 Optimization Strategies
+Speedrun meta: “5/4/0” builds (5-weight chassis, 4-weight plating, 0-weight [no weapon] distraction bots) for specific encounters (speedrun.com) .
+4.8 Balancing Implications
+Cost-Efficiency Curves:
+Counter-Build Triangle [INFERRED from mechanics]:
+
+        Speed
+       /     \
+      /       \
+     /    beats    \
+    /                 \
+Tank ----------------- Range
+    \    beats        /
+     \              /
+      \   beats   /
+       \        /
+        \      /
+
+5. Combat Engine Logic
+5.1 Damage Formulas
+5.1.1 Base Damage Roll
+
+Uniform distribution assumed; Gaussian alternative possible but unconfirmed [5.1.1].
+5.1.2 Accuracy Application [INFERRED]
+
+5.1.3 Critical Hits
+No evidence in sources [UNKNOWN]. Likely absent to reduce outcome variance and emphasize skill over randomness.
+5.1.4 Final Damage
+
+With critical_multiplier = 1.0 if absent.
+5.2 Collision Model
+5.3 Targeting Logic
+5.3.1 Acquisition Range
+
+5.3.2 Priority Heuristics [INFERRED from AI behavior observation]
+
+PRIORITY_SCORE(target) = 
+  0.50 × (1 - d/range_maximum) +           // Distance (closer = higher)
+  0.30 × (DPS_target × HP_target/HP_max) + // Threat (dangerous + healthy)
+  0.15 × (1 - HP_target/HP_max) +          // Cleanup (weakened)
+  0.05 × allies_targeting_bonus            // Focus fire coordination
+5.3.3 Line-of-Sight
+Simplified or absent [UNKNOWN]. Top-down perspective and limited obstacle density may render explicit LOS unnecessary; range-only targeting sufficient.
+5.3.4 Target Lock Persistence
+Minimum 0.5–1.0 second hold before re-evaluation prevents jitter. Re-evaluation triggers: target death, target out of range, new higher-priority target enters range, manual override command.
+5.4 Cooldown Timing
+
+Animation lock: If firing animation duration > t_cooldown, effective rate limited by animation [INFERRED].
+5.5 Attack Cycles
+
+STATE DIAGRAM:
+
+                    [target invalid]
+                         ↑
+    ┌────────────────────┼────────────────────┐
+    ↓                    │                    │
+  IDLE ──[target valid]──→ ACQUIRING ──[in range]──→ AIMING
+    ↑                    │    ↑                  │
+    │                    │    └────[out of range]┘
+    │                    ↓
+    └────────[cooldown complete]←──── COOLDOWN ←── FIRE
+                              (t_cooldown elapsed)
+Interrupt conditions: Target death, manual reposition command, retreat trigger.
+5.6 Movement Rules
+Kinematic integration:
+
+With , where  is normalized direction to target position or current waypoint.
+5.7 AI Decision Trees
+5.8 Projectile Systems
+5.9 Win Conditions
+
+6. Artificial Intelligence System
+6.1 Target Selection Priority
+Multi-criteria evaluation with explicit weighting [INFERRED from speedrun analysis and observed behavior]:
+
+FUNCTION EvaluateTarget(bot, target):
+  // Distance component (primary)
+  d = Distance(bot.position, target.position)
+  IF d > bot.weapon.range_maximum: RETURN 0  // Cannot engage
+  
+  distance_score = 1 - (d / bot.weapon.range_maximum)
+  
+  // Threat component (secondary)
+  threat_score = (target.weapon.damage_avg * target.weapon.fire_rate) * 
+                 (target.HP / target.HP_max)
+  
+  // Health component (tertiary)
+  health_score = 1 - (target.HP / target.HP_max)
+  
+  // Focus fire bonus
+  allies_targeting = CountAlliesTargeting(target)
+  focus_bonus = 1 + 0.3 * allies_targeting
+  
+  // Composite score
+  RETURN (0.50 * distance_score + 
+          0.30 * threat_score + 
+          0.15 * health_score) * focus_bonus
+Manual override: Player-designated target receives score = ∞, forcing exclusive focus until death or release.
+6.2 Pathing Logic
+No sophisticated navigation—A*, waypoints, or predictive intercept absent [INFERRED from Flash constraints and observed behavior].
+6.3 Aggression Thresholds
+6.4 Retreat Behavior
+Re-engagement: Automatic when HP > 50% or threatening enemies eliminated.
+6.5 Command Overrides
+Return to AI: 3–5 second timeout, or explicit “release” action [INFERRED from speedrun micro-management emphasis].
+6.6 Pseudocode Approximation
+
+CLASS BotAI:
+  bot: Bot reference
+  state: AIState = IDLE
+  target: Bot reference = NULL
+  command: Command = NULL
+  command_timer: float = 0
+  
+  PROCEDURE Update(delta_time):
+    // Command override processing
+    IF command != NULL:
+      IF command_timer > 0:
+        command_timer -= delta_time
+        ExecuteCommand()
+        RETURN  // Skip autonomous AI
+      ELSE:
+        command = NULL  // Timeout, return to AI
+    
+    // State machine evaluation
+    SWITCH state:
+      CASE IDLE:
+        EvaluateThreats()
+        IF ViableTargetExists():
+          state = ACQUIRING
+          target = SelectBestTarget()
+      
+      CASE ACQUIRING:
+        IF NOT ValidateTarget(target):
+          state = IDLE
+          target = NULL
+        ELSE IF InAttackRange(target):
+          state = ENGAGING
+        ELSE:
+          MoveToward(OptimalAttackPosition(target))
+      
+      CASE ENGAGING:
+        IF NOT ValidateTarget(target):
+          state = ACQUIRING
+        ELSE IF NOT InWeaponRange(target):
+          state = ACQUIRING
+        ELSE IF ShouldRetreat():
+          state = RETREATING
+        ELSE IF bot.weapon.cooldown <= 0:
+          FireAt(target)
+          bot.weapon.cooldown = bot.weapon.fire_interval
+      
+      CASE RETREATING:
+        IF SafeToReengage():
+          state = ACQUIRING
+        ELSE:
+          MoveTo(SafePosition())
+  
+  FUNCTION SelectBestTarget():
+    candidates = GetEnemyBotsInSensorRange()
+    best_score = -INFINITY
+    best_target = NULL
+    
+    FOR candidate IN candidates:
+      score = EvaluateTarget(bot, candidate)
+      IF score > best_score:
+        best_score = score
+        best_target = candidate
+    
+    RETURN best_target
+  
+  FUNCTION ShouldRetreat():
+    RETURN (bot.HP / bot.HP_max < 0.25) OR 
+           (CountNearbyEnemies() >= 3 AND CountNearbyAllies() <= 1)
+
+7. Economy + Progression System
+7.1 Currency Generation Formulas
+7.1.1 Base Victory Reward [INFERRED from grinding patterns]
+
+7.1.2 Performance Bonus [INFERRED]
+
+Time penalty prevents passive waiting strategies.
+7.1.3 Challenge Bonus
+Fixed amounts per special condition: no damage taken, speed clear (< par time), minimal build (under weight threshold), etc. [INFERRED from challenge mode existence].
+7.1.4 Total Payout
+
+7.2 Reward Scaling
+Exponential base growth (1.5× per tier) ensures late-tier grinding efficiency, creating natural progression pacing without explicit gates. The speedrun community’s explicit guidance—“grind for money on as late of a mission as you can” (speedrun.com) —confirms this design intent.
+7.3 Unlock Algorithms
+No hidden components confirmed—all components visible from appropriate tier, with purchase gating primary restriction [7.3].
+7.4 Difficulty Curves
+7.5 Tournament Structure
+Each tournament contains 3–5 sequential battles with escalating enemy configurations.
+7.6 Pacing Logic
+
+8. Level + Mode Design Structure
+8.1 Campaign Progression
+Linear tournament sequence with discrete unlock gates. No branching paths, optional side content, or narrative choices confirmed [8.1].
+8.2 Challenge Modes
+Challenge 4 (“Dragon”) notorious difficulty: weapon with longest minimum range in game requires precise range exploitation—“hug the enemy as tight as possible to avoid missing” while staying outside their retaliation range (speedrun.com) .
+8.3 Preset Encounters
+Enemy team compositions are hand-authored per battle, not procedurally generated. This enables:
+Learnable patterns for speedrun optimization
+Specific counter-build strategies
+Consistent difficulty calibration
+Enemy role archetypes [INFERRED]:
+Tank: Heavy chassis/plating, short-range high-damage weapon, slow
+DPS: Medium build, sustained damage weapon, moderate speed
+Sniper: Light build, long-range accurate weapon, attempts range maintenance
+8.4 Scaling Difficulty
+
+9. User Interface Architecture
+9.1 Main Menu Screen
+9.2 Shop Screen
+Filtering: By tier (slider or buttons), by stat (sortable columns), by cost range [INFERRED].
+9.3 Builder Screen
+Drag-and-drop validation: Ghost rendering during drag, green highlight on valid drop target, red on invalid, bounce-back animation on invalid release (Armor Games) .
+9.4 Battle HUD
+9.5 Results Screen
+
+10. Balance + Meta Analysis
+10.1 Dominant Strategies
+Speedrun insight: “Buying maxed out bots for the first two missions is suboptimal”—early over-investment delays critical unlocks (speedrun.com) .
+10.2 Cost Efficiency Curves
+Economic conclusion: Early components offer superior efficiency; late components enable necessary performance thresholds for advanced content.
+10.3 Stat Breakpoints
+10.4 Optimal Builds (Community-Verified)
+10.5 Theoretical Models
+Damage Per Credit (DPC):
+
+Optimization seeks Pareto frontier of DPC vs. survivability vs. speed.
+Time-to-Kill (TTK) model:
+
+
+Favorable engagement when .
+
+11. Technical Implementation Hypothesis
+11.1 Object Model
+Inheritance Hierarchy [INFERRED from Flash patterns]:
+
+DisplayObject (Flash native)
+└── Sprite/MovieClip
+    └── GameObject (custom base: position, update(), destroy())
+        ├── Bot extends GameObject
+        │   ├── chassis: Chassis
+        │   ├── plating: Plating  
+        │   ├── weapon: Weapon
+        │   ├── ai: BotAI
+        │   └── stats: BotStats
+        ├── Projectile extends GameObject
+        │   ├── velocity: Vector2
+        │   ├── damage: float
+        │   └── lifetime: float
+        ├── VisualEffect extends GameObject
+        │   ├── animation: Animation
+        │   └── autoDestroy: bool
+        └── UIElement extends GameObject
+            ├── interactive: bool
+            ├── state: UIState
+            └── callback: Function
+Composition over Inheritance: Bot behavior emerges from component aggregation, not deep class hierarchies.
+11.2 Update Loops
+Main Game Loop (root timeline onEnterFrame):
+
+// Pseudocode reconstruction
+function onEnterFrame(event:Event):void {
+    var deltaTime:Number = calculateDeltaTime();  // Clamp to prevent spiral
+    
+    // Phase 1: Input
+    processMouseQueue();
+    processKeyboardInput();  // Minimal or none
+    
+    // Phase 2: AI (if battle active)
+    if (state == BATTLE_ACTIVE) {
+        for each (var bot:Bot in activeBots) {
+            bot.ai.evaluate(deltaTime);
+        }
+    }
+    
+    // Phase 3: Physics/Movement
+    for each (bot in activeBots) {
+        bot.updatePosition(deltaTime);
+    }
+    for each (var proj:Projectile in activeProjectiles) {
+        proj.updatePosition(deltaTime);
+    }
+    
+    // Phase 4: Collision Detection
+    collisionSystem.broadPhase();   // Spatial partition or brute force
+    collisionSystem.narrowPhase();  // Detailed shape tests
+    
+    // Phase 5: Combat Resolution
+    for each (proj in activeProjectiles) {
+        proj.checkCollisions();
+    }
+    processDamageQueue();  // Apply buffered damage
+    
+    // Phase 6: Visual Synchronization
+    for each (bot in activeBots) {
+        bot.syncVisualState();
+    }
+    
+    // Phase 7: Rendering (implicit via DisplayList)
+    // Flash Player handles composite
+}
+Fixed Timestep: 30 FPS target with deltaTime clamping to maximum 2× expected interval (prevents large time steps after lag).
+11.3 Rendering Logic
+Y-sorting: bots.sortOn("y", Array.NUMERIC) each frame ensures correct overlap for top-down perspective.
+11.4 Event Handling
+11.5 State Storage
+SharedObject Structure [INFERRED]:
+
+var saveData:Object = {
+    version: 1,  // For migration handling
+    
+    // Economy
+    credits: 15000,
+    
+    // Inventory (arrays of owned component IDs)
+    inventory: {
+        chassis: [0, 1, 3, 5, 8],
+        plating: [0, 1, 2, 4, 7, 9],
+        weapons: [0, 1, 2, 3, 5, 8, 12]
+    },
+    
+    // Saved builds (1-5 bot configurations)
+    builds: [
+        {chassis: 3, plating: 4, weapon: 5},  // Bot 0
+        {chassis: 1, plating: 2, weapon: 3},  // Bot 1
+        null,  // Empty slot
+        null,
+        null
+    ],
+    
+    // Progression
+    progression: {
+        highestTier: 4,
+        tournamentStates: [3, 3, 3, 2, 0, 0, 0, 0],  // Per-tournament state enum
+        challengesCompleted: [true, true, false, false, false, false, false]
+    },
+    
+    // Metadata
+    timestamp: 1172500000,  // Last save time
+    playTime: 36000  // Seconds (optional)
+};
+11.6 Engine Pseudocode Architecture
+Core Class Structure:
+
+// Main entry point
+class BotArena3 extends MovieClip {
+    private static var _instance:BotArena3;
+    public static function getInstance():BotArena3 { return _instance; }
+    
+    public var gameManager:GameManager;
+    public var uiManager:UIManager;
+    
+    public function BotArena3() {
+        _instance = this;
+        gameManager = new GameManager();
+        uiManager = new UIManager();
+        addEventListener(Event.ENTER_FRAME, onEnterFrame);
+    }
+}
+
+// Central coordinator
+class GameManager extends EventDispatcher {
+    public var state:GameState = BOOT;
+    public var economyManager:EconomyManager;
+    public var progressionManager:ProgressionManager;
+    public var battleManager:BattleManager;  // Null when not in battle
+    
+    public function transitionTo(newState:GameState, data:Object = null):void {
+        // Exit current state
+        // Validate transition
+        // Enter new state
+        dispatchEvent(new GameStateEvent(GameStateEvent.CHANGE, newState));
+    }
+}
+
+// Combat simulation
+class BattleManager extends EventDispatcher {
+    public var arena:Arena;
+    public var playerBots:Array;  // of Bot
+    public var enemyBots:Array;   // of Bot
+    public var projectiles:Array; // of Projectile (pooled)
+    public var collisionSystem:CollisionSystem;
+    
+    public function update(deltaTime:Number):void {
+        // Update all entities
+        // Check victory/defeat conditions
+    }
+}
+
+12. System Dependency Map
+12.1 Hierarchical Structure
+
+BotArena3 (root)
+├── GameManager (singleton)
+│   ├── EconomyManager
+│   │   └── SharedObject (persistence)
+│   ├── ProgressionManager
+│   │   └── ComponentDatabase (unlock state)
+│   ├── BattleManager [conditional: battle active]
+│   │   ├── Arena
+│   │   ├── Bot[] (player + enemy)
+│   │   │   ├── Chassis
+│   │   │   ├── Plating
+│   │   │   └── Weapon
+│   │   ├── Projectile[] (pooled)
+│   │   ├── CollisionSystem
+│   │   └── AISystem
+│   └── BuilderManager [conditional: in builder]
+│       └── BuildValidator
+├── UIManager
+│   ├── ScreenMainMenu
+│   ├── ScreenShop
+│   ├── ScreenBuilder
+│   ├── ScreenArenaSelect
+│   ├── ScreenBattle (HUD)
+│   └── ScreenResults
+├── InputManager
+│   └── Mouse/Keyboard handlers
+└── AssetManager
+    └── Embedded/load-on-demand assets
+12.2 Data Flow Diagram
+
+[Player Input] → InputManager → UIManager → GameManager
+                                          ↓
+[Battle Results] → BattleManager → EconomyManager (rewards)
+                                 → ProgressionManager (unlocks)
+                                 → SaveManager (persistence)
+                                          ↓
+[State Changes] → UIManager (screen transitions, feedback)
+12.3 Critical Path Dependencies
+12.4 Initialization Order
+BOOT: Load SharedObject, validate version, initialize singletons
+Asset preload: Critical UI assets, audio
+Database load: Component definitions (chassis, plating, weapon stats)
+State restoration: Economy, progression, saved builds
+UI initialization: Create screens, wire event handlers
+Transition to MAIN_MENU: Ready for player interaction
+
+13. Rebuild Specification
+13.1 Data Schemas
+13.1.1 Component Database (JSON)
+
+{
+  "version": 1,
+  "chassis": [
+    {
+      "id": "akaumin_dl2_100",
+      "name": "AKAUMIN \"DL2-100\"",
+      "hpBase": 80,
+      "speedBase": 5.0,
+      "weightCapacity": 120,
+      "weightSelf": 25,
+      "slotCount": 1,
+      "cost": 300,
+      "unlockTier": 0,
+      "visualAsset": "chassis_akaumin_01"
+    }
+  ],
+  "plating": [
+    {
+      "id": "santrin_auro",
+      "name": "SANTRIN \"AURO\"",
+      "hpBonus": 40,
+      "damageReduction": 0.15,
+      "weight": 10,
+      "cost": 200,
+      "unlockTier": 0,
+      "visualAsset": "plating_santrin_01"
+    }
+  ],
+  "weapons": [
+    {
+      "id": "raptor_dt_01",
+      "name": "RAPTOR \"DT-01\"",
+      "damageMin": 15,
+      "damageMax": 25,
+      "accuracy": 0.75,
+      "rangeOptimal": 150,
+      "rangeMaximum": 250,
+      "fireRate": 2.0,
+      "projectileType": "bullet",
+      "projectileSpeed": 12,
+      "weight": 20,
+      "cost": 250,
+      "unlockTier": 0,
+      "visualAsset": "weapon_raptor_01",
+      "muzzleFlash": "fx_muzzle_01",
+      "impactEffect": "fx_impact_01"
+    }
+  ]
+}
+13.1.2 Arena Definitions (JSON)
+
+{
+  "arenas": [
+    {
+      "id": "roxtan_park",
+      "name": "Roxtan Park Arena",
+      "tier": 1,
+      "dimensions": [600, 400],
+      "weightLimit": 120,
+      "obstacles": [
+        {"type": "rectangle", "x": 200, "y": 150, "w": 50, "h": 100}
+      ],
+      "enemyPresets": [
+        {
+          "battle": 1,
+          "enemies": [
+            {"chassis": "basic_light", "plating": "light_01", "weapon": "basic_01", "position": [500, 200]}
+          ]
+        },
+        {
+          "battle": 2,
+          "enemies": [
+            {"chassis": "basic_light", "plating": "light_01", "weapon": "basic_01", "position": [450, 150]},
+            {"chassis": "basic_light", "plating": "light_01", "weapon": "basic_01", "position": [450, 250]}
+          ]
+        }
+      ],
+      "backgroundAsset": "arena_roxtan_bg",
+      "musicTrack": "battle_theme_01",
+      "parTime": 120
+    }
+  ]
+}
+13.1.3 Progression Data (JSON)
+
+{
+  "progression": {
+    "tournaments": [
+      {"id": "roxtan_park", "tier": 1, "unlockedBy": null},
+      {"id": "torys_junkyard", "tier": 2, "unlockedBy": "roxtan_park"},
+      {"id": "chrometek_rally", "tier": 3, "unlockedBy": "torys_junkyard"},
+      {"id": "metalmash_2057", "tier": 4, "unlockedBy": "chrometek_rally"}
+    ],
+    "rewardTable": {
+      "baseMultiplier": 1.5,
+      "performanceBonus": {
+        "perEnemyDestroyed": 20,
+        "perBotSurviving": 50,
+        "timePenaltyPerSecond": 0.5
+      }
+    }
+  }
+}
+13.2 Logic Rules
+13.2.1 Combat Resolution (Step-by-Step)
+
+FUNCTION ResolveAttack(attacker, target):
+  1. Validate target (alive, enemy team)
+  2. Check range: distance ≤ attacker.weapon.rangeMaximum
+  3. Calculate accuracy: apply distance falloff, facing, size modifiers
+  4. Roll hit: random() ≤ accuracy
+  5. IF hit:
+     a. Roll damage: random(damageMin, damageMax)
+     b. Apply mitigation: damage *= (1 - target.damageReduction)
+     c. Apply damage: target.currentHP -= damage
+     d. Spawn hit effect at target position
+     e. IF target.currentHP ≤ 0: TriggerDeath(target)
+  6. ELSE (miss):
+     a. Spawn miss effect (optional)
+  7. Reset attacker cooldown: cooldown = 1 / fireRate
+  8. Return hit/miss status
+13.2.2 AI Evaluation (Priority Scoring)
+
+FUNCTION EvaluateTarget(bot, candidate):
+  distance = Distance(bot.position, candidate.position)
+  IF distance > bot.weapon.rangeMaximum: RETURN 0
+  
+  score = 0
+  score += 0.50 * (1 - distance / bot.weapon.rangeMaximum)
+  score += 0.30 * (candidate.DPS * candidate.HP / candidate.maxHP)
+  score += 0.15 * (1 - candidate.HP / candidate.maxHP)
+  score *= (1 + 0.30 * CountAlliesTargeting(candidate))
+  
+  RETURN score
+13.2.3 Economy Transactions
+
+FUNCTION ProcessPurchase(player, item):
+  1. Validate: player.credits ≥ item.cost
+  2. Validate: item.unlockTier ≤ player.highestTierCleared
+  3. Deduct: player.credits -= item.cost
+  4. Add: player.inventory[item.type].push(item.id)
+  5. Persist: savePlayerData()
+  6. Dispatch: EconomyEvent.PURCHASE(item, newBalance)
+  7. RETURN success
+13.3 System Priorities
+13.4 Tick Rates
+13.5 Update Order
+
+PER-FRAME EXECUTION SEQUENCE:
+1. Input collection (mouse queue flush)
+2. Game state evaluation (mode-appropriate)
+3. IF BATTLE_ACTIVE:
+   a. AI evaluation (all bots)
+   b. Movement integration (bots, projectiles)
+   c. Collision detection (broad → narrow)
+   d. Combat resolution (damage application)
+   e. Death check and cleanup
+4. Visual state synchronization
+5. Render (DisplayList composite)
+
+14. Successor Extension Guidelines
+14.1 New Parts Integration
+Safe addition formula: New part efficiency = (tier_average_efficiency) × (1 ± 0.15)
+14.2 New Arena Design
+14.3 New Weapon Types
+14.4 New Modes
+14.5 Arcade Mode Specification
+14.6 Design Constraints (Invariant)
+
+15. Complete System Summary Model
+15.1 Unified Architecture Diagram
+
+┌─────────────────────────────────────────────────────────┐
+│                    BOT ARENA 3 SYSTEM                    │
+├─────────────────────────────────────────────────────────┤
+│  PRESENTATION LAYER                                      │
+│  ├── UI Screens (Menu, Shop, Builder, Battle, Results)  │
+│  ├── HUD Elements (Health, Minimap, Command)            │
+│  └── Visual Effects (Projectiles, Impacts, Animations)  │
+├─────────────────────────────────────────────────────────┤
+│  GAME LOGIC LAYER                                        │
+│  ├── State Machine (12 primary states, formal transitions)│
+│  ├── Economy (Credits, Purchases, Persistence)          │
+│  ├── Progression (Tiers, Unlocks, Challenges)           │
+│  └── Battle Manager (Spawn, Simulation, Resolution)     │
+├─────────────────────────────────────────────────────────┤
+│  ENTITY SYSTEM                                           │
+│  ├── Bot (Chassis + Plating + Weapon, AI, Lifecycle)    │
+│  ├── Projectile (Kinematic, Collision, Damage)          │
+│  └── Arena (Boundaries, Obstacles, Constraints)         │
+├─────────────────────────────────────────────────────────┤
+│  TECHNICAL INFRASTRUCTURE                                │
+│  ├── Flash DisplayList (Rendering, Input, Events)       │
+│  ├── SharedObject (Save/Load)                           │
+│  └── Object Pools (Performance optimization)            │
+└─────────────────────────────────────────────────────────┘
+15.2 Mechanical Specification (All Formulas Consolidated)
+15.3 Executable Logic Outline
+Critical path for minimum viable rebuild:
+Entity system: Bot, Chassis, Plating, Weapon classes with composition
+Construction: Drag-and-drop builder with weight validation
+Combat: Movement, collision, damage, cooldown systems
+AI: Target selection, state machine, command override
+Economy: Credit transactions, component unlocks
+Progression: Tournament sequence, victory conditions
+UI: All five screen types with navigation
+Persistence: Save/load with SharedObject equivalent
+15.4 Master Blueprint Statement
+Bot Arena 3 is a tactical robot combat game built on hierarchical component assembly (chassis→plating→weapon) with weight-constrained team optimization, real-time combat with AI-assisted player control, and exponential economic progression through tiered tournaments. The deterministic simulation emphasizes skill expression through manual override of autonomous behaviors, while strategic depth emerges from counter-build dynamics (speed/range/tank triangle) and cost-efficiency optimization across diminishing-return upgrade curves. The Flash-era technical constraints (single-threaded, CPU-rendered, memory-limited) shaped an architecture of object pooling, simplified collision, and event-driven state management that remains reconstructible through modern engines with appropriate fidelity to original mechanical behavior.
