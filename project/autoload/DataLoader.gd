@@ -1,6 +1,6 @@
 extends Node
-## DataLoader singleton — loads and caches all JSON content at startup.
-## Delegates to src/managers/data_loader.gd (RefCounted) for core logic.
+## DataLoader singleton — loads and caches all game data at startup.
+## Provides indexed access to chassis, plating, weapons, and arenas.
 
 const DataLoaderCore := preload("res://src/managers/data_loader.gd")
 
@@ -12,58 +12,58 @@ func _ready() -> void:
 	_core.load_all()
 
 
-# --- Parts ---
+# --- Chassis ---
 
-func get_part(id: String) -> Variant:
-	return _core.get_part(id)
+func get_chassis(id: String) -> Dictionary:
+	return _core.get_chassis(id)
 
-func get_all_parts() -> Array:
-	return _core.get_all_parts()
+func get_all_chassis() -> Array:
+	return _core.get_all_chassis()
+
+func get_chassis_by_tier(tier: int) -> Array:
+	return _core.get_chassis_by_tier(tier)
+
+
+# --- Plating ---
+
+func get_plating(id: String) -> Dictionary:
+	return _core.get_plating(id)
+
+func get_all_plating() -> Array:
+	return _core.get_all_plating()
+
+func get_plating_by_tier(tier: int) -> Array:
+	return _core.get_plating_by_tier(tier)
+
+
+# --- Weapons ---
+
+func get_weapon(id: String) -> Dictionary:
+	return _core.get_weapon(id)
+
+func get_all_weapons() -> Array:
+	return _core.get_all_weapons()
+
+func get_weapons_by_tier(tier: int) -> Array:
+	return _core.get_weapons_by_tier(tier)
 
 
 # --- Arenas ---
 
-func get_arena(id: String) -> Variant:
+func get_arena(id: String) -> Dictionary:
 	return _core.get_arena(id)
 
 func get_all_arenas() -> Array:
 	return _core.get_all_arenas()
 
-
-# --- Bots ---
-
-func get_bot(id: String) -> Variant:
-	return _core.get_bot(id)
-
-func get_all_bots() -> Array:
-	return _core.get_all_bots()
+func get_arenas_by_tier(tier: int) -> Array:
+	return _core.get_arenas_by_tier(tier)
 
 
-# --- Enemies ---
+# --- Component helpers ---
 
-func get_enemy(id: String) -> Variant:
-	return _core.get_enemy(id)
+func get_components_unlocked_at_tier(tier: int) -> Dictionary:
+	return _core.get_components_unlocked_at_tier(tier)
 
-func get_all_enemies() -> Array:
-	return _core.get_all_enemies()
-
-
-# --- Campaign ---
-
-func get_campaign_node(id: String) -> Variant:
-	return _core.get_campaign_node(id)
-
-func get_all_campaign_nodes() -> Array:
-	return _core.get_all_campaign_nodes()
-
-
-# --- Economy ---
-
-func get_economy_config() -> Dictionary:
-	return _core.get_economy_config()
-
-
-# --- Direct access (for tests or advanced use) ---
-
-func get_core() -> RefCounted:
-	return _core
+func component_exists(id: String) -> bool:
+	return _core.component_exists(id)

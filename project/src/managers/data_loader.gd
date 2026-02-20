@@ -1,24 +1,13 @@
 extends RefCounted
 ## DataLoader core logic — JSON parsing and data caching.
-## Loads all vertical-slice JSON files and indexes them by id.
+## Loads component database and provides indexed access.
 
-const DATA_DIR: String = "res://data/slice/"
+const COMPONENTS_PATH: String = "res://../data/components.json"
 
-const _FILE_MAP: Dictionary = {
-	"parts": "parts_slice.json",
-	"bots": "bots_slice.json",
-	"arenas": "arenas_slice.json",
-	"enemies": "enemies_slice.json",
-	"campaign": "campaign_slice.json",
-	"economy": "economy_slice.json",
-}
-
-var parts_by_id: Dictionary = {}
+var chassis_by_id: Dictionary = {}
+var plating_by_id: Dictionary = {}
+var weapons_by_id: Dictionary = {}
 var arenas_by_id: Dictionary = {}
-var bots_by_id: Dictionary = {}
-var enemies_by_id: Dictionary = {}
-var campaign_by_id: Dictionary = {}
-var economy_config: Dictionary = {}
 
 var _loaded: bool = false
 
@@ -26,126 +15,127 @@ var _loaded: bool = false
 func load_all() -> void:
 	if _loaded:
 		return
-	_load_array_file("parts", "parts_by_id")
-	_load_array_file("arenas", "arenas_by_id")
-	_load_array_file("bots", "bots_by_id")
-	_load_array_file("enemies", "enemies_by_id")
-	_load_array_file("campaign", "campaign_by_id")
-	_load_economy()
+	
+	var json_text: String = _read_file(COMPONENTS_PATH)
+	if json_text.is_empty():
+		push_error("DataLoader: failed to load components.json")
+		return
+	
+	var parsed: Variant = _parse_json(json_text, COMPONENTS_PATH)
+	if parsed == null or not (parsed is Dictionary):
+		push_error("DataLoader: components.json is invalid")
+		return
+	
+	var data: Dictionary = parsed as Dictionary
+	
+	# Index chassis
+	if data.has("chassis"):
+		for entry in data["chassis"]:
+			if entry is Dictionary and entry.has("id"):
+				chassis_by_id[String(entry["id"])] = entry
+	
+	# Index plating
+	if data.has("plating"):
+		for entry in data["plating"]:
+			if entry is Dictionary and entry.has("id"):
+				plating_by_id[String(entry["id"])] = entry
+	
+	# Index weapons
+	if data.has("weapons"):
+		for entry in data["weapons"]:
+			if entry is Dictionary and entry.has("id"):
+				weapons_by_id[String(entry["id"])] = entry
+	
+	# Index arenas
+	if data.has("arenas"):
+		for entry in data["arenas"]:
+			if entry is Dictionary and entry.has("id"):
+				arenas_by_id[String(entry["id"])] = entry
+	
 	_loaded = true
+	print("DataLoader: Loaded %d chassis, %d plating, %d weapons, %d arenas" % [
+		chassis_by_id.size(), plating_by_id.size(), weapons_by_id.size(), arenas_by_id.size()
+	])
 
 
-# --- Parts ---
+# --- Chassis ---
 
-func get_part(id: String) -> Variant:
-	return parts_by_id.get(id, null)
+func get_chassis(id: String) -> Dictionary:
+	return chassis_by_id.get(id, {})
 
-func get_all_parts() -> Array:
-	return parts_by_id.values()
+func get_all_chassis() -> Array:
+	return chassis_by_id.values()
+
+func get_chassis_by_tier(tier: int) -> Array:
+	var result: Array = []
+	for chassis in chassis_by_id.values():
+		if chassis is Dictionary and chassis.get("tier", -1) == tier:
+			result.append(chassis)
+	return result
+
+
+# --- Plating ---
+
+func get_plating(id: String) -> Dictionary:
+	return plating_by_id.get(id, {})
+
+func get_all_plating() -> Array:
+	return plating_by_id.values()
+
+func get_plating_by_tier(tier: int) -> Array:
+	var result: Array = []
+	for plating in plating_by_id.values():
+		if plating is Dictionary and plating.get("tier", -1) == tier:
+			result.append(plating)
+	return result
+
+
+# --- Weapons ---
+
+func get_weapon(id: String) -> Dictionary:
+	return weapons_by_id.get(id, {})
+
+func get_all_weapons() -> Array:
+	return weapons_by_id.values()
+
+func get_weapons_by_tier(tier: int) -> Array:
+	var result: Array = []
+	for weapon in weapons_by_id.values():
+		if weapon is Dictionary and weapon.get("tier", -1) == tier:
+			result.append(weapon)
+	return result
 
 
 # --- Arenas ---
 
-func get_arena(id: String) -> Variant:
-	return arenas_by_id.get(id, null)
+func get_arena(id: String) -> Dictionary:
+	return arenas_by_id.get(id, {})
 
 func get_all_arenas() -> Array:
 	return arenas_by_id.values()
 
-
-# --- Bots ---
-
-func get_bot(id: String) -> Variant:
-	return bots_by_id.get(id, null)
-
-func get_all_bots() -> Array:
-	return bots_by_id.values()
+func get_arenas_by_tier(tier: int) -> Array:
+	var result: Array = []
+	for arena in arenas_by_id.values():
+		if arena is Dictionary and arena.get("tier", -1) == tier:
+			result.append(arena)
+	return result
 
 
-# --- Enemies ---
+# --- Component helpers ---
 
-func get_enemy(id: String) -> Variant:
-	return enemies_by_id.get(id, null)
+func get_components_unlocked_at_tier(tier: int) -> Dictionary:
+	return {
+		"chassis": get_chassis_by_tier(tier),
+		"plating": get_plating_by_tier(tier),
+		"weapons": get_weapons_by_tier(tier)
+	}
 
-func get_all_enemies() -> Array:
-	return enemies_by_id.values()
-
-
-# --- Campaign ---
-
-func get_campaign_node(id: String) -> Variant:
-	return campaign_by_id.get(id, null)
-
-func get_all_campaign_nodes() -> Array:
-	return campaign_by_id.values()
-
-
-# --- Economy ---
-
-func get_economy_config() -> Dictionary:
-	return economy_config
+func component_exists(id: String) -> bool:
+	return chassis_by_id.has(id) or plating_by_id.has(id) or weapons_by_id.has(id)
 
 
 # --- Internal helpers ---
-
-func _load_array_file(key: String, dict_property: String) -> void:
-	var rel: String = String(_FILE_MAP.get(key, ""))
-	if rel.is_empty():
-		push_error("DataLoader: missing file mapping for key: %s" % key)
-		return
-
-	var path: String = DATA_DIR + rel
-	var json_text: String = _read_file(path)
-	if json_text.is_empty():
-		return
-
-	var parsed_v: Variant = _parse_json(json_text, path)
-	if parsed_v == null:
-		return
-
-	if not (parsed_v is Array):
-		push_error("DataLoader: expected Array in '%s', got %s" % [path, typeof(parsed_v)])
-		return
-
-	var parsed: Array = parsed_v as Array
-	var dict_v: Variant = get(dict_property)
-	if not (dict_v is Dictionary):
-		push_error("DataLoader: property '%s' is not a Dictionary" % dict_property)
-		return
-
-	var dict: Dictionary = dict_v as Dictionary
-	for entry_v in parsed:
-		if entry_v is Dictionary:
-			var entry: Dictionary = entry_v as Dictionary
-			if entry.has("id"):
-				dict[String(entry["id"])] = entry
-			else:
-				push_error("DataLoader: entry in '%s' missing 'id' field" % path)
-		else:
-			push_error("DataLoader: non-dictionary entry in '%s'" % path)
-
-
-func _load_economy() -> void:
-	var rel: String = String(_FILE_MAP.get("economy", ""))
-	if rel.is_empty():
-		push_error("DataLoader: missing file mapping for key: economy")
-		return
-
-	var path: String = DATA_DIR + rel
-	var json_text: String = _read_file(path)
-	if json_text.is_empty():
-		return
-
-	var parsed_v: Variant = _parse_json(json_text, path)
-	if parsed_v == null:
-		return
-
-	if not (parsed_v is Dictionary):
-		push_error("DataLoader: expected Dictionary in '%s', got %s" % [path, typeof(parsed_v)])
-		return
-
-	economy_config = parsed_v as Dictionary
-
 
 func _read_file(path: String) -> String:
 	if not FileAccess.file_exists(path):
