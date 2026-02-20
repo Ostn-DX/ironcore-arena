@@ -23,13 +23,13 @@
 ## PHASE 4: SCENE FLOW ✅ COMPLETE
 - [x] 14. Main menu ✅ COMPLETE
 - [x] 15. Scene transitions ✅ COMPLETE
-- [ ] 16. Battle HUD ← NEXT TASK
+- [x] 16. Battle HUD ✅ COMPLETE
 
-## PHASE 5: POLISH
-- [ ] 17. Sound effects
+## PHASE 5: POLISH [NEXT]
+- [ ] 17. Sound effects ← NEXT TASK
 - [ ] 18. Visual effects
 - [ ] 19. Balance testing
 
 ---
-CURRENT TASK: #15 — Scene transitions
+CURRENT TASK: #17 — Sound effects
 STATUS: Starting now
