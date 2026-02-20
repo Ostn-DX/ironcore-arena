@@ -19,8 +19,8 @@
 - [x] Spawn markers ✅ GENERATED
 
 #### UI
-- [ ] Main menu styled background
-- [ ] Button styling
+- [x] Main menu styled background ✅ COMPLETE
+- [x] Button styling ✅ COMPLETE
 
 ### Completed
 - SpriteGenerator tool created
