@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://battle_screen"]
+[gd_scene load_steps=4 format=3 uid="uid://battle_screen"]
 
 [ext_resource type="Script" path="res://src/ui/battle_screen.gd" id="1_battle"]
 [ext_resource type="Script" path="res://src/managers/BattleManager.gd" id="2_battle_mgr"]
+[ext_resource type="Script" path="res://src/ui/battle_hud.gd" id="3_battle_hud"]
 
 [node name="BattleScreen" type="Control"]
 layout_mode = 3
@@ -16,44 +17,10 @@ script = ExtResource("1_battle")
 script = ExtResource("2_battle_mgr")
 
 [node name="BattleHUD" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 60.0
-grow_horizontal = 2
-
-[node name="Panel" type="Panel" parent="BattleHUD"]
-layout_mode = 1
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="Title" type="Label" parent="BattleHUD"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -100.0
-offset_right = 100.0
-offset_bottom = 30.0
-grow_horizontal = 2
-text = "IRONCORE ARENA"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Instructions" type="Label" parent="BattleHUD"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -250.0
-offset_top = -25.0
-offset_right = 250.0
-grow_horizontal = 2
-grow_vertical = 0
-text = "Drag your BLUE bot to move. Drag to RED enemy to focus fire."
-horizontal_alignment = 1
+script = ExtResource("3_battle_hud")
