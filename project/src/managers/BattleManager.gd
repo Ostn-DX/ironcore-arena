@@ -12,6 +12,7 @@ signal battle_state_changed(new_state: BattleState, old_state: BattleState)
 signal countdown_tick(seconds_left: int)
 signal battle_ended(result: BattleResult)
 signal rewards_calculated(rewards: Dictionary)
+signal battle_stats_updated(stats: WinLossManager.BattleStats)
 
 # Battle result data
 class BattleResult:
@@ -23,6 +24,9 @@ class BattleResult:
     var player_bots_lost: int = 0
     var enemy_bots_destroyed: int = 0
     var ticks_elapsed: int = 0
+    var end_condition: WinLossManager.EndCondition = WinLossManager.EndCondition.STALEMATE
+    var end_reason: String = ""
+    var battle_stats: Dictionary = {}  # Detailed stats from WinLossManager
     
     func is_par_met() -> bool:
         return completion_time <= par_time
@@ -41,6 +45,23 @@ class BattleResult:
             return "C"
         else:
             return "D"
+    
+    func get_condition_string() -> String:
+        match end_condition:
+            WinLossManager.EndCondition.ALL_ENEMIES_DESTROYED:
+                return "Victory - Enemies Eliminated"
+            WinLossManager.EndCondition.ALL_PLAYER_BOTS_DESTROYED:
+                return "Defeat - Squad Lost"
+            WinLossManager.EndCondition.PLAYER_SURRENDER:
+                return "Retreat"
+            WinLossManager.EndCondition.TIMEOUT_VICTORY:
+                return "Victory - Time Limit"
+            WinLossManager.EndCondition.TIMEOUT_DEFEAT:
+                return "Defeat - Time Limit"
+            WinLossManager.EndCondition.STALEMATE:
+                return "Stalemate"
+            _:
+                return end_reason if end_reason else "Unknown"
 
 # Current battle state
 var current_state: BattleState = BattleState.SETUP
@@ -60,12 +81,27 @@ var _battle_start_tick: int = 0
 # Visual scene reference (set by BattleScreen)
 var battle_screen: Control = null
 
+# Win/Loss tracking
+var win_loss_manager: WinLossManager = null
+
 
 func _ready() -> void:
+    # Create WinLossManager
+    win_loss_manager = WinLossManager.new()
+    win_loss_manager.name = "WinLossManager"
+    add_child(win_loss_manager)
+    
+    # Connect to WinLossManager
+    win_loss_manager.set_stat_update_callback(_on_stats_updated)
+    
     # Connect to SimulationManager signals
     if SimulationManager:
         SimulationManager.battle_ended.connect(_on_simulation_battle_ended)
         SimulationManager.tick_processed.connect(_on_tick_processed)
+
+
+func _on_stats_updated(stats: WinLossManager.BattleStats) -> void:
+    battle_stats_updated.emit(stats)
 
 
 func _process(delta: float) -> void:
@@ -162,7 +198,7 @@ func end_battle_early() -> void:
     if current_state in [BattleState.ACTIVE, BattleState.PAUSED]:
         if SimulationManager:
             SimulationManager.stop_battle()
-        _finalize_battle(false)
+        _finalize_battle(false, WinLossManager.EndCondition.PLAYER_SURRENDER, "Player retreated", SimulationManager.current_tick if SimulationManager else 0)
 
 
 func get_battle_time() -> float:
@@ -224,6 +260,10 @@ func _start_combat() -> void:
     if SimulationManager:
         SimulationManager.start_battle(sim_arena_data, player_loadouts, enemy_loadouts, false)
         _battle_start_tick = SimulationManager.current_tick
+        
+        # Start WinLoss tracking
+        if win_loss_manager:
+            win_loss_manager.start_tracking(_battle_start_tick, player_loadouts.size(), enemy_loadouts.size())
     
     print("BattleManager: Combat started!")
 
@@ -312,40 +352,59 @@ func _on_tick_processed(tick: int) -> void:
     if current_state != BattleState.ACTIVE:
         return
     
+    # Check victory conditions via WinLossManager
+    if win_loss_manager:
+        var condition: Dictionary = win_loss_manager.check_victory_condition()
+        if condition["ended"]:
+            _end_battle_from_condition(condition)
+            return
+    
     # Check for timeout
     var max_ticks: int = 10800  # 3 minutes
     if tick - _battle_start_tick >= max_ticks:
-        _resolve_stalemate()
+        _resolve_timeout()
+
+
+func _end_battle_from_condition(condition: Dictionary) -> void:
+    ## End battle based on WinLossManager condition
+    if SimulationManager:
+        SimulationManager.stop_battle()
+    
+    var condition_enum: WinLossManager.EndCondition = condition["condition"]
+    var victory: bool = condition["victory"]
+    
+    _finalize_battle(victory, condition_enum, condition["reason"])
 
 
 func _on_simulation_battle_ended(result: String, tick_count: int) -> void:
     ## Called when SimulationManager detects victory/defeat
     var victory: bool = (result == "PLAYER_WIN")
-    _finalize_battle(victory, tick_count)
+    var condition: WinLossManager.EndCondition = WinLossManager.EndCondition.ALL_ENEMIES_DESTROYED if victory else WinLossManager.EndCondition.ALL_PLAYER_BOTS_DESTROYED
+    var reason: String = "All enemies destroyed" if victory else "All player bots destroyed"
+    
+    _finalize_battle(victory, condition, reason, tick_count)
 
 
-func _resolve_stalemate() -> void:
+func _resolve_timeout() -> void:
     ## Resolve battle when time runs out
     if SimulationManager:
         SimulationManager.stop_battle()
     
-    # Determine winner by remaining HP
-    var player_hp: float = 0.0
-    var enemy_hp: float = 0.0
-    
-    for bot_id in SimulationManager.bots:
-        var bot = SimulationManager.bots[bot_id]
-        if bot.team == 0:
-            player_hp += bot.hp
-        else:
-            enemy_hp += bot.hp
-    
-    _finalize_battle(player_hp > enemy_hp, SimulationManager.current_tick)
+    if win_loss_manager:
+        var resolution: Dictionary = win_loss_manager.resolve_timeout()
+        _finalize_battle(resolution["victory"], resolution["condition"], resolution["reason"])
+    else:
+        # Fallback if no WinLossManager
+        _finalize_battle(false, WinLossManager.EndCondition.STALEMATE, "Time limit")
 
 
-func _finalize_battle(victory: bool, final_tick: int = 0) -> void:
+func _finalize_battle(victory: bool, condition: WinLossManager.EndCondition, reason: String, final_tick: int = 0) -> void:
     ## Finalize battle and calculate results
     _change_state(BattleState.ENDED)
+    
+    # Stop WinLoss tracking
+    if win_loss_manager:
+        win_loss_manager.stop_tracking(final_tick)
     
     # Create result object
     battle_result = BattleResult.new()
@@ -355,15 +414,23 @@ func _finalize_battle(victory: bool, final_tick: int = 0) -> void:
     battle_result.ticks_elapsed = final_tick - _battle_start_tick
     battle_result.completion_time = battle_result.ticks_elapsed / 60.0
     battle_result.par_time = current_arena_data.get("par_time", 120)
+    battle_result.end_condition = condition
+    battle_result.end_reason = reason
     
-    # Count bots
-    if SimulationManager:
-        for bot_id in SimulationManager.bots:
-            var bot = SimulationManager.bots[bot_id]
-            if bot.team == 0 and not bot.is_alive:
-                battle_result.player_bots_lost += 1
-            elif bot.team == 1 and not bot.is_alive:
-                battle_result.enemy_bots_destroyed += 1
+    # Get stats from WinLossManager
+    if win_loss_manager:
+        battle_result.battle_stats = win_loss_manager.get_stats_dictionary()
+        battle_result.player_bots_lost = win_loss_manager.current_stats.player_bots_destroyed if win_loss_manager.current_stats else 0
+        battle_result.enemy_bots_destroyed = win_loss_manager.current_stats.enemy_bots_destroyed if win_loss_manager.current_stats else 0
+    else:
+        # Fallback counting
+        if SimulationManager:
+            for bot_id in SimulationManager.bots:
+                var bot = SimulationManager.bots[bot_id]
+                if bot.team == 0 and not bot.is_alive:
+                    battle_result.player_bots_lost += 1
+                elif bot.team == 1 and not bot.is_alive:
+                    battle_result.enemy_bots_destroyed += 1
     
     # Calculate rewards
     var rewards: Dictionary = _calculate_rewards()
@@ -373,8 +440,8 @@ func _finalize_battle(victory: bool, final_tick: int = 0) -> void:
         GameState.add_credits(rewards["credits"])
         GameState.complete_arena(current_arena_id)
     
-    print("BattleManager: Battle ended! Victory: %s, Grade: %s, Credits: %d" % [
-        victory, battle_result.get_grade(), rewards["credits"]
+    print("BattleManager: Battle ended! Victory: %s, Condition: %s, Grade: %s, Credits: %d" % [
+        victory, reason, battle_result.get_grade(), rewards["credits"]
     ])
     
     battle_ended.emit(battle_result)
