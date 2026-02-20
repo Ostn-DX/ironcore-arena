@@ -73,5 +73,69 @@
     "theme": "tech_dark",
     "music": "intense",
     "description": "Death trap with mines and snipers"
+  },
+  {
+    "id": "arena_the_gauntlet",
+    "name": "The Gauntlet",
+    "tier": 2,
+    "weight_cap": 100,
+    "entry_fee": 200,
+    "reward_credits": 450,
+    "time_limit": 420,
+    "size": {"width": 1200, "height": 500},
+    "obstacles": [
+      {"type": "wall", "x": 300, "y": 0, "width": 30, "height": 200},
+      {"type": "wall", "x": 300, "y": 300, "width": 30, "height": 200},
+      {"type": "wall", "x": 600, "y": 0, "width": 30, "height": 150},
+      {"type": "wall", "x": 600, "y": 350, "width": 30, "height": 150},
+      {"type": "wall", "x": 900, "y": 0, "width": 30, "height": 200},
+      {"type": "wall", "x": 900, "y": 300, "width": 30, "height": 200},
+      {"type": "cover", "x": 150, "y": 225, "width": 60, "height": 30},
+      {"type": "cover", "x": 450, "y": 150, "width": 60, "height": 30},
+      {"type": "cover", "x": 750, "y": 350, "width": 60, "height": 30}
+    ],
+    "spawn_points_player": [{"x": 80, "y": 250}],
+    "spawn_points_enemy": [{"x": 1100, "y": 150}, {"x": 1100, "y": 250}, {"x": 1100, "y": 350}],
+    "waves": [
+      {"spawn_tick": 0, "enemies": ["enemy_hunter_tank", "enemy_scrapper_fighter"]},
+      {"spawn_tick": 300, "enemies": ["enemy_salvager_scout", "enemy_raider_fighter"]},
+      {"spawn_tick": 900, "enemies": ["enemy_executioner_sniper"]}
+    ],
+    "victory_condition": "eliminate",
+    "theme": "industrial_blue",
+    "music": "gauntlet",
+    "description": "Narrow chokepoints and wave assaults"
+  },
+  {
+    "id": "arena_champions_pit",
+    "name": "Champion's Pit",
+    "tier": 3,
+    "weight_cap": 120,
+    "entry_fee": 500,
+    "reward_credits": 1000,
+    "time_limit": 600,
+    "size": {"width": 900, "height": 900},
+    "obstacles": [
+      {"type": "hazard_mine", "x": 300, "y": 300, "width": 16, "height": 16, "damage": 50, "trigger_radius": 35},
+      {"type": "hazard_mine", "x": 600, "y": 300, "width": 16, "height": 16, "damage": 50, "trigger_radius": 35},
+      {"type": "hazard_mine", "x": 300, "y": 600, "width": 16, "height": 16, "damage": 50, "trigger_radius": 35},
+      {"type": "hazard_mine", "x": 600, "y": 600, "width": 16, "height": 16, "damage": 50, "trigger_radius": 35},
+      {"type": "wall", "x": 400, "y": 400, "width": 100, "height": 100},
+      {"type": "cover", "x": 150, "y": 150, "width": 80, "height": 30},
+      {"type": "cover", "x": 670, "y": 150, "width": 80, "height": 30},
+      {"type": "cover", "x": 150, "y": 720, "width": 80, "height": 30},
+      {"type": "cover", "x": 670, "y": 720, "width": 80, "height": 30}
+    ],
+    "spawn_points_player": [{"x": 100, "y": 450}, {"x": 200, "y": 450}],
+    "spawn_points_enemy": [{"x": 800, "y": 200}, {"x": 800, "y": 450}, {"x": 800, "y": 700}, {"x": 750, "y": 325}, {"x": 750, "y": 575}],
+    "waves": [
+      {"spawn_tick": 0, "enemies": ["enemy_hunter_tank", "enemy_hunter_tank", "enemy_scrapper_fighter"]},
+      {"spawn_tick": 400, "enemies": ["enemy_executioner_sniper", "enemy_raider_fighter"]},
+      {"spawn_tick": 1200, "enemies": ["enemy_champion_boss"]}
+    ],
+    "victory_condition": "eliminate",
+    "theme": "boss_arena",
+    "music": "boss",
+    "description": "Final test against the Champion"
   }
 ]
