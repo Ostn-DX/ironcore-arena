@@ -2,8 +2,11 @@
   {
     "id": "arena_training",
     "name": "Training Pit",
+    "tier": 1,
     "weight_cap": 50,
     "entry_fee": 0,
+    "reward_credits": 50,
+    "time_limit": 300,
     "size": {"width": 600, "height": 400},
     "obstacles": [],
     "spawn_points_player": [{"x": 100, "y": 200}],
@@ -16,8 +19,11 @@
   {
     "id": "arena_scrapyard",
     "name": "Scrapyard Ring",
+    "tier": 1,
     "weight_cap": 70,
     "entry_fee": 50,
+    "reward_credits": 150,
+    "time_limit": 300,
     "size": {"width": 800, "height": 600},
     "obstacles": [
       {"type": "cover", "x": 350, "y": 250, "width": 100, "height": 40},
@@ -35,8 +41,11 @@
   {
     "id": "arena_minefield",
     "name": "The Minefield",
+    "tier": 2,
     "weight_cap": 90,
     "entry_fee": 100,
+    "reward_credits": 300,
+    "time_limit": 360,
     "size": {"width": 1000, "height": 700},
     "obstacles": [
       {"type": "hazard_mine", "x": 400, "y": 300, "width": 16, "height": 16, "damage": 40, "trigger_radius": 30},
