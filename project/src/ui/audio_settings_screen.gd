@@ -48,7 +48,7 @@ func _setup_ui() -> void:
 	var container: VBoxContainer = VBoxContainer.new()
 	container.position = Vector2(340, 150)
 	container.size = Vector2(600, 400)
-	container.theme_override_constants/separation = 30
+	container.add_theme_constant_override("separation", 30)
 	add_child(container)
 	
 	# Master volume

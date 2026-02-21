@@ -97,7 +97,7 @@ func _setup_ui() -> void:
 	team_status_container.position = Vector2(10, 5)
 	team_status_container.size = Vector2(1240, 40)
 	team_status_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	team_status_container.theme_override_constants/separation = 100
+	team_status_container.add_theme_constant_override("separation", 100)
 	add_child(team_status_container)
 	
 	# Player team status

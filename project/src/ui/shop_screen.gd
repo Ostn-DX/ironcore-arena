@@ -135,7 +135,7 @@ func _setup_ui() -> void:
     add_child(scroll)
     
     component_list = VBoxContainer.new()
-    component_list.theme_override_constants/separation = 5
+    component_list.add_theme_constant_override("separation", 5)
     scroll.add_child(component_list)
     
     # Component details (right side)

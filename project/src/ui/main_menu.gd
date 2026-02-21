@@ -107,7 +107,7 @@ func _setup_ui() -> void:
 	button_container.set_anchors_preset(Control.PRESET_CENTER)
 	button_container.position = Vector2(540, 320)
 	button_container.size = Vector2(200, 300)
-	button_container.theme_override_constants/separation = 10
+	button_container.add_theme_constant_override("separation", 10)
 	add_child(button_container)
 	
 	# Continue button (only if save exists)

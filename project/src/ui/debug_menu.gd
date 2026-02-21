@@ -35,7 +35,7 @@ func _setup_ui() -> void:
 	var container: VBoxContainer = VBoxContainer.new()
 	container.position = Vector2(440, 100)
 	container.size = Vector2(400, 500)
-	container.theme_override_constants/separation = 10
+	container.add_theme_constant_override("separation", 10)
 	add_child(container)
 	
 	# Section: Arena Select

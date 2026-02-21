@@ -68,7 +68,7 @@ func _setup_ui() -> void:
 	add_child(scroll)
 	
 	arena_container = VBoxContainer.new()
-	arena_container.theme_override_constants/separation = 10
+	arena_container.add_theme_constant_override("separation", 10)
 	scroll.add_child(arena_container)
 	
 	# Info panel (right side)

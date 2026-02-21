@@ -219,7 +219,7 @@ func _setup_menu_buttons() -> void:
 	var container: VBoxContainer = VBoxContainer.new()
 	container.position = Vector2(540, 220)
 	container.size = Vector2(200, 400)
-	container.theme_override_constants/separation = 16
+	container.add_theme_constant_override("separation", 16)
 	add_child(container)
 	
 	# Continue button (if save exists)

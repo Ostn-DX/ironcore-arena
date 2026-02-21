@@ -208,7 +208,7 @@ func _create_stats_section() -> void:
 	stats_container = VBoxContainer.new()
 	stats_container.position = Vector2(380, 290)
 	stats_container.size = Vector2(520, 220)
-	stats_container.theme_override_constants/separation = 6
+	stats_container.add_theme_constant_override("separation", 6)
 	add_child(stats_container)
 	
 	# Section title
@@ -351,7 +351,7 @@ func _create_buttons() -> void:
 	buttons_container.position = Vector2(340, 600)
 	buttons_container.size = Vector2(600, 60)
 	buttons_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	buttons_container.theme_override_constants/separation = 15
+	buttons_container.add_theme_constant_override("separation", 15)
 	add_child(buttons_container)
 	
 	var is_victory: bool = _current_result.get("victory", false)
