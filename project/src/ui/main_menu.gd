@@ -194,8 +194,7 @@ func _create_menu_button(text: String, callback: Callable, is_primary: bool = fa
 
 func _on_button_hover() -> void:
 	## Play hover sound
-	if AudioManager:
-		AudioManager.play_ui_hover()
+	AudioManager.play_ui_hover()
 
 
 func _update_button_visibility() -> void:
@@ -220,9 +219,6 @@ func _has_save_file() -> bool:
 
 func _get_save_progress_summary() -> String:
 	## Get a brief summary of save progress
-	if not GameState:
-		return "Unknown"
-	
 	var tier: int = GameState.current_tier
 	var credits: int = GameState.credits
 	var completed: int = GameState.completed_arenas.size()
@@ -245,8 +241,7 @@ func _animate_title() -> void:
 func _on_continue() -> void:
 	## Continue existing campaign
 	print("MainMenu: Continue campaign")
-	if GameState:
-		GameState.set_game_mode("campaign")
+	GameState.set_game_mode("campaign")
 	continue_pressed.emit()
 
 
@@ -258,12 +253,10 @@ func _on_new_campaign() -> void:
 	if _has_save_file():
 		# In a real implementation, show a confirmation dialog
 		print("MainMenu: Warning - overwriting existing save")
-		if GameState:
-			GameState.delete_save()
-			GameState.set_game_mode("campaign")
+		GameState.delete_save()
+		GameState.set_game_mode("campaign")
 	else:
-		if GameState:
-			GameState.set_game_mode("campaign")
+		GameState.set_game_mode("campaign")
 	
 	start_campaign_pressed.emit()
 
@@ -271,8 +264,7 @@ func _on_new_campaign() -> void:
 func _on_arcade() -> void:
 	## Start arcade mode
 	print("MainMenu: Arcade mode")
-	if GameState:
-		GameState.set_game_mode("arcade")
+	GameState.set_game_mode("arcade")
 	start_arcade_pressed.emit()
 
 
