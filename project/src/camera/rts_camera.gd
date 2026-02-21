@@ -62,11 +62,31 @@ func _process(delta: float) -> void:
 	; Smooth zoom interpolation
 	zoom = zoom.lerp(target_zoom, zoom_speed * delta)
 	
+	; WASD keyboard movement (continuous)
+	_handle_keyboard_movement(delta)
+	
 	; Smooth position interpolation
 	position = position.lerp(target_position, pan_speed * delta)
 	
 	; Clamp to bounds
 	_clamp_to_bounds()
+
+func _handle_keyboard_movement(delta: float) -> void:
+	## WASD and Arrow key camera movement
+	var move_dir: Vector2 = Vector2.ZERO
+	
+	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+		move_dir.y -= 1
+	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+		move_dir.y += 1
+	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+		move_dir.x -= 1
+	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+		move_dir.x += 1
+	
+	if move_dir != Vector2.ZERO:
+		move_dir = move_dir.normalized()
+		target_position += move_dir * edge_scroll_speed * delta / zoom.x
 
 func _input(event: InputEvent) -> void:
 	; Mouse wheel zoom

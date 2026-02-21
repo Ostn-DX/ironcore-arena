@@ -1,0 +1,172 @@
+[
+  {
+    "id": "mission_16_artillery_strike",
+    "name": "Artillery Strike",
+    "mission_number": 16,
+    "act": "IV: Commander",
+    "tier": 3,
+    "weight_cap": 350,
+    "entry_fee": 350,
+    "reward_credits": 900,
+    "time_limit": 720,
+    "size": {"width": 2000, "height": 1200},
+    "theme": "desert",
+    "new_enemy": "artillery",
+    "enemy_types": 11,
+    "objective": "priority_targets",
+    "priority_targets": ["artillery"],
+    "objective_count": 4,
+    "player_bots": 5,
+    "enemies": [
+      {"type": "artillery", "count": 4, "positions": [[200,200], [1800,200], [200,1000], [1800,1000]], "spawn_delay": 0},
+      {"type": "scout", "count": 6, "spawn_delay": 60},
+      {"type": "tank", "count": 2, "spawn_delay": 180}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 500, "y": 600, "width": 100, "height": 40},
+      {"type": "cover", "x": 1000, "y": 400, "width": 100, "height": 40},
+      {"type": "cover", "x": 1000, "y": 800, "width": 100, "height": 40},
+      {"type": "cover", "x": 1500, "y": 600, "width": 100, "height": 40}
+    ],
+    "special": "artillery_fire",
+    "description": "Artillery at map corners fires constantly. Destroy them or die. Fast scouts recommended."
+  },
+  {
+    "id": "mission_17_juggernaut",
+    "name": "Juggernaut",
+    "mission_number": 17,
+    "act": "IV: Commander",
+    "tier": 3,
+    "weight_cap": 400,
+    "entry_fee": 400,
+    "reward_credits": 1000,
+    "time_limit": 900,
+    "size": {"width": 1800, "height": 1400},
+    "theme": "factory",
+    "new_enemy": "juggernaut",
+    "enemy_types": 12,
+    "objective": "elimination",
+    "objective_count": 11,
+    "player_bots": 6,
+    "enemies": [
+      {"type": "juggernaut", "count": 1, "spawn_delay": 0},
+      {"type": "heavy_gunner", "count": 2, "spawn_delay": 120},
+      {"type": "support", "count": 2, "spawn_delay": 240},
+      {"type": "fighter", "count": 6, "spawn_delay": 300}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 400, "y": 400, "width": 100, "height": 40},
+      {"type": "cover", "x": 1400, "y": 400, "width": 100, "height": 40},
+      {"type": "cover", "x": 400, "y": 1000, "width": 100, "height": 40},
+      {"type": "cover", "x": 1400, "y": 1000, "width": 100, "height": 40},
+      {"type": "wall", "x": 900, "y": 600, "width": 40, "height": 200}
+    ],
+    "description": "Mini-boss Juggernaut with support. Kill adds first or focus boss?"
+  },
+  {
+    "id": "mission_18_siege_warfare",
+    "name": "Siege Warfare",
+    "mission_number": 18,
+    "act": "IV: Commander",
+    "tier": 3,
+    "weight_cap": 450,
+    "entry_fee": 450,
+    "reward_credits": 1100,
+    "time_limit": 1200,
+    "size": {"width": 2200, "height": 1500},
+    "theme": "urban",
+    "new_enemy": null,
+    "enemy_types": 12,
+    "objective": "destruction",
+    "objective_count": 3,
+    "destroy_targets": [
+      {"x": 400, "y": 400, "hp": 1000, "type": "command_center"},
+      {"x": 1100, "y": 750, "hp": 1000, "type": "command_center"},
+      {"x": 1800, "y": 1100, "hp": 1000, "type": "command_center"}
+    ],
+    "player_bots": 6,
+    "enemies": [
+      {"type": "tank", "count": 3, "spawn_delay": 0},
+      {"type": "heavy_gunner", "count": 3, "spawn_delay": 180},
+      {"type": "artillery", "count": 2, "spawn_delay": 360},
+      {"type": "scout", "count": 8, "spawn_delay": 60}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 600, "y": 400, "width": 80, "height": 30},
+      {"type": "cover", "x": 1300, "y": 750, "width": 80, "height": 30},
+      {"type": "cover", "x": 1600, "y": 1100, "width": 80, "height": 30}
+    ],
+    "description": "Destroy 3 command centers in any order. Split forces or sequential push?"
+  },
+  {
+    "id": "mission_19_nightmare",
+    "name": "Nightmare",
+    "mission_number": 19,
+    "act": "IV: Commander",
+    "tier": 3,
+    "weight_cap": 500,
+    "entry_fee": 500,
+    "reward_credits": 1200,
+    "time_limit": 1200,
+    "size": {"width": 2000, "height": 1600},
+    "theme": "void",
+    "new_enemy": null,
+    "enemy_types": 12,
+    "objective": "survival",
+    "objective_count": 600,
+    "player_bots": 7,
+    "waves": [
+      {"tick": 0, "enemies": [{"scout": 5}, {"fighter": 3}]},
+      {"tick": 300, "enemies": [{"tank": 2}, {"sniper": 2}, {"scout": 4}]},
+      {"tick": 600, "enemies": [{"raider": 4}, {"grenadier": 2}, {"fighter": 3}]},
+      {"tick": 900, "enemies": [{"assault": 4}, {"heavy_gunner": 2}, {"tank": 1}]},
+      {"tick": 1200, "enemies": [{"stealth": 3}, {"support": 2}, {"sniper": 2}]},
+      {"tick": 1500, "enemies": [{"artillery": 2}, {"juggernaut": 1}, {"tank": 2}]},
+      {"tick": 1800, "enemies": [{"all": 15}]}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 500, "y": 500, "width": 100, "height": 40},
+      {"type": "cover", "x": 1500, "y": 500, "width": 100, "height": 40},
+      {"type": "cover", "x": 500, "y": 1100, "width": 100, "height": 40},
+      {"type": "cover", "x": 1500, "y": 1100, "width": 100, "height": 40}
+    ],
+    "description": "Survive 10 minutes. All 12 enemy types attack. The ultimate test before Boss 2."
+  },
+  {
+    "id": "mission_20_the_stalker",
+    "name": "THE STALKER",
+    "mission_number": 20,
+    "act": "V: Master - BOSS",
+    "tier": 3,
+    "weight_cap": 500,
+    "entry_fee": 600,
+    "reward_credits": 1500,
+    "time_limit": 900,
+    "size": {"width": 1800, "height": 1800},
+    "theme": "cyber_arena",
+    "new_enemy": "BOSS_2",
+    "enemy_types": 12,
+    "objective": "boss",
+    "boss": {
+      "name": "THE STALKER",
+      "type": "stealth_assassin",
+      "hp": 1500,
+      "stealthed": true,
+      "visible_when_attacking": 2.0,
+      "one_shot_light": true,
+      "phases": 1
+    },
+    "player_bots": 7,
+    "enemies": [
+      {"type": "boss_stalker", "count": 1, "spawn_delay": 0}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 300, "y": 300, "width": 60, "height": 30},
+      {"type": "cover", "x": 1500, "y": 300, "width": 60, "height": 30},
+      {"type": "cover", "x": 300, "y": 1500, "width": 60, "height": 30},
+      {"type": "cover", "x": 1500, "y": 1500, "width": 60, "height": 30},
+      {"type": "cover", "x": 900, "y": 900, "width": 80, "height": 30}
+    ],
+    "description": "BOSS 2: THE STALKER is invisible until it attacks. One-shots light bots. Use tanks or detection."
+  }
+]

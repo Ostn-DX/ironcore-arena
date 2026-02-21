@@ -16,7 +16,7 @@ var theme: ArenaTheme = ArenaTheme.ROXTAN_PARK
 @onready var walls: Node2D = $Walls
 @onready var floor_details: Node2D = $FloorDetails
 @onready var obstacles: Node2D = $Obstacles
-@onready var camera: Camera2D = $Camera2D
+@onready var camera: Camera2D = $RTSCamera
 @onready var spawn_points: Node2D = $SpawnPoints
 
 # Spawn markers (set by arena data or use defaults)
@@ -492,25 +492,26 @@ func _create_obstacle(data: Dictionary) -> void:
 # ============================================================================
 
 func _setup_camera() -> void:
-	## Setup the battle camera
+	## Setup the RTS camera with arena bounds
 	if not camera:
 		camera = Camera2D.new()
-		camera.name = "Camera2D"
+		camera.name = "RTSCamera"
 		add_child(camera)
 	
-	camera.position = arena_size / 2
-	camera.zoom = Vector2.ONE * camera_zoom_default
-	camera.enabled = true
-	
-	# Set limits based on arena size
-	camera.limit_left = -100
-	camera.limit_top = -100
-	camera.limit_right = int(arena_size.x + 100)
-	camera.limit_bottom = int(arena_size.y + 100)
-	
-	# Smooth camera settings
-	camera.position_smoothing_enabled = true
-	camera.position_smoothing_speed = camera_smooth_speed
+	; Setup RTS camera bounds
+	if camera.has_method("setup_arena_bounds"):
+		camera.setup_arena_bounds(Rect2(Vector2.ZERO, arena_size))
+	else:
+		; Fallback for regular Camera2D
+		camera.position = arena_size / 2
+		camera.zoom = Vector2.ONE * camera_zoom_default
+		camera.enabled = true
+		camera.limit_left = -100
+		camera.limit_top = -100
+		camera.limit_right = int(arena_size.x + 100)
+		camera.limit_bottom = int(arena_size.y + 100)
+		camera.position_smoothing_enabled = true
+		camera.position_smoothing_speed = camera_smooth_speed
 
 func _update_camera(delta: float) -> void:
 	## Update camera position and zoom

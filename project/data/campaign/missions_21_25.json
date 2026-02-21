@@ -1,0 +1,186 @@
+[
+  {
+    "id": "mission_21_beachhead",
+    "name": "Beachhead",
+    "mission_number": 21,
+    "act": "VI: Warlord",
+    "tier": 4,
+    "weight_cap": 600,
+    "entry_fee": 700,
+    "reward_credits": 1800,
+    "time_limit": 1200,
+    "size": {"width": 2500, "height": 1800},
+    "theme": "beach",
+    "new_enemy": null,
+    "enemy_types": 12,
+    "objective": "capture_points",
+    "objective_count": 3,
+    "capture_points": [
+      {"x": 625, "y": 900, "radius": 100},
+      {"x": 1250, "y": 900, "radius": 100},
+      {"x": 1875, "y": 900, "radius": 100}
+    ],
+    "player_bots": 8,
+    "enemies": [
+      {"type": "tank", "count": 4, "spawn_delay": 0},
+      {"type": "heavy_gunner", "count": 3, "spawn_delay": 120},
+      {"type": "artillery", "count": 2, "spawn_delay": 240},
+      {"type": "scout", "count": 10, "spawn_delay": 60},
+      {"type": "support", "count": 2, "spawn_delay": 300}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 500, "y": 800, "width": 100, "height": 40},
+      {"type": "cover", "x": 1200, "y": 800, "width": 100, "height": 40},
+      {"type": "cover", "x": 1900, "y": 800, "width": 100, "height": 40}
+    ],
+    "description": "Capture 3 beachheads simultaneously. Split forces or take sequentially?"
+  },
+  {
+    "id": "mission_22_convoy",
+    "name": "Convoy",
+    "mission_number": 22,
+    "act": "VI: Warlord",
+    "tier": 4,
+    "weight_cap": 650,
+    "entry_fee": 750,
+    "reward_credits": 2000,
+    "time_limit": 1500,
+    "size": {"width": 3000, "height": 1500},
+    "theme": "canyon",
+    "new_enemy": null,
+    "enemy_types": 12,
+    "objective": "escort",
+    "objective_count": 3,
+    "escort_targets": [
+      {"x": 200, "y": 500, "destination": [2800, 500], "hp": 300, "speed": 2.0},
+      {"x": 200, "y": 750, "destination": [2800, 750], "hp": 300, "speed": 2.0},
+      {"x": 200, "y": 1000, "destination": [2800, 1000], "hp": 300, "speed": 2.0}
+    ],
+    "player_bots": 8,
+    "enemies": [
+      {"type": "raider", "count": 6, "spawn_delay": 0},
+      {"type": "assault", "count": 4, "spawn_delay": 180},
+      {"type": "grenadier", "count": 3, "spawn_delay": 360},
+      {"type": "stealth", "count": 4, "spawn_delay": 240},
+      {"type": "sniper", "count": 3, "spawn_delay": 480}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 800, "y": 400, "width": 80, "height": 30},
+      {"type": "cover", "x": 1500, "y": 750, "width": 80, "height": 30},
+      {"type": "cover", "x": 2200, "y": 1100, "width": 80, "height": 30}
+    ],
+    "description": "Escort 3 civilian bots across the map. Ambushes at every turn."
+  },
+  {
+    "id": "mission_23_scorched_earth",
+    "name": "Scorched Earth",
+    "mission_number": 23,
+    "act": "VI: Warlord",
+    "tier": 4,
+    "weight_cap": 700,
+    "entry_fee": 800,
+    "reward_credits": 2200,
+    "time_limit": 1800,
+    "size": {"width": 2800, "height": 2000},
+    "theme": "wasteland",
+    "new_enemy": null,
+    "enemy_types": 12,
+    "objective": "destruction",
+    "objective_count": 5,
+    "destroy_targets": [
+      {"x": 500, "y": 500, "hp": 1500, "type": "factory"},
+      {"x": 1400, "y": 400, "hp": 1500, "type": "factory"},
+      {"x": 2300, "y": 500, "hp": 1500, "type": "factory"},
+      {"x": 800, "y": 1500, "hp": 1500, "type": "factory"},
+      {"x": 2000, "y": 1500, "hp": 1500, "type": "factory"}
+    ],
+    "player_bots": 9,
+    "enemies": [
+      {"type": "juggernaut", "count": 2, "spawn_delay": 0},
+      {"type": "heavy_gunner", "count": 4, "spawn_delay": 180},
+      {"type": "tank", "count": 4, "spawn_delay": 120},
+      {"type": "artillery", "count": 3, "spawn_delay": 300},
+      {"type": "support", "count": 3, "spawn_delay": 240}
+    ],
+    "obstacles": [
+      {"type": "hazard_mine", "x": 1000, "y": 1000, "damage": 50},
+      {"type": "hazard_mine", "x": 1800, "y": 1000, "damage": 50},
+      {"type": "cover", "x": 700, "y": 700, "width": 100, "height": 40},
+      {"type": "cover", "x": 2100, "y": 700, "width": 100, "height": 40},
+      {"type": "cover", "x": 700, "y": 1300, "width": 100, "height": 40},
+      {"type": "cover", "x": 2100, "y": 1300, "width": 100, "height": 40}
+    ],
+    "description": "Destroy 5 factories spread across the map. Strike teams or full assault?"
+  },
+  {
+    "id": "mission_24_king_of_the_hill",
+    "name": "King of the Hill",
+    "mission_number": 24,
+    "act": "VI: Warlord",
+    "tier": 4,
+    "weight_cap": 750,
+    "entry_fee": 850,
+    "reward_credits": 2400,
+    "time_limit": 1800,
+    "size": {"width": 2500, "height": 2200},
+    "theme": "plateau",
+    "new_enemy": null,
+    "enemy_types": 12,
+    "objective": "hold_zone",
+    "objective_count": 300,
+    "hold_zone": {"x": 1250, "y": 1100, "radius": 200},
+    "player_bots": 9,
+    "waves": [
+      {"tick": 0, "enemies": [{"scout": 8}, {"fighter": 4}]},
+      {"tick": 400, "enemies": [{"tank": 3}, {"heavy_gunner": 3}, {"assault": 4}]},
+      {"tick": 800, "enemies": [{"raider": 5}, {"grenadier": 3}, {"sniper": 3}]},
+      {"tick": 1200, "enemies": [{"stealth": 4}, {"support": 2}, {"juggernaut": 1}]},
+      {"tick": 1600, "enemies": [{"artillery": 3}, {"all": 10}]}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 900, "y": 900, "width": 100, "height": 40},
+      {"type": "cover", "x": 1600, "y": 900, "width": 100, "height": 40},
+      {"type": "cover", "x": 900, "y": 1300, "width": 100, "height": 40},
+      {"type": "cover", "x": 1600, "y": 1300, "width": 100, "height": 40}
+    ],
+    "description": "Hold the center for 5 minutes against constant waves. Fortify or mobile defense?"
+  },
+  {
+    "id": "mission_25_the_devourer",
+    "name": "THE DEVOURER",
+    "mission_number": 25,
+    "act": "VII: Legend - BOSS",
+    "tier": 4,
+    "weight_cap": 800,
+    "entry_fee": 1000,
+    "reward_credits": 3000,
+    "time_limit": 1200,
+    "size": {"width": 2200, "height": 2000},
+    "theme": "bio_lab",
+    "new_enemy": "BOSS_3",
+    "enemy_types": 12,
+    "objective": "boss",
+    "boss": {
+      "name": "THE DEVOURER",
+      "type": "consumption_beast",
+      "hp": 3000,
+      "phases": 5,
+      "consumes_bots": true,
+      "heals_on_consume": 500,
+      "phase_thresholds": [2400, 1800, 1200, 600],
+      "speed_increases_per_phase": 0.2
+    },
+    "player_bots": 10,
+    "enemies": [
+      {"type": "boss_devourer", "count": 1, "spawn_delay": 0}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 400, "y": 400, "width": 80, "height": 30},
+      {"type": "cover", "x": 1800, "y": 400, "width": 80, "height": 30},
+      {"type": "cover", "x": 400, "y": 1600, "width": 80, "height": 30},
+      {"type": "cover", "x": 1800, "y": 1600, "width": 80, "height": 30},
+      {"type": "cover", "x": 1100, "y": 1000, "width": 100, "height": 40}
+    ],
+    "description": "BOSS 3: THE DEVOURER consumes your bots to heal. 5 phases, gets faster each phase. DPS race!"
+  }
+]

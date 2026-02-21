@@ -1,0 +1,168 @@
+[
+  {
+    "id": "mission_11_gauntlet_run",
+    "name": "Gauntlet Run",
+    "mission_number": 11,
+    "act": "II: Veteran",
+    "tier": 2,
+    "weight_cap": 180,
+    "entry_fee": 150,
+    "reward_credits": 400,
+    "time_limit": 720,
+    "size": {"width": 1400, "height": 800},
+    "theme": "industrial",
+    "new_enemy": null,
+    "enemy_types": 7,
+    "objective": "wave_survival",
+    "objective_count": 20,
+    "player_bots": 4,
+    "waves": [
+      {"tick": 0, "enemies": [{"scout": 3}]},
+      {"tick": 300, "enemies": [{"fighter": 2}, {"scout": 2}]},
+      {"tick": 600, "enemies": [{"tank": 1}, {"fighter": 2}]},
+      {"tick": 900, "enemies": [{"sniper": 2}, {"scout": 3}]},
+      {"tick": 1200, "enemies": [{"raider": 3}, {"fighter": 2}]},
+      {"tick": 1500, "enemies": [{"grenadier": 2}, {"tank": 1}]},
+      {"tick": 1800, "enemies": [{"assault": 3}, {"scout": 2}]},
+      {"tick": 2100, "enemies": [{"all": 7}]}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 350, "y": 200, "width": 100, "height": 40},
+      {"type": "cover", "x": 700, "y": 400, "width": 100, "height": 40},
+      {"type": "cover", "x": 1050, "y": 600, "width": 100, "height": 40}
+    ],
+    "description": "Wave survival. All 7 enemy types. Survive 12 waves."
+  },
+  {
+    "id": "mission_12_suppression",
+    "name": "Suppression",
+    "mission_number": 12,
+    "act": "II: Veteran",
+    "tier": 2,
+    "weight_cap": 200,
+    "entry_fee": 175,
+    "reward_credits": 450,
+    "time_limit": 600,
+    "size": {"width": 1500, "height": 900},
+    "theme": "urban",
+    "new_enemy": "heavy_gunner",
+    "enemy_types": 8,
+    "objective": "defend_point",
+    "objective_count": 300,
+    "player_bots": 4,
+    "defend_targets": [{"x": 750, "y": 450, "hp": 500}],
+    "enemies": [
+      {"type": "heavy_gunner", "count": 3, "spawn_delay": 0},
+      {"type": "fighter", "count": 4, "spawn_delay": 90},
+      {"type": "scout", "count": 4, "spawn_delay": 180},
+      {"type": "tank", "count": 2, "spawn_delay": 240}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 400, "y": 300, "width": 100, "height": 40},
+      {"type": "cover", "x": 1100, "y": 300, "width": 100, "height": 40},
+      {"type": "cover", "x": 400, "y": 600, "width": 100, "height": 40},
+      {"type": "cover", "x": 1100, "y": 600, "width": 100, "height": 40}
+    ],
+    "description": "Heavy Gunners suppress your position. Defend the command center."
+  },
+  {
+    "id": "mission_13_ghost_division",
+    "name": "Ghost Division",
+    "mission_number": 13,
+    "act": "II: Veteran",
+    "tier": 2,
+    "weight_cap": 220,
+    "entry_fee": 200,
+    "reward_credits": 500,
+    "time_limit": 540,
+    "size": {"width": 1300, "height": 1000},
+    "theme": "frozen",
+    "new_enemy": "stealth",
+    "enemy_types": 9,
+    "objective": "elimination",
+    "objective_count": 12,
+    "player_bots": 5,
+    "enemies": [
+      {"type": "stealth", "count": 4, "spawn_delay": 0},
+      {"type": "sniper", "count": 2, "spawn_delay": 120},
+      {"type": "assault", "count": 3, "spawn_delay": 240},
+      {"type": "scout", "count": 3, "spawn_delay": 360}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 300, "y": 300, "width": 80, "height": 30},
+      {"type": "cover", "x": 650, "y": 500, "width": 80, "height": 30},
+      {"type": "cover", "x": 1000, "y": 700, "width": 80, "height": 30}
+    ],
+    "special": "stealth_cloak",
+    "description": "Stealth units are invisible until close. Sensor modules help."
+  },
+  {
+    "id": "mission_14_medic",
+    "name": "Medic!",
+    "mission_number": 14,
+    "act": "II: Veteran",
+    "tier": 2,
+    "weight_cap": 240,
+    "entry_fee": 225,
+    "reward_credits": 550,
+    "time_limit": 720,
+    "size": {"width": 1600, "height": 900},
+    "theme": "lava",
+    "new_enemy": "support",
+    "enemy_types": 10,
+    "objective": "priority_targets",
+    "priority_targets": ["support"],
+    "objective_count": 3,
+    "player_bots": 5,
+    "enemies": [
+      {"type": "support", "count": 3, "spawn_delay": 0},
+      {"type": "tank", "count": 3, "spawn_delay": 0},
+      {"type": "heavy_gunner", "count": 2, "spawn_delay": 180},
+      {"type": "fighter", "count": 4, "spawn_delay": 300}
+    ],
+    "obstacles": [
+      {"type": "hazard_lava", "x": 500, "y": 300, "radius": 100},
+      {"type": "hazard_lava", "x": 1100, "y": 600, "radius": 100},
+      {"type": "cover", "x": 400, "y": 450, "width": 80, "height": 30},
+      {"type": "cover", "x": 1200, "y": 450, "width": 80, "height": 30}
+    ],
+    "description": "Support units heal enemies. Kill them first or fight forever."
+  },
+  {
+    "id": "mission_15_the_warden",
+    "name": "THE WARDEN",
+    "mission_number": 15,
+    "act": "III: ELITE - BOSS",
+    "tier": 3,
+    "weight_cap": 300,
+    "entry_fee": 300,
+    "reward_credits": 800,
+    "time_limit": 900,
+    "size": {"width": 1500, "height": 1000},
+    "theme": "boss_arena",
+    "new_enemy": "BOSS_1",
+    "enemy_types": 10,
+    "objective": "boss",
+    "boss": {
+      "name": "THE WARDEN",
+      "type": "shielded_tank",
+      "hp": 2000,
+      "shield_generators": 4,
+      "spawns_adds": true,
+      "phases": 1
+    },
+    "player_bots": 5,
+    "enemies": [
+      {"type": "boss_warden", "count": 1, "spawn_delay": 0},
+      {"type": "shield_generator", "count": 4, "positions": [[300,300], [1200,300], [300,700], [1200,700]]},
+      {"type": "adds_wave", "interval": 300, "types": ["scout", "fighter", "tank"]}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 200, "y": 200, "width": 60, "height": 30},
+      {"type": "cover", "x": 1300, "y": 200, "width": 60, "height": 30},
+      {"type": "cover", "x": 200, "y": 800, "width": 60, "height": 30},
+      {"type": "cover", "x": 1300, "y": 800, "width": 60, "height": 30}
+    ],
+    "description": "BOSS 1: Destroy 4 shield generators, then kill THE WARDEN. Adds spawn constantly."
+  }
+]

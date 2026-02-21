@@ -1,0 +1,150 @@
+[
+  {
+    "id": "mission_06_the_blockade",
+    "name": "The Blockade",
+    "mission_number": 6,
+    "act": "I: Initiate",
+    "tier": 1,
+    "weight_cap": 110,
+    "entry_fee": 50,
+    "reward_credits": 220,
+    "time_limit": 600,
+    "size": {"width": 1000, "height": 650},
+    "theme": "rust",
+    "new_enemy": null,
+    "enemy_types": 3,
+    "objective": "elimination",
+    "objective_count": 14,
+    "player_bots": 3,
+    "enemies": [
+      {"type": "scout", "count": 6, "spawn_delay": 0},
+      {"type": "fighter", "count": 5, "spawn_delay": 120},
+      {"type": "tank", "count": 3, "spawn_delay": 240}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 200, "y": 200, "width": 80, "height": 30},
+      {"type": "cover", "x": 500, "y": 325, "width": 80, "height": 30},
+      {"type": "cover", "x": 800, "y": 450, "width": 80, "height": 30},
+      {"type": "wall", "x": 350, "y": 0, "width": 20, "height": 200},
+      {"type": "wall", "x": 650, "y": 450, "width": 20, "height": 200}
+    ],
+    "description": "All three basic enemy types. Master their counters."
+  },
+  {
+    "id": "mission_07_precision_strike",
+    "name": "Precision Strike",
+    "mission_number": 7,
+    "act": "I: Initiate",
+    "tier": 2,
+    "weight_cap": 120,
+    "entry_fee": 75,
+    "reward_credits": 250,
+    "time_limit": 480,
+    "size": {"width": 1100, "height": 700},
+    "theme": "tech",
+    "new_enemy": "sniper",
+    "enemy_types": 4,
+    "objective": "elimination",
+    "objective_count": 8,
+    "player_bots": 3,
+    "enemies": [
+      {"type": "scout", "count": 5, "spawn_delay": 0},
+      {"type": "sniper", "count": 3, "spawn_delay": 90}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 300, "y": 200, "width": 60, "height": 30},
+      {"type": "cover", "x": 550, "y": 350, "width": 60, "height": 30},
+      {"type": "cover", "x": 800, "y": 500, "width": 60, "height": 30}
+    ],
+    "description": "Snipers appear. Close the distance or die at range."
+  },
+  {
+    "id": "mission_08_close_quarters",
+    "name": "Close Quarters",
+    "mission_number": 8,
+    "act": "I: Initiate",
+    "tier": 2,
+    "weight_cap": 130,
+    "entry_fee": 100,
+    "reward_credits": 280,
+    "time_limit": 540,
+    "size": {"width": 900, "height": 800},
+    "theme": "cave",
+    "new_enemy": "raider",
+    "enemy_types": 5,
+    "objective": "elimination",
+    "objective_count": 8,
+    "player_bots": 3,
+    "enemies": [
+      {"type": "fighter", "count": 4, "spawn_delay": 0},
+      {"type": "raider", "count": 4, "spawn_delay": 60}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 250, "y": 250, "width": 60, "height": 30},
+      {"type": "cover", "x": 450, "y": 400, "width": 60, "height": 30},
+      {"type": "cover", "x": 650, "y": 550, "width": 60, "height": 30},
+      {"type": "wall", "x": 400, "y": 100, "width": 20, "height": 200},
+      {"type": "wall", "x": 500, "y": 500, "width": 20, "height": 200}
+    ],
+    "description": "Raiders charge close. Kiting is essential."
+  },
+  {
+    "id": "mission_09_explosive_entry",
+    "name": "Explosive Entry",
+    "mission_number": 9,
+    "act": "I: Initiate",
+    "tier": 2,
+    "weight_cap": 140,
+    "entry_fee": 100,
+    "reward_credits": 320,
+    "time_limit": 600,
+    "size": {"width": 1200, "height": 750},
+    "theme": "industrial",
+    "new_enemy": "grenadier",
+    "enemy_types": 6,
+    "objective": "elimination",
+    "objective_count": 10,
+    "player_bots": 3,
+    "enemies": [
+      {"type": "tank", "count": 3, "spawn_delay": 0},
+      {"type": "grenadier", "count": 3, "spawn_delay": 90},
+      {"type": "scout", "count": 4, "spawn_delay": 180}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 300, "y": 250, "width": 100, "height": 40},
+      {"type": "cover", "x": 600, "y": 375, "width": 100, "height": 40},
+      {"type": "cover", "x": 900, "y": 500, "width": 100, "height": 40},
+      {"type": "hazard_mine", "x": 450, "y": 300, "damage": 30}
+    ],
+    "description": "Grenadiers deal area damage. Spread out."
+  },
+  {
+    "id": "mission_10_speed_trap",
+    "name": "Speed Trap",
+    "mission_number": 10,
+    "act": "I: Initiate",
+    "tier": 2,
+    "weight_cap": 150,
+    "entry_fee": 100,
+    "reward_credits": 350,
+    "time_limit": 540,
+    "size": {"width": 1100, "height": 700},
+    "theme": "desert",
+    "new_enemy": "assault",
+    "enemy_types": 7,
+    "objective": "elimination",
+    "objective_count": 12,
+    "player_bots": 3,
+    "enemies": [
+      {"type": "assault", "count": 5, "spawn_delay": 0},
+      {"type": "sniper", "count": 3, "spawn_delay": 90},
+      {"type": "scout", "count": 4, "spawn_delay": 180}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 275, "y": 175, "width": 80, "height": 30},
+      {"type": "cover", "x": 550, "y": 350, "width": 80, "height": 30},
+      {"type": "cover", "x": 825, "y": 525, "width": 80, "height": 30}
+    ],
+    "description": "Assaults are fast and deadly. End of Act I."
+  }
+]
