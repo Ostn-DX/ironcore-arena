@@ -61,8 +61,9 @@ func get_campaign_tiers() -> Array:
 
 func get_current_tier() -> int:
 	## Get the player's current tier
-	return GameState.current_tier
-return 0
+	if GameState:
+		return GameState.current_tier
+	return 0
 
 
 func get_tier_data(tier: int) -> Dictionary:

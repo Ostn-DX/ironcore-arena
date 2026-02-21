@@ -121,37 +121,40 @@ func _on_start_campaign() -> void:
 	print("SceneFlow: Starting new campaign")
 	
 	# Reset campaign progress for new game
-	GameState.set_game_mode("campaign")
-	# Check if save exists and confirm overwrite
-	if SaveManager and SaveManager._has_save():
-		print("SceneFlow: Existing save found, starting fresh")
-		GameState.delete_save()
-		GameState._give_starter_kit()
-
-# Go to builder first
-_open_builder()
+	if GameState:
+		GameState.set_game_mode("campaign")
+		# Check if save exists and confirm overwrite
+		if SaveManager and SaveManager._has_save():
+			print("SceneFlow: Existing save found, starting fresh")
+			GameState.delete_save()
+			GameState._give_starter_kit()
+	
+	# Go to builder first
+	_open_builder()
 
 func _on_start_arcade() -> void:
 	print("SceneFlow: Starting arcade mode")
 	
-	GameState.set_game_mode("arcade")
-
-# Arcade goes straight to builder with all parts unlocked
-_open_builder()
+	if GameState:
+		GameState.set_game_mode("arcade")
+	
+	# Arcade goes straight to builder with all parts unlocked
+	_open_builder()
 
 func _on_continue_campaign() -> void:
 	print("SceneFlow: Continuing campaign")
 	
-	GameState.set_game_mode("campaign")
-	# Load existing save
-	SaveManager.load()
-
-# Go to campaign map or builder
-var next_arena: String = GameState.get_next_unlocked_arena()
-if next_arena.is_empty():
-	_open_builder()
-else:
-	_open_campaign_map()
+	if GameState:
+		GameState.set_game_mode("campaign")
+		# Load existing save
+		SaveManager.load()
+	
+	# Go to campaign map or builder
+	var next_arena: String = GameState.get_next_unlocked_arena()
+	if next_arena.is_empty():
+		_open_builder()
+	else:
+		_open_campaign_map()
 
 func _on_open_shop() -> void:
 	print("SceneFlow: Opening shop")

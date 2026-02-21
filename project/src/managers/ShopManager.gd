@@ -49,22 +49,23 @@ func _refresh_available_components() -> void:
     var player_tier: int = GameState.current_tier if GameState else 0
     
     # Get all components from DataLoader
-    # Chassis
-    for chassis in DataLoader.get_all_chassis():
-        if _is_component_available(chassis, player_tier):
-            available_components.append(_normalize_component(chassis, "chassis"))
+    if DataLoader:
+        # Chassis
+        for chassis in DataLoader.get_all_chassis():
+            if _is_component_available(chassis, player_tier):
+                available_components.append(_normalize_component(chassis, "chassis"))
+        
+        # Plating
+        for plating in DataLoader.get_all_plating():
+            if _is_component_available(plating, player_tier):
+                available_components.append(_normalize_component(plating, "plating"))
+        
+        # Weapons
+        for weapon in DataLoader.get_all_weapons():
+            if _is_component_available(weapon, player_tier):
+                available_components.append(_normalize_component(weapon, "weapons"))
     
-    # Plating
-    for plating in DataLoader.get_all_plating():
-        if _is_component_available(plating, player_tier):
-            available_components.append(_normalize_component(plating, "plating"))
-    
-    # Weapons
-    for weapon in DataLoader.get_all_weapons():
-        if _is_component_available(weapon, player_tier):
-            available_components.append(_normalize_component(weapon, "weapons"))
-
-print("ShopManager: Refreshed %d available components" % available_components.size())
+    print("ShopManager: Refreshed %d available components" % available_components.size())
 
 
 func _is_component_available(component: Dictionary, player_tier: int) -> bool:
@@ -202,19 +203,20 @@ func purchase_component(component_id: String, quantity: int = 1) -> bool:
     var total_cost: int = component["cost"] * quantity
     
     # Deduct credits
-    if not GameState.spend_credits(total_cost):
-        purchase_failed.emit(component_id, "Transaction failed")
-        return false
+    if GameState:
+        if not GameState.spend_credits(total_cost):
+            purchase_failed.emit(component_id, "Transaction failed")
+            return false
+        
+        # Add component to inventory
+        GameState.add_part(component_id, quantity)
+        
+        component_purchased.emit(component_id, quantity, GameState.credits)
+        print("ShopManager: Purchased %dx %s for %d credits" % [quantity, component_id, total_cost])
+        return true
     
-    # Add component to inventory
-    GameState.add_part(component_id, quantity)
-    
-    component_purchased.emit(component_id, quantity, GameState.credits)
-    print("ShopManager: Purchased %dx %s for %d credits" % [quantity, component_id, total_cost])
-    return true
-
-purchase_failed.emit(component_id, "GameState not available")
-return false
+    purchase_failed.emit(component_id, "GameState not available")
+    return false
 
 
 func get_component_cost(component_id: String) -> int:
@@ -227,8 +229,9 @@ func get_component_cost(component_id: String) -> int:
 
 func get_owned_quantity(component_id: String) -> int:
     ## Get how many of a component the player owns
-    return GameState.get_part_quantity(component_id)
-return 0
+    if GameState:
+        return GameState.get_part_quantity(component_id)
+    return 0
 
 
 # ============================================================================
@@ -290,15 +293,18 @@ func get_tier_display_name(tier: int) -> String:
 # ============================================================================
 
 func get_player_credits() -> int:
-    return GameState.credits
-return 0
+    if GameState:
+        return GameState.credits
+    return 0
 
 
 func get_player_tier() -> int:
-    return GameState.current_tier
-return 0
+    if GameState:
+        return GameState.current_tier
+    return 0
 
 
 func is_arcade_mode() -> bool:
-    return GameState.is_arcade_mode()
-return false
+    if GameState:
+        return GameState.is_arcade_mode()
+    return false

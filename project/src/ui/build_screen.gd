@@ -112,20 +112,21 @@ func _load_shop() -> void:
 
 func _load_inventory() -> void:
 	inventory_list.clear()
-	return
-
-for part_id in GameState.owned_parts:
-	var qty: int = GameState.owned_parts[part_id]
-	if qty <= 0:
-		continue
+	if not DataLoader:
+		return
 	
-	var part: Dictionary = DataLoader.get_part(part_id)
-	if part.is_empty():
-		continue
-	
-	var part_name: String = part.get("name", "Unknown")
-	inventory_list.add_item(part_name + " [" + str(qty) + "]")
-	inventory_list.set_item_metadata(inventory_list.get_item_count() - 1, part)
+	for part_id in GameState.owned_parts:
+		var qty: int = GameState.owned_parts[part_id]
+		if qty <= 0:
+			continue
+		
+		var part: Dictionary = DataLoader.get_part(part_id)
+		if part.is_empty():
+			continue
+		
+		var part_name: String = part.get("name", "Unknown")
+		inventory_list.add_item(part_name + " [" + str(qty) + "]")
+		inventory_list.set_item_metadata(inventory_list.get_item_count() - 1, part)
 
 func _load_my_bots() -> void:
 	my_bots_list.clear()

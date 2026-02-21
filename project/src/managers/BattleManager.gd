@@ -266,10 +266,11 @@ func _spawn_bot(config: Dictionary, team_id: int, spawn_pos: Vector2) -> Bot:
 	
 	add_child(bot)
 	
-	SimulationManager.register_bot(bot)
-
-bot_spawned.emit(bot, team_id)
-return bot
+	if SimulationManager:
+		SimulationManager.register_bot(bot)
+	
+	bot_spawned.emit(bot, team_id)
+	return bot
 
 func start_battle() -> void:
 	if current_state != BattleState.SETUP:

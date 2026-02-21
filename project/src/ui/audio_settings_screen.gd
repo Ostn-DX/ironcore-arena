@@ -136,15 +136,16 @@ func _create_value_label(parent: Node, slider: HSlider) -> Label:
 
 func _load_current_settings() -> void:
 	## Load current audio settings
-	return
-
-# Set slider values (convert 0-1 to 0-100)
-master_slider.value = AudioManager.master_volume * 100
-sfx_slider.value = AudioManager.sfx_volume * 100
-music_slider.value = AudioManager.music_volume * 100
-ui_slider.value = AudioManager.ui_volume * 100
-
-_update_value_labels()
+	if not AudioManager:
+		return
+	
+	# Set slider values (convert 0-1 to 0-100)
+	master_slider.value = AudioManager.master_volume * 100
+	sfx_slider.value = AudioManager.sfx_volume * 100
+	music_slider.value = AudioManager.music_volume * 100
+	ui_slider.value = AudioManager.ui_volume * 100
+	
+	_update_value_labels()
 
 
 func _update_value_labels() -> void:
@@ -161,42 +162,49 @@ func _update_value_labels() -> void:
 
 func _on_master_changed(value: float) -> void:
 	var volume: float = value / 100.0
-	AudioManager.set_master_volume(volume)
-master_value.text = "%d%%" % value
+	if AudioManager:
+		AudioManager.set_master_volume(volume)
+	master_value.text = "%d%%" % value
 
 
 func _on_sfx_changed(value: float) -> void:
 	var volume: float = value / 100.0
-	AudioManager.set_sfx_volume(volume)
-sfx_value.text = "%d%%" % value
+	if AudioManager:
+		AudioManager.set_sfx_volume(volume)
+	sfx_value.text = "%d%%" % value
 
 
 func _on_music_changed(value: float) -> void:
 	var volume: float = value / 100.0
-	AudioManager.set_music_volume(volume)
-music_value.text = "%d%%" % value
+	if AudioManager:
+		AudioManager.set_music_volume(volume)
+	music_value.text = "%d%%" % value
 
 
 func _on_ui_changed(value: float) -> void:
 	var volume: float = value / 100.0
-	AudioManager.set_ui_volume(volume)
-ui_value.text = "%d%%" % value
+	if AudioManager:
+		AudioManager.set_ui_volume(volume)
+	ui_value.text = "%d%%" % value
 
 
 func _on_mute_toggled(muted: bool) -> void:
-	AudioManager.mute_all(muted)
+	if AudioManager:
+		AudioManager.mute_all(muted)
 
 
 func _on_test_sounds() -> void:
 	## Play test sounds
-	AudioManager.play_ui_click()
-	await get_tree().create_timer(0.3).timeout
-	AudioManager.play_ui_confirm()
-	await get_tree().create_timer(0.3).timeout
-	AudioManager.play_weapon_fire()
+	if AudioManager:
+		AudioManager.play_ui_click()
+		await get_tree().create_timer(0.3).timeout
+		AudioManager.play_ui_confirm()
+		await get_tree().create_timer(0.3).timeout
+		AudioManager.play_weapon_fire()
 
 
 func _on_back() -> void:
 	## Save settings and go back
-	AudioManager.play_ui_cancel()
-back_pressed.emit()
+	if AudioManager:
+		AudioManager.play_ui_cancel()
+	back_pressed.emit()

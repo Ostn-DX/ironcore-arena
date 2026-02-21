@@ -48,30 +48,31 @@ func _load_parts() -> void:
 	armor_list.clear()
 	weapon_list.clear()
 	
-	return
-
-for part in DataLoader.get_all_parts():
-	if not part is Dictionary:
-		continue
+	if not DataLoader:
+		return
 	
-	var category: String = part.get("category", "")
-	var name: String = part.get("name", "Unknown")
-	var cost: int = part.get("cost", 0)
-	
-	var display: String = name
-	if not GameState.is_arcade_mode():
-		display += " - " + str(cost) + " CR"
-	
-	match category:
-		"chassis":
-			chassis_list.add_item(display)
-			chassis_list.set_item_metadata(chassis_list.get_item_count() - 1, part)
-		"armor":
-			armor_list.add_item(display)
-			armor_list.set_item_metadata(armor_list.get_item_count() - 1, part)
-		"weapon", "utility":
-			weapon_list.add_item(display)
-			weapon_list.set_item_metadata(weapon_list.get_item_count() - 1, part)
+	for part in DataLoader.get_all_parts():
+		if not part is Dictionary:
+			continue
+		
+		var category: String = part.get("category", "")
+		var name: String = part.get("name", "Unknown")
+		var cost: int = part.get("cost", 0)
+		
+		var display: String = name
+		if not GameState.is_arcade_mode():
+			display += " - " + str(cost) + " CR"
+		
+		match category:
+			"chassis":
+				chassis_list.add_item(display)
+				chassis_list.set_item_metadata(chassis_list.get_item_count() - 1, part)
+			"armor":
+				armor_list.add_item(display)
+				armor_list.set_item_metadata(armor_list.get_item_count() - 1, part)
+			"weapon", "utility":
+				weapon_list.add_item(display)
+				weapon_list.set_item_metadata(weapon_list.get_item_count() - 1, part)
 
 func _update_display() -> void:
 	# Update bot list
