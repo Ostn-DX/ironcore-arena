@@ -250,6 +250,12 @@ func _create_bot_visual(bot) -> void:
 	hp_fill.name = "HPBar"
 	visual.add_child(hp_fill)
 	
+	# Selection indicator
+	var selection: Node2D = load("res://src/ui/selection_indicator.gd").new()
+	selection.name = "SelectionIndicator"
+	selection.radius = bot.radius
+	visual.add_child(selection)
+	
 	bots_container.add_child(visual)
 	bot_visuals[bot.sim_id] = visual
 	_cached_bot_data[bot.sim_id] = bot
@@ -433,3 +439,48 @@ func on_show() -> void:
 func on_hide() -> void:
 	visible = false
 	battle_manager.end_battle_early()
+
+# ============================================================================
+# SELECTION INDICATOR METHODS
+# ============================================================================
+
+func show_bot_selection(bot_id: int, is_group_leader: bool = false) -> void:
+	## Show selection indicator for a bot
+	if bot_visuals.has(bot_id):
+		var visual: Node2D = bot_visuals[bot_id]
+		var indicator: Node = visual.get_node_or_null("SelectionIndicator")
+		if indicator:
+			if is_group_leader:
+				indicator.indicator_type = indicator.IndicatorType.GROUP_LEADER
+			else:
+				indicator.indicator_type = indicator.IndicatorType.SINGLE
+			indicator.show_selection()
+
+func hide_bot_selection(bot_id: int) -> void:
+	## Hide selection indicator for a bot
+	if bot_visuals.has(bot_id):
+		var visual: Node2D = bot_visuals[bot_id]
+		var indicator: Node = visual.get_node_or_null("SelectionIndicator")
+		if indicator:
+			indicator.hide_selection()
+
+func show_bot_hover(bot_id: int) -> void:
+	## Show hover indicator for a bot
+	if bot_visuals.has(bot_id):
+		var visual: Node2D = bot_visuals[bot_id]
+		var indicator: Node = visual.get_node_or_null("SelectionIndicator")
+		if indicator:
+			indicator.show_hover()
+
+func hide_bot_hover(bot_id: int) -> void:
+	## Hide hover indicator for a bot
+	if bot_visuals.has(bot_id):
+		var visual: Node2D = bot_visuals[bot_id]
+		var indicator: Node = visual.get_node_or_null("SelectionIndicator")
+		if indicator:
+			indicator.hide_hover()
+
+func clear_all_selections() -> void:
+	## Hide all selection indicators
+	for bot_id in bot_visuals:
+		hide_bot_selection(bot_id)
