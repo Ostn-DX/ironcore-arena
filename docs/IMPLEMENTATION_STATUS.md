@@ -98,7 +98,7 @@ All components now use "pts" (points) instead of kg:
 - [x] Wire RTS camera into Arena scene ✅ DONE
 - [x] Wire group selection into BattleScreen ✅ DONE
 - [x] Create remaining 25 arena data files ✅ DONE (All 30 missions created)
-- [ ] Add bot visual selection indicators
+- [x] Add bot visual selection indicators ✅ DONE
 - [ ] Implement mini-map
 - [ ] Optimize for 10+ bots (Act II)
 - [ ] Optimize for 50+ bots (Act III)
