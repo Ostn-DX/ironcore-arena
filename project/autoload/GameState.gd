@@ -224,7 +224,7 @@ func advance_tier() -> void:
 	print("GameState: Advanced to tier ", current_tier)
 
 
-def can_advance_tier() -> bool:
+func can_advance_tier() -> bool:
 	## Check if player can advance to next tier
 	# Must complete all arenas in current tier
 	var current_tier_arenas: Array[String] = get_arenas_by_tier(current_tier)

@@ -498,11 +498,11 @@ func _setup_camera() -> void:
 		camera.name = "RTSCamera"
 		add_child(camera)
 	
-	; Setup RTS camera bounds
+	# Setup RTS camera bounds
 	if camera.has_method("setup_arena_bounds"):
 		camera.setup_arena_bounds(Rect2(Vector2.ZERO, arena_size))
 	else:
-		; Fallback for regular Camera2D
+		# Fallback for regular Camera2D
 		camera.position = arena_size / 2
 		camera.zoom = Vector2.ONE * camera_zoom_default
 		camera.enabled = true

@@ -8,11 +8,11 @@ func _run() -> void:
 	print("IRONCORE ARENA - PNG Generator")
 	print("=" * 50)
 	
-	; Create directories
+	# Create directories
 	DirAccess.make_dir_recursive_absolute("res://assets/sprites/v2/")
 	DirAccess.make_dir_recursive_absolute("res://assets/tilesets/training_grounds/")
 	
-	; Generate chassis
+	# Generate chassis
 	print("\n[1/3] Generating chassis sprites...")
 	for chassis_type in ["scout", "fighter", "tank"]:
 		for team in ["player", "enemy"]:
@@ -22,7 +22,7 @@ func _run() -> void:
 			img.save_png(path)
 			print("  ✓ " + path)
 	
-	; Generate weapons
+	# Generate weapons
 	print("\n[2/3] Generating weapon sprites...")
 	for weapon_type in ["machine_gun", "cannon", "launcher", "beam", "sniper", "shotgun"]:
 		var img: Image = _create_weapon(weapon_type)
@@ -30,7 +30,7 @@ func _run() -> void:
 		img.save_png(path)
 		print("  ✓ " + path)
 	
-	; Generate tiles
+	# Generate tiles
 	print("\n[3/3] Generating tileset...")
 	var tiles: Dictionary = {
 		"floor_0.png": _create_floor(Color(0.15, 0.18, 0.15)),
@@ -56,7 +56,7 @@ func _create_chassis(type: String, team: String, size: int) -> Image:
 	var img: Image = Image.create(size, size, false, Image.FORMAT_RGBA8)
 	img.fill(Color.TRANSPARENT)
 	
-	; Colors
+	# Colors
 	var base: Color
 	if team == "player":
 		base = Color(0.18, 0.80, 0.44)  ; Green
@@ -66,30 +66,30 @@ func _create_chassis(type: String, team: String, size: int) -> Image:
 	var center: int = size / 2
 	var radius: float = size * 0.35
 	
-	; Shadow
+	# Shadow
 	for x in range(size):
 		for y in range(size):
 			var dist: float = Vector2(x - center - 3, y - center - 3).length()
 			if dist < radius:
 				img.set_pixel(x, y, Color(0, 0, 0, 0.25))
 	
-	; Base shape
+	# Base shape
 	for x in range(size):
 		for y in range(size):
 			var dist: float = Vector2(x - center, y - center).length()
 			if dist < radius:
-				; Shading
+				# Shading
 				var shade: float = 1.0 - (dist / radius) * 0.2
 				var col: Color = base * shade
 				
-				; Highlight upper left
+				# Highlight upper left
 				var highlight_dist: float = Vector2(x - center + radius*0.3, y - center + radius*0.3).length()
 				if highlight_dist < radius * 0.4:
 					col = col.lightened(0.3 * (1.0 - highlight_dist / (radius * 0.4)))
 				
 				img.set_pixel(x, y, col)
 	
-	; Center detail
+	# Center detail
 	var detail_r: int = int(radius * 0.25)
 	for x in range(center - detail_r, center + detail_r):
 		for y in range(center - detail_r, center + detail_r):
@@ -107,76 +107,76 @@ func _create_weapon(type: String) -> Image:
 	
 	match type:
 		"machine_gun":
-			; Body
+			# Body
 			for x in range(8, 16):
 				for y in range(12, 20):
 					img.set_pixel(x, y, base.darkened(0.1))
-			; Barrel
+			# Barrel
 			for x in range(16, 28):
 				for y in range(15, 17):
 					img.set_pixel(x, y, base)
-			; Muzzle
+			# Muzzle
 			for x in range(28, 30):
 				for y in range(14, 18):
 					img.set_pixel(x, y, accent)
 		
 		"cannon":
-			; Thick barrel
+			# Thick barrel
 			for x in range(4, 24):
 				for y in range(12, 20):
 					img.set_pixel(x, y, base)
-			; Muzzle
+			# Muzzle
 			for x in range(22, 28):
 				for y in range(10, 22):
 					img.set_pixel(x, y, base.darkened(0.2))
-			; Tip
+			# Tip
 			for x in range(26, 30):
 				for y in range(13, 19):
 					img.set_pixel(x, y, accent.darkened(0.3))
 		
 		"launcher":
-			; Tube
+			# Tube
 			for x in range(6, 22):
 				for y in range(10, 22):
 					img.set_pixel(x, y, base.darkened(0.1))
-			; Rim
+			# Rim
 			for x in range(20, 26):
 				for y in range(8, 24):
 					img.set_pixel(x, y, base)
 		
 		"beam":
-			; Emitter
+			# Emitter
 			for x in range(4, 12):
 				for y in range(12, 20):
 					img.set_pixel(x, y, base)
-			; Beam
+			# Beam
 			for x in range(12, 30):
 				for y in range(15, 17):
 					var alpha: float = 1.0 - (x - 12) / 18.0
 					img.set_pixel(x, y, Color(accent.r, accent.g, accent.b, alpha))
-			; Core
+			# Core
 			for x in range(14, 28):
 				img.set_pixel(x, 16, Color.WHITE)
 		
 		"sniper":
-			; Long barrel
+			# Long barrel
 			for x in range(2, 28):
 				for y in range(15, 17):
 					img.set_pixel(x, y, base)
-			; Scope
+			# Scope
 			for x in range(10, 18):
 				for y in range(10, 14):
 					img.set_pixel(x, y, base.darkened(0.2))
 		
 		"shotgun":
-			; Double barrel
+			# Double barrel
 			for x in range(12, 24):
 				for y in range(10, 13):
 					img.set_pixel(x, y, base)
 			for x in range(12, 24):
 				for y in range(19, 22):
 					img.set_pixel(x, y, base)
-			; Body
+			# Body
 			for x in range(4, 12):
 				for y in range(10, 22):
 					img.set_pixel(x, y, base.darkened(0.2))
@@ -195,7 +195,7 @@ func _create_grid_floor() -> Image:
 	
 	img.fill(base)
 	
-	; Grid lines
+	# Grid lines
 	for i in range(0, 32, 8):
 		for y in range(32):
 			img.set_pixel(i, y, line)
@@ -209,10 +209,10 @@ func _create_wall(side: String) -> Image:
 	var color: Color = Color(0.4, 0.45, 0.4)  ; Wall color
 	
 	if side == "top":
-		; Lighter top
+		# Lighter top
 		color = color.lightened(0.1)
 	else:
-		; Darker bottom/sides
+		# Darker bottom/sides
 		color = color.darkened(0.1)
 	
 	img.fill(color)
@@ -230,22 +230,22 @@ func _create_spawn(team: String) -> Image:
 	
 	var center: int = 16
 	
-	; Circle outline
+	# Circle outline
 	for x in range(32):
 		for y in range(32):
 			var dist: float = Vector2(x - center, y - center).length()
 			if dist > 10 and dist < 13:
 				img.set_pixel(x, y, color)
 	
-	; Inner symbol
+	# Inner symbol
 	if team == "player":
-		; Triangle
+		# Triangle
 		for y in range(12, 22):
 			var width: int = int((y - 12) * 0.8)
 			for x in range(center - width, center + width):
 				img.set_pixel(x, y, color)
 	else:
-		; X
+		# X
 		for i in range(-6, 6):
 			img.set_pixel(center + i, center + i, color)
 			img.set_pixel(center + i, center - i, color)

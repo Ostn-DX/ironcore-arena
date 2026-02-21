@@ -29,7 +29,7 @@ func _create_selection_box() -> void:
 	selection_box.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(selection_box)
 	
-	; Draw the box in _draw
+	# Draw the box in _draw
 	selection_box.draw.connect(_draw_selection_box)
 
 func _draw_selection_box() -> void:
@@ -38,9 +38,9 @@ func _draw_selection_box() -> void:
 	
 	var rect: Rect2 = _get_selection_rect()
 	
-	; Fill
+	# Fill
 	selection_box.draw_rect(rect, selection_box_color)
-	; Border
+	# Border
 	selection_box.draw_rect(rect, selection_box_border, false, 2.0)
 
 func _get_selection_rect() -> Rect2:
@@ -56,51 +56,51 @@ func _get_selection_rect() -> Rect2:
 	return Rect2(top_left, size)
 
 func _input(event: InputEvent) -> void:
-	; Left click start selection
+	# Left click start selection
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
-				; Check if clicking on UI or game world
+				# Check if clicking on UI or game world
 				if not _is_mouse_over_ui():
 					_start_selection()
 			else:
 				_end_selection()
 		
-		; Right click = issue command to selected units
+		# Right click = issue command to selected units
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			if selected_units.size() > 0:
 				_issue_command_to_selection()
 	
-	; Drag selection box
+	# Drag selection box
 	if event is InputEventMouseMotion and is_selecting:
 		selection_box.queue_redraw()
 	
-	; Control groups (number keys)
+	# Control groups (number keys)
 	if event is InputEventKey and event.pressed:
 		var key: int = event.keycode
 		if key >= KEY_1 and key <= KEY_9:
 			var group_num: int = key - KEY_0
 			if Input.is_key_pressed(KEY_CTRL):
-				; Ctrl+Number = assign group
+				# Ctrl+Number = assign group
 				_assign_control_group(group_num)
 			elif Input.is_key_pressed(KEY_SHIFT):
-				; Shift+Number = add group to selection
+				# Shift+Number = add group to selection
 				_select_control_group(group_num, true)
 			else:
-				; Number = select group
+				# Number = select group
 				_select_control_group(group_num, false)
 		
-		; Spacebar = center camera on selection
+		# Spacebar = center camera on selection
 		elif key == KEY_SPACE:
 			_center_on_selection()
 
 func _is_mouse_over_ui() -> bool:
 	## Check if mouse is over UI elements (not game world)
-	; Get mouse position
+	# Get mouse position
 	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
 	
-	; Check if over any UI panels
-	; This is a simplified check - in practice you'd check specific UI nodes
+	# Check if over any UI panels
+	# This is a simplified check - in practice you'd check specific UI nodes
 	var ui_rects: Array[Rect2] = _get_ui_rects()
 	for rect in ui_rects:
 		if rect.has_point(mouse_pos):
@@ -110,7 +110,7 @@ func _is_mouse_over_ui() -> bool:
 
 func _get_ui_rects() -> Array[Rect2]:
 	## Return array of UI element rectangles to avoid clicking through
-	; This should be populated with your actual UI bounds
+	# This should be populated with your actual UI bounds
 	return []
 
 func _start_selection() -> void:
@@ -118,7 +118,7 @@ func _start_selection() -> void:
 	is_selecting = true
 	selection_start = get_viewport().get_mouse_position()
 	
-	; If not holding shift, clear current selection
+	# If not holding shift, clear current selection
 	if not Input.is_key_pressed(KEY_SHIFT):
 		clear_selection()
 	
@@ -132,13 +132,13 @@ func _end_selection() -> void:
 	is_selecting = false
 	selection_box.visible = false
 	
-	; Get selection rectangle
+	# Get selection rectangle
 	var screen_rect: Rect2 = _get_selection_rect()
 	
-	; Convert to world rect if needed
-	; For now, assume screen space
+	# Convert to world rect if needed
+	# For now, assume screen space
 	
-	; Select units in rectangle
+	# Select units in rectangle
 	_select_units_in_rect(screen_rect)
 
 func _select_units_in_rect(rect: Rect2) -> void:
@@ -147,7 +147,7 @@ func _select_units_in_rect(rect: Rect2) -> void:
 	
 	for unit in units:
 		if unit.visible and unit.is_inside_tree():
-			; Get unit screen position
+			# Get unit screen position
 			var screen_pos: Vector2 = get_viewport().get_camera_2d().world_to_screen(unit.global_position)
 			
 			if rect.has_point(screen_pos):
@@ -157,10 +157,10 @@ func _select_units_in_rect(rect: Rect2) -> void:
 
 func _get_selectable_units() -> Array[Node2D]:
 	## Get all player-controlled units
-	; This should query the battle manager or unit container
+	# This should query the battle manager or unit container
 	var units: Array[Node2D] = []
 	
-	; Look for units in the bots_container
+	# Look for units in the bots_container
 	var battle_screen = get_parent()
 	if battle_screen and battle_screen.bots_container:
 		for child in battle_screen.bots_container.get_children():
@@ -173,14 +173,14 @@ func _select_unit(unit: Node2D) -> void:
 	## Add unit to selection
 	if not selected_units.has(unit):
 		selected_units.append(unit)
-		; Visual feedback
+		# Visual feedback
 		if unit.has_method("set_selected"):
 			unit.set_selected(true)
 
 func _deselect_unit(unit: Node2D) -> void:
 	## Remove unit from selection
 	selected_units.erase(unit)
-	; Visual feedback
+	# Visual feedback
 	if unit.has_method("set_selected"):
 		unit.set_selected(false)
 
@@ -197,21 +197,21 @@ func _issue_command_to_selection() -> void:
 	## Issue move or attack command to selected units
 	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
 	
-	; Convert to world position
+	# Convert to world position
 	var camera: Camera2D = get_viewport().get_camera_2d()
 	var world_pos: Vector2 = camera.get_global_mouse_position()
 	
-	; Check if clicking on enemy
+	# Check if clicking on enemy
 	var target = _get_enemy_at_position(world_pos)
 	
 	if target:
-		; Attack command
+		# Attack command
 		for unit in selected_units:
 			if unit.has_method("command_attack"):
 				unit.command_attack(target)
 	else:
-		; Move command
-		; Calculate formation positions
+		# Move command
+		# Calculate formation positions
 		var formation_positions: Array[Vector2] = _calculate_formation(world_pos, selected_units.size())
 		
 		for i in range(selected_units.size()):
@@ -239,12 +239,12 @@ func _calculate_formation(center: Vector2, count: int) -> Array[Vector2]:
 	if count == 1:
 		positions.append(center)
 	elif count <= 4:
-		; Line formation
+		# Line formation
 		var start_x: float = center.x - ((count - 1) * spacing / 2)
 		for i in range(count):
 			positions.append(Vector2(start_x + i * spacing, center.y))
 	else:
-		; Grid formation
+		# Grid formation
 		var cols: int = ceili(sqrt(count))
 		var start_x: float = center.x - ((cols - 1) * spacing / 2)
 		var start_y: float = center.y - ((cols - 1) * spacing / 2)
@@ -283,13 +283,13 @@ func _center_on_selection() -> void:
 	if selected_units.size() == 0:
 		return
 	
-	; Calculate center of selection
+	# Calculate center of selection
 	var center: Vector2 = Vector2.ZERO
 	for unit in selected_units:
 		center += unit.global_position
 	center /= selected_units.size()
 	
-	; Move camera
+	# Move camera
 	var camera: Camera2D = get_viewport().get_camera_2d()
 	if camera and camera.has_method("center_on_position"):
 		camera.center_on_position(center)

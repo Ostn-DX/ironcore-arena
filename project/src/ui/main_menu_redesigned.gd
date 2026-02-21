@@ -11,7 +11,7 @@ signal builder_pressed
 signal settings_pressed
 signal quit_pressed
 
-; Colors (matching Outhold)
+# Colors (matching Outhold)
 const COLOR_BG: Color = Color("#1A1F2E")
 const COLOR_PANEL: Color = Color("#252B3D")
 const COLOR_CARD: Color = Color("#2D3548")
@@ -19,7 +19,7 @@ const COLOR_ACCENT: Color = Color("#00D4FF")
 const COLOR_TEXT: Color = Color.WHITE
 const COLOR_TEXT_DIM: Color = Color("#A0AEC0")
 
-; Node network decoration
+# Node network decoration
 var _decoration_nodes: Array[Dictionary] = []
 var _node_lines: Array[Line2D] = []
 
@@ -32,13 +32,13 @@ func _ready() -> void:
 	_animate_entry()
 
 func _setup_background() -> void:
-	; Main dark background
+	# Main dark background
 	var bg: ColorRect = ColorRect.new()
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.color = COLOR_BG
 	add_child(bg)
 	
-	; Subtle grid pattern
+	# Subtle grid pattern
 	var grid: Control = _create_grid_pattern()
 	add_child(grid)
 
@@ -47,7 +47,7 @@ func _create_grid_pattern() -> Control:
 	container.set_anchors_preset(Control.PRESET_FULL_RECT)
 	container.modulate.a = 0.05
 	
-	; Draw faint dots
+	# Draw faint dots
 	var spacing: int = 40
 	for x in range(0, 1280, spacing):
 		for y in range(0, 720, spacing):
@@ -60,8 +60,8 @@ func _create_grid_pattern() -> Control:
 	return container
 
 func _setup_decorative_nodes() -> void:
-	; Create floating decorative nodes (like Outhold skill tree)
-	; These are visual only, not interactive
+	# Create floating decorative nodes (like Outhold skill tree)
+	# These are visual only, not interactive
 	
 	var node_positions: Array[Vector2] = [
 		Vector2(100, 100), Vector2(250, 180), Vector2(180, 300),
@@ -74,7 +74,7 @@ func _setup_decorative_nodes() -> void:
 		var is_active: bool = randf() > 0.5
 		_create_decorative_node(pos, is_active)
 	
-	; Draw connections between nearby nodes
+	# Draw connections between nearby nodes
 	_create_node_connections()
 
 func _create_decorative_node(pos: Vector2, is_active: bool) -> void:
@@ -82,7 +82,7 @@ func _create_decorative_node(pos: Vector2, is_active: bool) -> void:
 	container.position = pos
 	container.size = Vector2(48, 48)
 	
-	; Shadow
+	# Shadow
 	var shadow: ColorRect = ColorRect.new()
 	shadow.color = Color(0, 0, 0, 0.2)
 	shadow.position = Vector2(4, 4)
@@ -90,7 +90,7 @@ func _create_decorative_node(pos: Vector2, is_active: bool) -> void:
 	shadow.z_index = -1
 	container.add_child(shadow)
 	
-	; Node body
+	# Node body
 	var body: Panel = Panel.new()
 	body.size = Vector2(48, 48)
 	
@@ -118,21 +118,21 @@ func _create_decorative_node(pos: Vector2, is_active: bool) -> void:
 	body.add_theme_stylebox_override("panel", style)
 	container.add_child(body)
 	
-	; Icon (simple shapes)
+	# Icon (simple shapes)
 	var icon: Control = _create_node_icon(is_active)
 	icon.position = Vector2(12, 12)
 	container.add_child(icon)
 	
 	add_child(container)
 	
-	; Store for connection drawing
+	# Store for connection drawing
 	_decoration_nodes.append({
 		"position": pos + Vector2(24, 24),
 		"active": is_active,
 		"container": container
 	})
 	
-	; Subtle floating animation
+	# Subtle floating animation
 	var tween: Tween = create_tween()
 	tween.set_loops()
 	tween.set_trans(Tween.TRANS_SINE)
@@ -142,7 +142,7 @@ func _create_decorative_node(pos: Vector2, is_active: bool) -> void:
 func _create_node_icon(is_active: bool) -> Control:
 	var icon_color: Color = COLOR_BG if is_active else COLOR_TEXT_DIM
 	
-	; Simple geometric icon
+	# Simple geometric icon
 	var icon: Control = Control.new()
 	icon.size = Vector2(24, 24)
 	
@@ -154,7 +154,7 @@ func _create_node_icon(is_active: bool) -> Control:
 	return icon
 
 func _create_node_connections() -> void:
-	; Draw lines between nearby nodes
+	# Draw lines between nearby nodes
 	var max_distance: float = 200.0
 	
 	for i in range(_decoration_nodes.size()):
@@ -168,7 +168,7 @@ func _create_node_connections() -> void:
 				line.points = [node_a["position"], node_b["position"]]
 				line.width = 2
 				
-				; Color based on if both are active
+				# Color based on if both are active
 				if node_a["active"] and node_b["active"]:
 					line.default_color = COLOR_ACCENT
 					line.modulate.a = 0.3
@@ -176,19 +176,19 @@ func _create_node_connections() -> void:
 					line.default_color = COLOR_TEXT_DIM
 					line.modulate.a = 0.1
 				
-				; Lines go behind nodes
+				# Lines go behind nodes
 				line.z_index = -2
 				add_child(line)
 				_node_lines.append(line)
 
 func _setup_title() -> void:
-	; Main title with long shadow
+	# Main title with long shadow
 	var title_container: Control = Control.new()
 	title_container.position = Vector2(640, 80)
 	title_container.size = Vector2(0, 0)
 	add_child(title_container)
 	
-	; Title shadow (offset)
+	# Title shadow (offset)
 	var shadow: Label = Label.new()
 	shadow.text = "IRONCORE"
 	shadow.add_theme_font_size_override("font_size", 72)
@@ -197,7 +197,7 @@ func _setup_title() -> void:
 	shadow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title_container.add_child(shadow)
 	
-	; Title text
+	# Title text
 	var title: Label = Label.new()
 	title.text = "IRONCORE"
 	title.add_theme_font_size_override("font_size", 72)
@@ -205,7 +205,7 @@ func _setup_title() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title_container.add_child(title)
 	
-	; Subtitle
+	# Subtitle
 	var subtitle: Label = Label.new()
 	subtitle.text = "ARENA"
 	subtitle.add_theme_font_size_override("font_size", 36)
@@ -215,55 +215,55 @@ func _setup_title() -> void:
 	title_container.add_child(subtitle)
 
 func _setup_menu_buttons() -> void:
-	; Main button container - centered
+	# Main button container - centered
 	var container: VBoxContainer = VBoxContainer.new()
 	container.position = Vector2(540, 220)
 	container.size = Vector2(200, 400)
 	container.theme_override_constants/separation = 16
 	add_child(container)
 	
-	; Continue button (if save exists)
+	# Continue button (if save exists)
 	if _has_save_file():
 		var continue_btn: UIButton = _create_menu_button("Continue", UIButton.ButtonStyle.PRIMARY)
 		continue_btn.pressed.connect(_on_continue)
 		container.add_child(continue_btn)
 	
-	; New Campaign
+	# New Campaign
 	var campaign_btn: UIButton = _create_menu_button("New Campaign", UIButton.ButtonStyle.SECONDARY)
 	campaign_btn.pressed.connect(_on_new_campaign)
 	container.add_child(campaign_btn)
 	
-	; Arcade Mode
+	# Arcade Mode
 	var arcade_btn: UIButton = _create_menu_button("Arcade Mode", UIButton.ButtonStyle.SECONDARY)
 	arcade_btn.pressed.connect(_on_arcade)
 	container.add_child(arcade_btn)
 	
-	; Separator
+	# Separator
 	var spacer: Control = Control.new()
 	spacer.custom_minimum_size = Vector2(0, 16)
 	container.add_child(spacer)
 	
-	; Bot Builder
+	# Bot Builder
 	var builder_btn: UIButton = _create_menu_button("Bot Builder", UIButton.ButtonStyle.GHOST)
 	builder_btn.pressed.connect(_on_builder)
 	container.add_child(builder_btn)
 	
-	; Shop
+	# Shop
 	var shop_btn: UIButton = _create_menu_button("Component Shop", UIButton.ButtonStyle.GHOST)
 	shop_btn.pressed.connect(_on_shop)
 	container.add_child(shop_btn)
 	
-	; Separator
+	# Separator
 	var spacer2: Control = Control.new()
 	spacer2.custom_minimum_size = Vector2(0, 16)
 	container.add_child(spacer2)
 	
-	; Settings
+	# Settings
 	var settings_btn: UIButton = _create_menu_button("Settings", UIButton.ButtonStyle.GHOST)
 	settings_btn.pressed.connect(_on_settings)
 	container.add_child(settings_btn)
 	
-	; Quit
+	# Quit
 	var quit_btn: UIButton = _create_menu_button("Quit", UIButton.ButtonStyle.DANGER)
 	quit_btn.pressed.connect(_on_quit)
 	container.add_child(quit_btn)
@@ -280,7 +280,7 @@ func _setup_save_info() -> void:
 	if not _has_save_file():
 		return
 	
-	; Show save info at bottom
+	# Show save info at bottom
 	var info_label: Label = Label.new()
 	info_label.text = _get_save_summary()
 	info_label.add_theme_font_size_override("font_size", 14)
@@ -302,12 +302,12 @@ func _get_save_summary() -> String:
 	]
 
 func _animate_entry() -> void:
-	; Fade in animation
+	# Fade in animation
 	modulate.a = 0
 	var tween: Tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, 0.5)
 
-; Button handlers
+# Button handlers
 func _on_continue() -> void:
 	continue_pressed.emit()
 

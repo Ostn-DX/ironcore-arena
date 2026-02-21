@@ -36,21 +36,21 @@ func _ready() -> void:
 	_update_bot_display()
 	_update_preview()
 	
-	; Connect button signals
+	# Connect button signals
 	back_btn.pressed.connect(_on_back_pressed)
 	test_btn.pressed.connect(_on_test_pressed)
 	
 	print("BuildScreen: Ready")
 
 func on_show() -> void:
-	; Called when screen becomes visible
+	# Called when screen becomes visible
 	_load_inventory()
 	_load_my_bots()
 	_update_bot_display()
 	visible = true
 
 func on_hide() -> void:
-	; Called when screen is hidden
+	# Called when screen is hidden
 	visible = false
 
 func _on_back_pressed() -> void:
@@ -59,7 +59,7 @@ func _on_back_pressed() -> void:
 
 func _on_test_pressed() -> void:
 	print("BuildScreen: Test battle pressed")
-	; Save current bot before battle
+	# Save current bot before battle
 	_save_current_bot()
 	test_battle_pressed.emit()
 

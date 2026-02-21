@@ -24,12 +24,12 @@ var is_panning: bool = false
 var last_mouse_pos: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
-	; Set initial zoom based on arena size
+	# Set initial zoom based on arena size
 	_calculate_initial_zoom()
 	target_zoom = zoom
 	target_position = position
 	
-	; Enable processing
+	# Enable processing
 	set_process(true)
 	set_process_input(true)
 
@@ -38,12 +38,12 @@ func _calculate_initial_zoom() -> void:
 	var viewport_size: Vector2 = get_viewport_rect().size
 	var arena_size: Vector2 = arena_bounds.size
 	
-	; Calculate zoom to fit arena with some padding
+	# Calculate zoom to fit arena with some padding
 	var zoom_x: float = viewport_size.x / arena_size.x * 0.9
 	var zoom_y: float = viewport_size.y / arena_size.y * 0.9
 	var fit_zoom: float = min(zoom_x, zoom_y)
 	
-	; Clamp to valid range
+	# Clamp to valid range
 	fit_zoom = clampf(fit_zoom, min_zoom, max_zoom)
 	
 	zoom = Vector2(fit_zoom, fit_zoom)
@@ -54,21 +54,21 @@ func setup_arena_bounds(bounds: Rect2) -> void:
 	arena_bounds = bounds
 	_calculate_initial_zoom()
 	
-	; Center camera on arena
+	# Center camera on arena
 	target_position = arena_bounds.get_center()
 	position = target_position
 
 func _process(delta: float) -> void:
-	; Smooth zoom interpolation
+	# Smooth zoom interpolation
 	zoom = zoom.lerp(target_zoom, zoom_speed * delta)
 	
-	; WASD keyboard movement (continuous)
+	# WASD keyboard movement (continuous)
 	_handle_keyboard_movement(delta)
 	
-	; Smooth position interpolation
+	# Smooth position interpolation
 	position = position.lerp(target_position, pan_speed * delta)
 	
-	; Clamp to bounds
+	# Clamp to bounds
 	_clamp_to_bounds()
 
 func _handle_keyboard_movement(delta: float) -> void:
@@ -89,7 +89,7 @@ func _handle_keyboard_movement(delta: float) -> void:
 		target_position += move_dir * edge_scroll_speed * delta / zoom.x
 
 func _input(event: InputEvent) -> void:
-	; Mouse wheel zoom
+	# Mouse wheel zoom
 	if event is InputEventMouseButton:
 		match event.button_index:
 			MOUSE_BUTTON_WHEEL_UP:
@@ -97,20 +97,20 @@ func _input(event: InputEvent) -> void:
 			MOUSE_BUTTON_WHEEL_DOWN:
 				_zoom_out()
 			MOUSE_BUTTON_MIDDLE:
-				; Middle click to start panning
+				# Middle click to start panning
 				if event.pressed:
 					is_panning = true
 					last_mouse_pos = event.position
 				else:
 					is_panning = false
 	
-	; Middle click drag panning
+	# Middle click drag panning
 	if event is InputEventMouseMotion and is_panning:
 		var delta: Vector2 = event.position - last_mouse_pos
 		target_position -= delta / zoom.x  ; Account for zoom in pan calculation
 		last_mouse_pos = event.position
 	
-	; Edge scrolling
+	# Edge scrolling
 	if event is InputEventMouseMotion:
 		_handle_edge_scroll(event.position, get_viewport_rect().size)
 
@@ -126,21 +126,21 @@ func _handle_edge_scroll(mouse_pos: Vector2, viewport_size: Vector2) -> void:
 	## Move camera when mouse is near screen edges
 	var scroll_dir: Vector2 = Vector2.ZERO
 	
-	; Check left edge
+	# Check left edge
 	if mouse_pos.x < edge_scroll_margin:
 		scroll_dir.x = -1
-	; Check right edge
+	# Check right edge
 	elif mouse_pos.x > viewport_size.x - edge_scroll_margin:
 		scroll_dir.x = 1
 	
-	; Check top edge
+	# Check top edge
 	if mouse_pos.y < edge_scroll_margin:
 		scroll_dir.y = -1
-	; Check bottom edge
+	# Check bottom edge
 	elif mouse_pos.y > viewport_size.y - edge_scroll_margin:
 		scroll_dir.y = 1
 	
-	; Apply edge scrolling
+	# Apply edge scrolling
 	if scroll_dir != Vector2.ZERO:
 		target_position += scroll_dir * edge_scroll_speed * get_process_delta_time() / zoom.x
 
@@ -152,19 +152,19 @@ func _clamp_to_bounds() -> void:
 	var viewport_size: Vector2 = get_viewport_rect().size / zoom
 	var half_viewport: Vector2 = viewport_size / 2
 	
-	; Calculate clamp bounds
+	# Calculate clamp bounds
 	var min_x: float = arena_bounds.position.x + half_viewport.x
 	var max_x: float = arena_bounds.end.x - half_viewport.x
 	var min_y: float = arena_bounds.position.y + half_viewport.y
 	var max_y: float = arena_bounds.end.y - half_viewport.y
 	
-	; Handle case where arena is smaller than viewport
+	# Handle case where arena is smaller than viewport
 	if min_x > max_x:
 		min_x = max_x = arena_bounds.get_center().x
 	if min_y > max_y:
 		min_y = max_y = arena_bounds.get_center().y
 	
-	; Clamp target position
+	# Clamp target position
 	target_position.x = clampf(target_position.x, min_x, max_x)
 	target_position.y = clampf(target_position.y, min_y, max_y)
 

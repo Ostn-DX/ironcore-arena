@@ -16,7 +16,7 @@ enum ButtonStyle {
 @export var corner_radius: int = 8
 @export var shadow_offset: Vector2 = Vector2(4, 4)
 
-; Colors by style
+# Colors by style
 var _colors: Dictionary = {
 	ButtonStyle.PRIMARY: Color("#2D3548"),
 	ButtonStyle.SECONDARY: Color("#252B3D"),
@@ -59,7 +59,7 @@ func _update_style() -> void:
 	var base_color: Color = _colors[button_style]
 	var accent: Color = _accent_colors[button_style]
 	
-	; Normal state
+	# Normal state
 	var normal_style := StyleBoxFlat.new()
 	normal_style.bg_color = base_color
 	normal_style.corner_radius_top_left = corner_radius
@@ -76,17 +76,17 @@ func _update_style() -> void:
 	
 	add_theme_stylebox_override("normal", normal_style)
 	
-	; Hover state
+	# Hover state
 	var hover_style := normal_style.duplicate()
 	hover_style.bg_color = base_color.lightened(0.15)
 	add_theme_stylebox_override("hover", hover_style)
 	
-	; Pressed state
+	# Pressed state
 	var pressed_style := normal_style.duplicate()
 	pressed_style.bg_color = base_color.darkened(0.1)
 	add_theme_stylebox_override("pressed", pressed_style)
 	
-	; Text color
+	# Text color
 	var text_color: Color = Color.WHITE
 	if button_style == ButtonStyle.SUCCESS or button_style == ButtonStyle.DANGER:
 		text_color = Color("#1A1F2E")  ; Dark text on bright buttons
@@ -96,7 +96,7 @@ func _update_style() -> void:
 	add_theme_color_override("font_pressed_color", text_color.darkened(0.1))
 
 func _on_mouse_entered() -> void:
-	; Subtle shadow lift
+	# Subtle shadow lift
 	if _shadow_rect and not _is_pressed_down:
 		var tween: Tween = create_tween()
 		tween.tween_property(_shadow_rect, "position", shadow_offset * 0.7, 0.1)
@@ -111,7 +111,7 @@ func _on_mouse_exited() -> void:
 func _on_button_down() -> void:
 	_is_pressed_down = true
 	if _shadow_rect:
-		; Shadow disappears on press (button "sits down")
+		# Shadow disappears on press (button "sits down")
 		var tween: Tween = create_tween()
 		tween.tween_property(_shadow_rect, "position", Vector2.ZERO, 0.05)
 		tween.parallel().tween_property(_shadow_rect, "modulate:a", 0, 0.05)

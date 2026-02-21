@@ -15,13 +15,13 @@ func _ready() -> void:
 	visible = false  ; Hidden by default
 
 func _setup_ui() -> void:
-	; Semi-transparent background
+	# Semi-transparent background
 	var bg: ColorRect = ColorRect.new()
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.color = Color(0, 0, 0, 0.9)
 	add_child(bg)
 	
-	; Title
+	# Title
 	var title: Label = Label.new()
 	title.text = "DEBUG MENU"
 	title.add_theme_font_size_override("font_size", 32)
@@ -31,33 +31,33 @@ func _setup_ui() -> void:
 	title.modulate = Color(1, 0.5, 0)  ; Orange for debug
 	add_child(title)
 	
-	; Container for buttons
+	# Container for buttons
 	var container: VBoxContainer = VBoxContainer.new()
 	container.position = Vector2(440, 100)
 	container.size = Vector2(400, 500)
 	container.theme_override_constants/separation = 10
 	add_child(container)
 	
-	; Section: Arena Select
+	# Section: Arena Select
 	_add_section_header(container, "ARENA SELECT")
 	_add_arena_button(container, "Boot Camp (1v1)", "arena_boot_camp")
 	_add_arena_button(container, "Iron Graveyard (1v2)", "arena_iron_graveyard")
 	_add_arena_button(container, "Kill Grid (1v3)", "arena_kill_grid")
 	
-	; Section: Cheats
+	# Section: Cheats
 	_add_section_header(container, "CHEATS")
 	_add_toggle_button(container, "Infinite Money", _toggle_infinite_money)
 	_add_action_button(container, "+1000 Credits", _add_credits)
 	_add_action_button(container, "Unlock All Arenas", _unlock_all)
 	_add_action_button(container, "Reset Save (New Game)", _reset_save)
 	
-	; Section: Battle
+	# Section: Battle
 	_add_section_header(container, "BATTLE")
 	_add_action_button(container, "Instant Win", _instant_win)
 	_add_action_button(container, "Instant Loss", _instant_loss)
 	_add_action_button(container, "Kill All Enemies", _kill_enemies)
 	
-	; Close button
+	# Close button
 	var spacer: Control = Control.new()
 	spacer.custom_minimum_size = Vector2(0, 20)
 	container.add_child(spacer)
@@ -68,7 +68,7 @@ func _setup_ui() -> void:
 	close_btn.pressed.connect(hide_menu)
 	container.add_child(close_btn)
 	
-	; Instructions
+	# Instructions
 	var instructions: Label = Label.new()
 	instructions.text = "F1: Toggle Debug Menu | F2: Quick Win | F3: +1000 CR"
 	instructions.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -126,7 +126,7 @@ func _input(event: InputEvent) -> void:
 func toggle_visibility() -> void:
 	visible = !visible
 	if visible:
-		; Pause game when debug menu open
+		# Pause game when debug menu open
 		get_tree().paused = true
 		print("DebugMenu: Opened")
 	else:
@@ -141,16 +141,16 @@ func hide_menu() -> void:
 	visible = false
 	get_tree().paused = false
 
-; ============================================================================
-; HANDLERS
-; ============================================================================
+# ============================================================================
+# HANDLERS
+# ============================================================================
 
 func _on_arena_selected(arena_id: String) -> void:
 	print("DebugMenu: Selected arena: ", arena_id)
 	arena_selected.emit(arena_id)
 	hide_menu()
 	
-	; Start battle in selected arena
+	# Start battle in selected arena
 	if SceneFlowManager:
 		SceneFlowManager.start_battle(arena_id)
 
@@ -179,7 +179,7 @@ func _reset_save() -> void:
 func _instant_win() -> void:
 	print("DebugMenu: Instant win triggered")
 	instant_win.emit()
-	; Force battle end with victory
+	# Force battle end with victory
 	if BattleManager and BattleManager.is_battle_active():
 		BattleManager._end_battle(BattleManager.BattleResult.ResultType.VICTORY)
 
