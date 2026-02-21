@@ -91,11 +91,10 @@ func _ready() -> void:
 
 func _connect_signals() -> void:
     ## Connect to SimulationManager signals
-    if SimulationManager:
-        SimulationManager.entity_destroyed.connect(_on_entity_destroyed)
-        SimulationManager.entity_damaged.connect(_on_entity_damaged)
-        SimulationManager.projectile_spawned.connect(_on_projectile_spawned)
-        SimulationManager.command_issued.connect(_on_command_issued)
+    SimulationManager.entity_destroyed.connect(_on_entity_destroyed)
+    SimulationManager.entity_damaged.connect(_on_entity_damaged)
+    SimulationManager.projectile_spawned.connect(_on_projectile_spawned)
+    SimulationManager.command_issued.connect(_on_command_issued)
 
 
 # ============================================================================

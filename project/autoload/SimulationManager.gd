@@ -531,17 +531,16 @@ func _end_battle(result: String) -> void:
 		battle_ended.emit(result, current_tick)
 
 func _load_part_data() -> void:
-	if DataLoader:
-		_part_data = {}
-		for part in DataLoader.get_all_chassis():
-			if part is Dictionary and part.has("id"):
-				_part_data[part["id"]] = part
-		for part in DataLoader.get_all_plating():
-			if part is Dictionary and part.has("id"):
-				_part_data[part["id"]] = part
-		for part in DataLoader.get_all_weapons():
-			if part is Dictionary and part.has("id"):
-				_part_data[part["id"]] = part
+	_part_data = {}
+	for part in DataLoader.get_all_chassis():
+		if part is Dictionary and part.has("id"):
+			_part_data[part["id"]] = part
+	for part in DataLoader.get_all_plating():
+		if part is Dictionary and part.has("id"):
+			_part_data[part["id"]] = part
+	for part in DataLoader.get_all_weapons():
+		if part is Dictionary and part.has("id"):
+			_part_data[part["id"]] = part
 
 func _setup_arena(arena_data: Dictionary) -> void:
 	var size: Dictionary = arena_data.get("size", {"width": 800, "height": 600})

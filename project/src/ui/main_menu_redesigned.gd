@@ -292,14 +292,13 @@ func _has_save_file() -> bool:
 	return FileAccess.file_exists("user://ironcore_save.json")
 
 func _get_save_summary() -> String:
-	if not GameState:
-		return ""
-	
-	return "Tier %d | %d CR | %d arenas" % [
-		GameState.current_tier + 1,
-		GameState.credits,
-		GameState.completed_arenas.size()
-	]
+	return ""
+
+return "Tier %d | %d CR | %d arenas" % [
+	GameState.current_tier + 1,
+	GameState.credits,
+	GameState.completed_arenas.size()
+]
 
 func _animate_entry() -> void:
 	# Fade in animation

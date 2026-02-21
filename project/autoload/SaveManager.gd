@@ -26,35 +26,31 @@ func _process(delta: float) -> void:
 
 func save() -> void:
 	## Manual save
-	if GameState:
-		GameState.save_game()
-		save_completed.emit(true)
-	else:
-		push_error("SaveManager: GameState not available")
-		save_completed.emit(false)
+	GameState.save_game()
+	save_completed.emit(true)
+else:
+	push_error("SaveManager: GameState not available")
+	save_completed.emit(false)
 
 
 func autosave() -> void:
 	## Automatic save (called on interval and key events)
-	if GameState:
-		GameState.save_game()
-		print("Autosaved")
+	GameState.save_game()
+	print("Autosaved")
 
 
 func load() -> void:
 	## Manual load
-	if GameState:
-		var success: bool = GameState.load_game()
-		load_completed.emit(success)
-	else:
-		push_error("SaveManager: GameState not available")
-		load_completed.emit(false)
+	var success: bool = GameState.load_game()
+	load_completed.emit(success)
+else:
+	push_error("SaveManager: GameState not available")
+	load_completed.emit(false)
 
 
 func delete_save() -> void:
 	## Delete save file (for reset/new game)
-	if GameState:
-		GameState.delete_save()
+	GameState.delete_save()
 
 
 func trigger_autosave_now() -> void:

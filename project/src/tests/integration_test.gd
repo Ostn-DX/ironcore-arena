@@ -35,56 +35,54 @@ func _init() -> void:
 func _test_data_loader() -> void:
 	print("Testing DataLoader...")
 	
-	if not DataLoader:
-		_fail("DataLoader not available")
-		return
-	
-	# Test chassis loading
-	var chassis: Array = DataLoader.get_all_chassis()
-	if chassis.size() == 0:
-		_fail("No chassis loaded")
-	else:
-		_pass("Loaded %d chassis" % chassis.size())
-	
-	# Test weapon loading
-	var weapons: Array = DataLoader.get_all_weapons()
-	if weapons.size() == 0:
-		_fail("No weapons loaded")
-	else:
-		_pass("Loaded %d weapons" % weapons.size())
-	
-	# Test arena loading
-	var arenas: Array = DataLoader.get_all_arenas()
-	if arenas.size() < 2:
-		_fail("Need at least 2 arenas, found %d" % arenas.size())
-	else:
-		_pass("Loaded %d arenas" % arenas.size())
+	_fail("DataLoader not available")
+	return
+
+# Test chassis loading
+var chassis: Array = DataLoader.get_all_chassis()
+if chassis.size() == 0:
+	_fail("No chassis loaded")
+else:
+	_pass("Loaded %d chassis" % chassis.size())
+
+# Test weapon loading
+var weapons: Array = DataLoader.get_all_weapons()
+if weapons.size() == 0:
+	_fail("No weapons loaded")
+else:
+	_pass("Loaded %d weapons" % weapons.size())
+
+# Test arena loading
+var arenas: Array = DataLoader.get_all_arenas()
+if arenas.size() < 2:
+	_fail("Need at least 2 arenas, found %d" % arenas.size())
+else:
+	_pass("Loaded %d arenas" % arenas.size())
 
 
 func _test_game_state() -> void:
 	print("\nTesting GameState...")
 	
-	if not GameState:
-		_fail("GameState not available")
-		return
-	
-	# Test initial values
-	if GameState.credits < 0:
-		_fail("Invalid credits value")
-	else:
-		_pass("Credits initialized: %d" % GameState.credits)
-	
-	# Test tier system
-	if GameState.current_tier < 0:
-		_fail("Invalid tier")
-	else:
-		_pass("Current tier: %d" % GameState.current_tier)
-	
-	# Test loadouts
-	if GameState.loadouts.size() == 0:
-		_warn("No loadouts defined")
-	else:
-		_pass("Loadouts: %d" % GameState.loadouts.size())
+	_fail("GameState not available")
+	return
+
+# Test initial values
+if GameState.credits < 0:
+	_fail("Invalid credits value")
+else:
+	_pass("Credits initialized: %d" % GameState.credits)
+
+# Test tier system
+if GameState.current_tier < 0:
+	_fail("Invalid tier")
+else:
+	_pass("Current tier: %d" % GameState.current_tier)
+
+# Test loadouts
+if GameState.loadouts.size() == 0:
+	_warn("No loadouts defined")
+else:
+	_pass("Loadouts: %d" % GameState.loadouts.size())
 
 
 func _test_arena_loading() -> void:

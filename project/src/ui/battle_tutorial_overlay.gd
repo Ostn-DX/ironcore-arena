@@ -174,11 +174,10 @@ func hide_tip() -> void:
 
 func _on_ok_pressed() -> void:
 	## Acknowledge the tip
-	if AudioManager:
-		AudioManager.play_ui_click()
-	
-	hide_tip()
-	tip_acknowledged.emit()
+	AudioManager.play_ui_click()
+
+hide_tip()
+tip_acknowledged.emit()
 
 
 func is_tip_active() -> bool:
