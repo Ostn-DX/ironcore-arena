@@ -1,5 +1,4 @@
 extends Node
-class_name AudioManager
 ## AudioManager — handles all game audio (SFX, music, UI sounds).
 ## Provides categorized sound playback with volume control.
 

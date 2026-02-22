@@ -51,9 +51,6 @@ func _load_parts() -> void:
 	armor_list.clear()
 	weapon_list.clear()
 	
-	if not DataLoader:
-		return
-	
 	for part in _data_loader.get_all_parts():
 		if not part is Dictionary:
 			continue

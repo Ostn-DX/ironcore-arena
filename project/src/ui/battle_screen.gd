@@ -63,13 +63,12 @@ func _setup_signals() -> void:
 	battle_manager.battle_ended.connect(_on_battle_ended)
 	battle_manager.rewards_calculated.connect(_on_rewards_calculated)
 	
-	
-		_simulation_manager.entity_moved.connect(_on_entity_moved)
-		_simulation_manager.entity_damaged.connect(_on_entity_damaged)
-		_simulation_manager.entity_destroyed.connect(_on_entity_destroyed)
-		_simulation_manager.projectile_spawned.connect(_on_projectile_spawned)
-		_simulation_manager.projectile_destroyed.connect(_on_projectile_destroyed)
-		_simulation_manager.tick_processed.connect(_on_tick_processed)
+	_simulation_manager.entity_moved.connect(_on_entity_moved)
+	_simulation_manager.entity_damaged.connect(_on_entity_damaged)
+	_simulation_manager.entity_destroyed.connect(_on_entity_destroyed)
+	_simulation_manager.projectile_spawned.connect(_on_projectile_spawned)
+	_simulation_manager.projectile_destroyed.connect(_on_projectile_destroyed)
+	_simulation_manager.tick_processed.connect(_on_tick_processed)
 
 func _setup_ui() -> void:
 	countdown_label = Label.new()

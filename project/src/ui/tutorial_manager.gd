@@ -234,7 +234,7 @@ func _complete_tutorial() -> void:
 	hide_tutorial()
 	
 	# Mark tutorial as complete in save
-	if GameState:
+	
 		_game_state.settings["tutorial_completed"] = true
 		_game_state.save_game()
 	
@@ -243,7 +243,7 @@ func _complete_tutorial() -> void:
 
 func _on_continue() -> void:
 	## Handle continue button
-	if AudioManager:
+	
 		_audio_manager.play_ui_click()
 	
 	if current_step == TutorialStep.COMPLETE:
@@ -254,14 +254,14 @@ func _on_continue() -> void:
 
 func _on_skip() -> void:
 	## Handle skip button
-	if AudioManager:
+	
 		_audio_manager.play_ui_cancel()
 	
 	hide_tutorial()
 	tutorial_active = false
 	
 	# Mark as complete even if skipped
-	if GameState:
+	
 		_game_state.settings["tutorial_completed"] = true
 		_game_state.save_game()
 	
@@ -270,7 +270,7 @@ func _on_skip() -> void:
 
 func is_tutorial_completed() -> bool:
 	## Check if tutorial was already completed
-	if GameState:
+	
 		return _game_state.settings.get("tutorial_completed", false)
 	return false
 
@@ -281,7 +281,7 @@ func should_show_tutorial() -> bool:
 	if is_tutorial_completed():
 		return false
 	
-	if GameState:
+	
 		# Don't show if player has already won battles
 		if _game_state.completed_arenas.size() > 0:
 			return false

@@ -138,9 +138,6 @@ func _create_value_label(parent: Node, slider: HSlider) -> Label:
 
 func _load_current_settings() -> void:
 	## Load current audio settings
-	
-		return
-	
 	# Set slider values (convert 0-1 to 0-100)
 	master_slider.value = _audio_manager.master_volume * 100
 	sfx_slider.value = _audio_manager.sfx_volume * 100
