@@ -43,8 +43,8 @@ func _setup_audio_buses() -> void:
 	for bus_name in buses:
 		var idx: int = AudioServer.get_bus_index(bus_name)
 		if idx == -1:
-			idx = AudioServer.add_bus(AudioServer.bus_count)
-			AudioServer.set_bus_name(idx, bus_name)
+			var new_idx: int = AudioServer.add_bus(AudioServer.bus_count)
+			AudioServer.set_bus_name(new_idx, bus_name)
 
 
 func _setup_players() -> void:

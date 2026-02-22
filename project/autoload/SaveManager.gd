@@ -5,6 +5,8 @@ extends Node
 signal save_completed(success: bool)
 signal load_completed(success: bool)
 
+@onready var _game_state = get_node("/root/GameState")
+
 var autosave_enabled: bool = true
 var autosave_interval_seconds: float = 60.0
 var _autosave_timer: float = 0.0
@@ -26,35 +28,25 @@ func _process(delta: float) -> void:
 
 func save() -> void:
 	## Manual save
-	if GameState:
-		GameState.save_game()
-		save_completed.emit(true)
-	else:
-		push_error("SaveManager: GameState not available")
-		save_completed.emit(false)
+	_game_state.save_game()
+	save_completed.emit(true)
 
 
 func autosave() -> void:
 	## Automatic save (called on interval and key events)
-	if GameState:
-		GameState.save_game()
-		print("Autosaved")
+	_game_state.save_game()
+	print("Autosaved")
 
 
 func load() -> void:
 	## Manual load
-	if GameState:
-		var success: bool = GameState.load_game()
-		load_completed.emit(success)
-	else:
-		push_error("SaveManager: GameState not available")
-		load_completed.emit(false)
+	var success: bool = _game_state.load_game()
+	load_completed.emit(success)
 
 
 func delete_save() -> void:
 	## Delete save file (for reset/new game)
-	if GameState:
-		GameState.delete_save()
+	_game_state.delete_save()
 
 
 func trigger_autosave_now() -> void:
