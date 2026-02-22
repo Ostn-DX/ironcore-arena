@@ -49,24 +49,23 @@ func _refresh_available_components() -> void:
     ## Refresh list of components available for purchase
     available_components.clear()
     
-    var player_tier: int = _game_state.current_tier if GameState else 0
+    var player_tier: int = _game_state.current_tier
     
     # Get all components from DataLoader
+    # Chassis
+    for chassis in _data_loader.get_all_chassis():
+        if _is_component_available(chassis, player_tier):
+            available_components.append(_normalize_component(chassis, "chassis"))
     
-        # Chassis
-        for chassis in _data_loader.get_all_chassis():
-            if _is_component_available(chassis, player_tier):
-                available_components.append(_normalize_component(chassis, "chassis"))
-        
-        # Plating
-        for plating in _data_loader.get_all_plating():
-            if _is_component_available(plating, player_tier):
-                available_components.append(_normalize_component(plating, "plating"))
-        
-        # Weapons
-        for weapon in _data_loader.get_all_weapons():
-            if _is_component_available(weapon, player_tier):
-                available_components.append(_normalize_component(weapon, "weapons"))
+    # Plating
+    for plating in _data_loader.get_all_plating():
+        if _is_component_available(plating, player_tier):
+            available_components.append(_normalize_component(plating, "plating"))
+    
+    # Weapons
+    for weapon in _data_loader.get_all_weapons():
+        if _is_component_available(weapon, player_tier):
+            available_components.append(_normalize_component(weapon, "weapons"))
     
     print("ShopManager: Refreshed %d available components" % available_components.size())
 

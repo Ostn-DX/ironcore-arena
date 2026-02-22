@@ -64,9 +64,7 @@ func get_campaign_tiers() -> Array:
 
 func get_current_tier() -> int:
 	## Get the player's current tier
-	
-		return _game_state.current_tier
-	return 0
+	return _game_state.current_tier
 
 
 func get_tier_data(tier: int) -> Dictionary:
@@ -85,7 +83,7 @@ func get_next_arena() -> String:
 	var arenas: Array = tier_data.get("arenas", [])
 	
 	for arena_id in arenas:
-		_game_state and not _game_state.is_arena_completed(arena_id):
+		if not _game_state.is_arena_completed(arena_id):
 			return arena_id
 	
 	return ""
@@ -102,7 +100,7 @@ func is_campaign_complete() -> bool:
 		
 		var arenas: Array = tier_data.get("arenas", [])
 		for arena_id in arenas:
-			_game_state and not _game_state.is_arena_completed(arena_id):
+			if not _game_state.is_arena_completed(arena_id):
 				return false
 	
 	return true

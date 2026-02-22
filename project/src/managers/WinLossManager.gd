@@ -142,7 +142,7 @@ func check_victory_condition() -> Dictionary:
     ## Check current victory condition
     ## Returns: {"ended": bool, "victory": bool, "condition": EndCondition, "reason": String}
     
-    _simulation_manager and not _simulation_manager.is_running:
+    if not _simulation_manager.is_running:
         return {"ended": false, "victory": false, "condition": -1, "reason": "Not running"}
     
     var player_alive: int = 0

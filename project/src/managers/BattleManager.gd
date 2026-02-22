@@ -403,7 +403,7 @@ func _calculate_rewards() -> void:
 		"entry_fee": current_arena_data.get("entry_fee", 0)
 	}
 	
-	_game_state and _current_result.result_type == BattleResult.ResultType.VICTORY:
+	if _current_result.result_type == BattleResult.ResultType.VICTORY:
 		_game_state.add_credits(rewards["credits"])
 	
 	rewards_calculated.emit(rewards)
