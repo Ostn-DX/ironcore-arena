@@ -3,6 +3,8 @@ class_name WinLossManager
 ## WinLossManager — tracks battle statistics and determines victory conditions.
 ## Works with BattleManager to provide detailed end-of-battle analysis.
 
+@onready var _simulation_manager = get_node("/root/SimulationManager")
+
 enum EndCondition {
     ALL_ENEMIES_DESTROYED,    # Normal victory
     ALL_PLAYER_BOTS_DESTROYED, # Normal defeat  
@@ -91,11 +93,11 @@ func _ready() -> void:
 
 func _connect_signals() -> void:
     ## Connect to SimulationManager signals
-    if SimulationManager:
-        SimulationManager.entity_destroyed.connect(_on_entity_destroyed)
-        SimulationManager.entity_damaged.connect(_on_entity_damaged)
-        SimulationManager.projectile_spawned.connect(_on_projectile_spawned)
-        SimulationManager.command_issued.connect(_on_command_issued)
+    
+        _simulation_manager.entity_destroyed.connect(_on_entity_destroyed)
+        _simulation_manager.entity_damaged.connect(_on_entity_damaged)
+        _simulation_manager.projectile_spawned.connect(_on_projectile_spawned)
+        _simulation_manager.command_issued.connect(_on_command_issued)
 
 
 # ============================================================================
@@ -140,7 +142,7 @@ func check_victory_condition() -> Dictionary:
     ## Check current victory condition
     ## Returns: {"ended": bool, "victory": bool, "condition": EndCondition, "reason": String}
     
-    if not SimulationManager or not SimulationManager.is_running:
+    _simulation_manager and not _simulation_manager.is_running:
         return {"ended": false, "victory": false, "condition": -1, "reason": "Not running"}
     
     var player_alive: int = 0
@@ -150,8 +152,8 @@ func check_victory_condition() -> Dictionary:
     var player_max_hp: int = 0
     var enemy_max_hp: int = 0
     
-    for bot_id in SimulationManager.bots:
-        var bot = SimulationManager.bots[bot_id]
+    for bot_id in _simulation_manager.bots:
+        var bot = _simulation_manager.bots[bot_id]
         if bot.team == 0:
             player_max_hp += bot.max_hp
             if bot.is_alive:
@@ -191,8 +193,8 @@ func resolve_timeout() -> Dictionary:
     var player_count: int = 0
     var enemy_count: int = 0
     
-    for bot_id in SimulationManager.bots:
-        var bot = SimulationManager.bots[bot_id]
+    for bot_id in _simulation_manager.bots:
+        var bot = _simulation_manager.bots[bot_id]
         var hp_pct: float = float(bot.hp) / float(bot.max_hp)
         
         if bot.team == 0:
@@ -235,7 +237,7 @@ func _on_entity_destroyed(bot_id: int, team: int) -> void:
     if not is_tracking or not current_stats:
         return
     
-    var tick: int = SimulationManager.current_tick if SimulationManager else 0
+    var tick: int = _simulation_manager.current_tick if SimulationManager else 0
     
     if team == 0:
         current_stats.player_bots_destroyed += 1
@@ -319,7 +321,7 @@ func _log_event(event_type: String, data: Dictionary) -> void:
         event_log.pop_front()  # Remove oldest
     
     event_log.append({
-        "tick": SimulationManager.current_tick if SimulationManager else 0,
+        "tick": _simulation_manager.current_tick if SimulationManager else 0,
         "type": event_type,
         "data": data
     })

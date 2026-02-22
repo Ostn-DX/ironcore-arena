@@ -6,6 +6,9 @@ signal arena_unlocked(arena_id: String)
 signal campaign_completed(campaign_id: String)
 signal tier_unlocked(tier: int)
 
+@onready var _game_state = get_node("/root/GameState")
+@onready var _data_loader = get_node("/root/DataLoader")
+
 # Campaign data
 var current_campaign: String = "main"
 var campaign_data: Dictionary = {}
@@ -61,8 +64,8 @@ func get_campaign_tiers() -> Array:
 
 func get_current_tier() -> int:
 	## Get the player's current tier
-	if GameState:
-		return GameState.current_tier
+	
+		return _game_state.current_tier
 	return 0
 
 
@@ -82,7 +85,7 @@ func get_next_arena() -> String:
 	var arenas: Array = tier_data.get("arenas", [])
 	
 	for arena_id in arenas:
-		if not GameState or not GameState.is_arena_completed(arena_id):
+		_game_state and not _game_state.is_arena_completed(arena_id):
 			return arena_id
 	
 	return ""
@@ -99,7 +102,7 @@ func is_campaign_complete() -> bool:
 		
 		var arenas: Array = tier_data.get("arenas", [])
 		for arena_id in arenas:
-			if GameState and not GameState.is_arena_completed(arena_id):
+			_game_state and not _game_state.is_arena_completed(arena_id):
 				return false
 	
 	return true
@@ -144,7 +147,7 @@ func get_arena_difficulty(arena_id: String) -> String:
 
 func get_arena_display_info(arena_id: String) -> Dictionary:
 	## Get combined display info for an arena
-	var arena_data: Dictionary = DataLoader.get_arena(arena_id) if DataLoader else {}
+	var arena_data: Dictionary = _data_loader.get_arena(arena_id) if DataLoader else {}
 	var config: Dictionary = get_arena_config(arena_id)
 	
 	return {
@@ -157,8 +160,8 @@ func get_arena_display_info(arena_id: String) -> Dictionary:
 		"weight_limit": arena_data.get("weight_limit", 120),
 		"par_time": arena_data.get("par_time", 120),
 		"base_reward": arena_data.get("base_reward", 100),
-		"is_completed": GameState.is_arena_completed(arena_id) if GameState else false,
-		"is_unlocked": GameState.is_arena_unlocked(arena_id) if GameState else false
+		"is_completed": _game_state.is_arena_completed(arena_id) if GameState else false,
+		"is_unlocked": _game_state.is_arena_unlocked(arena_id) if GameState else false
 	}
 
 

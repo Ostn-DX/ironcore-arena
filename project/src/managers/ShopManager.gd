@@ -9,6 +9,9 @@ signal purchase_failed(component_id: String, reason: String)
 signal category_changed(category: String)
 signal tier_filter_changed(tier: int)
 
+@onready var _game_state = get_node("/root/GameState")
+@onready var _data_loader = get_node("/root/DataLoader")
+
 # Shop categories
 const CATEGORIES: Array[String] = ["all", "chassis", "plating", "weapons"]
 
@@ -46,22 +49,22 @@ func _refresh_available_components() -> void:
     ## Refresh list of components available for purchase
     available_components.clear()
     
-    var player_tier: int = GameState.current_tier if GameState else 0
+    var player_tier: int = _game_state.current_tier if GameState else 0
     
     # Get all components from DataLoader
-    if DataLoader:
+    
         # Chassis
-        for chassis in DataLoader.get_all_chassis():
+        for chassis in _data_loader.get_all_chassis():
             if _is_component_available(chassis, player_tier):
                 available_components.append(_normalize_component(chassis, "chassis"))
         
         # Plating
-        for plating in DataLoader.get_all_plating():
+        for plating in _data_loader.get_all_plating():
             if _is_component_available(plating, player_tier):
                 available_components.append(_normalize_component(plating, "plating"))
         
         # Weapons
-        for weapon in DataLoader.get_all_weapons():
+        for weapon in _data_loader.get_all_weapons():
             if _is_component_available(weapon, player_tier):
                 available_components.append(_normalize_component(weapon, "weapons"))
     
@@ -163,17 +166,17 @@ func can_purchase(component_id: String, quantity: int = 1) -> Dictionary:
         return {"can_buy": false, "reason": "Component not available"}
     
     # Check tier lock
-    var player_tier: int = GameState.current_tier if GameState else 0
+    var player_tier: int = _game_state.current_tier if GameState else 0
     if component["tier"] > player_tier:
         return {"can_buy": false, "reason": "Requires tier %d" % component["tier"]}
     
     # Check cost
     var total_cost: int = component["cost"] * quantity
-    if GameState and GameState.credits < total_cost:
+    if GameState and _game_state.credits < total_cost:
         return {"can_buy": false, "reason": "Not enough credits (%d needed)" % total_cost}
     
     # Arcade mode always allows
-    if GameState and GameState.is_arcade_mode():
+    if GameState and _game_state.is_arcade_mode():
         return {"can_buy": true, "reason": ""}
     
     return {"can_buy": true, "reason": ""}
@@ -203,15 +206,15 @@ func purchase_component(component_id: String, quantity: int = 1) -> bool:
     var total_cost: int = component["cost"] * quantity
     
     # Deduct credits
-    if GameState:
-        if not GameState.spend_credits(total_cost):
+    
+        if not _game_state.spend_credits(total_cost):
             purchase_failed.emit(component_id, "Transaction failed")
             return false
         
         # Add component to inventory
-        GameState.add_part(component_id, quantity)
+        _game_state.add_part(component_id, quantity)
         
-        component_purchased.emit(component_id, quantity, GameState.credits)
+        component_purchased.emit(component_id, quantity, _game_state.credits)
         print("ShopManager: Purchased %dx %s for %d credits" % [quantity, component_id, total_cost])
         return true
     
@@ -229,8 +232,8 @@ func get_component_cost(component_id: String) -> int:
 
 func get_owned_quantity(component_id: String) -> int:
     ## Get how many of a component the player owns
-    if GameState:
-        return GameState.get_part_quantity(component_id)
+    
+        return _game_state.get_part_quantity(component_id)
     return 0
 
 
@@ -293,18 +296,18 @@ func get_tier_display_name(tier: int) -> String:
 # ============================================================================
 
 func get_player_credits() -> int:
-    if GameState:
-        return GameState.credits
+    
+        return _game_state.credits
     return 0
 
 
 func get_player_tier() -> int:
-    if GameState:
-        return GameState.current_tier
+    
+        return _game_state.current_tier
     return 0
 
 
 func is_arcade_mode() -> bool:
-    if GameState:
-        return GameState.is_arcade_mode()
+    
+        return _game_state.is_arcade_mode()
     return false
