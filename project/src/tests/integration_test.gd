@@ -5,6 +5,12 @@ extends SceneTree
 var tests_passed: int = 0
 var tests_failed: int = 0
 
+func _get_data_loader():
+	return get_root().get_node("DataLoader")
+
+func _get_game_state():
+	return get_root().get_node("GameState")
+
 func _init() -> void:
 	print("=== IRONCORE ARENA INTEGRATION TEST ===\n")
 	
@@ -33,28 +39,28 @@ func _init() -> void:
 
 
 func _test_data_loader() -> void:
-	print("Testing DataLoader...")
+	print("Testing _get_data_loader()...")
 	
-	if not DataLoader:
+	if not _get_data_loader():
 		_fail("DataLoader not available")
 		return
 	
 	# Test chassis loading
-	var chassis: Array = DataLoader.get_all_chassis()
+	var chassis: Array = _get_data_loader().get_all_chassis()
 	if chassis.size() == 0:
 		_fail("No chassis loaded")
 	else:
 		_pass("Loaded %d chassis" % chassis.size())
 	
 	# Test weapon loading
-	var weapons: Array = DataLoader.get_all_weapons()
+	var weapons: Array = _get_data_loader().get_all_weapons()
 	if weapons.size() == 0:
 		_fail("No weapons loaded")
 	else:
 		_pass("Loaded %d weapons" % weapons.size())
 	
 	# Test arena loading
-	var arenas: Array = DataLoader.get_all_arenas()
+	var arenas: Array = _get_data_loader().get_all_arenas()
 	if arenas.size() < 2:
 		_fail("Need at least 2 arenas, found %d" % arenas.size())
 	else:
@@ -62,29 +68,29 @@ func _test_data_loader() -> void:
 
 
 func _test_game_state() -> void:
-	print("\nTesting GameState...")
+	print("\nTesting _get_game_state()...")
 	
-	if not GameState:
+	if not _get_game_state():
 		_fail("GameState not available")
 		return
 	
 	# Test initial values
-	if GameState.credits < 0:
+	if _get_game_state().credits < 0:
 		_fail("Invalid credits value")
 	else:
-		_pass("Credits initialized: %d" % GameState.credits)
+		_pass("Credits initialized: %d" % _get_game_state().credits)
 	
 	# Test tier system
-	if GameState.current_tier < 0:
+	if _get_game_state().current_tier < 0:
 		_fail("Invalid tier")
 	else:
-		_pass("Current tier: %d" % GameState.current_tier)
+		_pass("Current tier: %d" % _get_game_state().current_tier)
 	
 	# Test loadouts
-	if GameState.loadouts.size() == 0:
+	if _get_game_state().loadouts.size() == 0:
 		_warn("No loadouts defined")
 	else:
-		_pass("Loadouts: %d" % GameState.loadouts.size())
+		_pass("Loadouts: %d" % _get_game_state().loadouts.size())
 
 
 func _test_arena_loading() -> void:

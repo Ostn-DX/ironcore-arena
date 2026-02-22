@@ -8,6 +8,10 @@ signal toggle_infinite_money(enabled: bool)
 signal instant_win
 signal reset_save
 
+@onready var _game_state = get_node("/root/GameState")
+@onready var _save_manager = get_node("/root/SaveManager")
+@onready var _simulation_manager = get_node("/root/SimulationManager")
+
 var _infinite_money: bool = false
 
 func _ready() -> void:
@@ -161,19 +165,19 @@ func _toggle_infinite_money(enabled: bool, btn: Button) -> void:
 	print("DebugMenu: Infinite money ", "enabled" if enabled else "disabled")
 
 func _add_credits() -> void:
-	if GameState:
-		GameState.add_credits(1000)
+	if _game_state:
+		_game_state.add_credits(1000)
 		print("DebugMenu: Added 1000 credits")
 
 func _unlock_all() -> void:
-	if GameState:
-		GameState.unlocked_arenas = ["arena_boot_camp", "arena_iron_graveyard", "arena_kill_grid"]
+	if _game_state:
+		_game_state.unlocked_arenas = ["arena_boot_camp", "arena_iron_graveyard", "arena_kill_grid"]
 		print("DebugMenu: All arenas unlocked")
 
 func _reset_save() -> void:
-	if SaveManager:
-		SaveManager.delete_save()
-		GameState._give_starter_kit()
+	if _save_manager:
+		_save_manager.delete_save()
+		_game_state._give_starter_kit()
 		print("DebugMenu: Save reset, new game started")
 
 func _instant_win() -> void:
@@ -190,9 +194,9 @@ func _instant_loss() -> void:
 
 func _kill_enemies() -> void:
 	print("DebugMenu: Killing all enemies")
-	if SimulationManager:
-		for bot_id in SimulationManager.bots:
-			var bot = SimulationManager.bots[bot_id]
+	if _simulation_manager:
+		for bot_id in _simulation_manager.bots:
+			var bot = _simulation_manager.bots[bot_id]
 			if bot.team == 1:  ; Enemy team
 				bot.take_damage(9999)
 
