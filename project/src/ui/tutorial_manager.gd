@@ -5,6 +5,9 @@ class_name TutorialManager
 signal tutorial_completed
 signal tutorial_skipped
 
+@onready var _game_state = get_node("/root/GameState")
+@onready var _audio_manager = get_node("/root/AudioManager")
+
 # Tutorial steps
 enum TutorialStep {
 	NONE,
@@ -232,8 +235,8 @@ func _complete_tutorial() -> void:
 	
 	# Mark tutorial as complete in save
 	if GameState:
-		GameState.settings["tutorial_completed"] = true
-		GameState.save_game()
+		_game_state.settings["tutorial_completed"] = true
+		_game_state.save_game()
 	
 	tutorial_completed.emit()
 
@@ -241,7 +244,7 @@ func _complete_tutorial() -> void:
 func _on_continue() -> void:
 	## Handle continue button
 	if AudioManager:
-		AudioManager.play_ui_click()
+		_audio_manager.play_ui_click()
 	
 	if current_step == TutorialStep.COMPLETE:
 		_complete_tutorial()
@@ -252,15 +255,15 @@ func _on_continue() -> void:
 func _on_skip() -> void:
 	## Handle skip button
 	if AudioManager:
-		AudioManager.play_ui_cancel()
+		_audio_manager.play_ui_cancel()
 	
 	hide_tutorial()
 	tutorial_active = false
 	
 	# Mark as complete even if skipped
 	if GameState:
-		GameState.settings["tutorial_completed"] = true
-		GameState.save_game()
+		_game_state.settings["tutorial_completed"] = true
+		_game_state.save_game()
 	
 	tutorial_skipped.emit()
 
@@ -268,7 +271,7 @@ func _on_skip() -> void:
 func is_tutorial_completed() -> bool:
 	## Check if tutorial was already completed
 	if GameState:
-		return GameState.settings.get("tutorial_completed", false)
+		return _game_state.settings.get("tutorial_completed", false)
 	return false
 
 
@@ -280,7 +283,7 @@ func should_show_tutorial() -> bool:
 	
 	if GameState:
 		# Don't show if player has already won battles
-		if GameState.completed_arenas.size() > 0:
+		if _game_state.completed_arenas.size() > 0:
 			return false
 	
 	return true

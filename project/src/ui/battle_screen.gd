@@ -6,6 +6,7 @@ extends Control
 signal battle_ended(result: Dictionary)
 
 @onready var battle_manager: BattleManager = $BattleManager
+@onready var _simulation_manager = get_node("/root/SimulationManager")
 
 # Arena
 var arena: Arena = null
@@ -62,13 +63,13 @@ func _setup_signals() -> void:
 	battle_manager.battle_ended.connect(_on_battle_ended)
 	battle_manager.rewards_calculated.connect(_on_rewards_calculated)
 	
-	if SimulationManager:
-		SimulationManager.entity_moved.connect(_on_entity_moved)
-		SimulationManager.entity_damaged.connect(_on_entity_damaged)
-		SimulationManager.entity_destroyed.connect(_on_entity_destroyed)
-		SimulationManager.projectile_spawned.connect(_on_projectile_spawned)
-		SimulationManager.projectile_destroyed.connect(_on_projectile_destroyed)
-		SimulationManager.tick_processed.connect(_on_tick_processed)
+	
+		_simulation_manager.entity_moved.connect(_on_entity_moved)
+		_simulation_manager.entity_damaged.connect(_on_entity_damaged)
+		_simulation_manager.entity_destroyed.connect(_on_entity_destroyed)
+		_simulation_manager.projectile_spawned.connect(_on_projectile_spawned)
+		_simulation_manager.projectile_destroyed.connect(_on_projectile_destroyed)
+		_simulation_manager.tick_processed.connect(_on_tick_processed)
 
 func _setup_ui() -> void:
 	countdown_label = Label.new()
@@ -174,8 +175,8 @@ func _on_battle_state_changed(new_state: BattleManager.BattleState, _old_state: 
 			countdown_label.visible = true
 		BattleManager.BattleState.ACTIVE:
 			countdown_label.visible = false
-			for bot_id in SimulationManager.bots:
-				_create_bot_visual(SimulationManager.bots[bot_id])
+			for bot_id in _simulation_manager.bots:
+				_create_bot_visual(_simulation_manager.bots[bot_id])
 		BattleManager.BattleState.ENDED:
 			countdown_label.visible = false
 
@@ -282,8 +283,8 @@ func _on_entity_moved(sim_id: int, pos: Vector2, rot: float) -> void:
 		var turret = visual.get_node_or_null("Turret")
 		if turret and _cached_bot_data.has(sim_id):
 			var bot = _cached_bot_data[sim_id]
-			if bot.target_id != -1 and SimulationManager.bots.has(bot.target_id):
-				var target = SimulationManager.bots[bot.target_id]
+			if bot.target_id != -1 and _simulation_manager.bots.has(bot.target_id):
+				var target = _simulation_manager.bots[bot.target_id]
 				if target.is_alive:
 					turret.rotation_degrees = rad_to_deg((target.position - pos).angle()) - rot
 
@@ -330,8 +331,8 @@ func _on_projectile_destroyed(proj_id: int) -> void:
 		projectile_visuals.erase(proj_id)
 
 func _on_tick_processed(_tick: int) -> void:
-	for proj_id in SimulationManager.projectiles:
-		var proj = SimulationManager.projectiles[proj_id]
+	for proj_id in _simulation_manager.projectiles:
+		var proj = _simulation_manager.projectiles[proj_id]
 		if projectile_visuals.has(proj_id):
 			projectile_visuals[proj_id].position = proj.position - Vector2(4, 2)
 	
@@ -380,8 +381,8 @@ func _drag_start(screen_pos: Vector2) -> void:
 	
 	var world_pos: Vector2 = _screen_to_arena(screen_pos)
 	
-	for bot_id in SimulationManager.bots:
-		var bot = SimulationManager.bots[bot_id]
+	for bot_id in _simulation_manager.bots:
+		var bot = _simulation_manager.bots[bot_id]
 		if bot.team == 0 and bot.is_alive and world_pos.distance_to(bot.position) < bot.radius * 1.5:
 			selected_bot_id = bot_id
 			is_dragging = true
@@ -397,10 +398,10 @@ func _drag_end(screen_pos: Vector2) -> void:
 	var command_type: String = "move"
 	var target: Variant = world_pos
 	
-	for bot_id in SimulationManager.bots:
+	for bot_id in _simulation_manager.bots:
 		if bot_id == selected_bot_id:
 			continue
-		var bot = SimulationManager.bots[bot_id]
+		var bot = _simulation_manager.bots[bot_id]
 		if not bot.is_alive:
 			continue
 		
@@ -409,7 +410,7 @@ func _drag_end(screen_pos: Vector2) -> void:
 			target = bot_id
 			break
 	
-	SimulationManager.issue_command(selected_bot_id, command_type, target)
+	_simulation_manager.issue_command(selected_bot_id, command_type, target)
 	
 	is_dragging = false
 	selected_bot_id = -1
@@ -431,10 +432,6 @@ func start_campaign_battle(arena_id: String) -> void:
 		_setup_arena(battle_manager.current_arena_data)
 		battle_manager.start_battle()
 
-func on_show() -> void:
-	visible = true
-	if battle_manager.is_battle_ended() or battle_manager.current_state == BattleManager.BattleState.SETUP:
-		_start_test_battle()
 
 func on_hide() -> void:
 	visible = false

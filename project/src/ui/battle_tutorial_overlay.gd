@@ -4,6 +4,8 @@ class_name BattleTutorialOverlay
 
 signal tip_acknowledged
 
+@onready var _audio_manager = get_node("/root/AudioManager")
+
 # Battle tips
 const BATTLE_TIPS: Array[Dictionary] = [
 	{
@@ -175,7 +177,7 @@ func hide_tip() -> void:
 func _on_ok_pressed() -> void:
 	## Acknowledge the tip
 	if AudioManager:
-		AudioManager.play_ui_click()
+		_audio_manager.play_ui_click()
 	
 	hide_tip()
 	tip_acknowledged.emit()

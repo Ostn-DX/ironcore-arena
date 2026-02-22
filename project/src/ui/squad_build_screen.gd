@@ -1,6 +1,9 @@
 extends Control
 ## SquadBuildScreen — manage multiple bots with team weight cap
 
+@onready var _game_state = get_node("/root/GameState")
+@onready var _data_loader = get_node("/root/DataLoader")
+
 const MAX_BOTS: int = 4
 
 var squad: Array[Dictionary] = []
@@ -23,13 +26,13 @@ func _ready() -> void:
 
 func _load_squad() -> void:
 	# Load from GameState or create default
-	if GameState.active_loadout_ids.is_empty():
+	if _game_state.active_loadout_ids.is_empty():
 		# Create default bot
 		squad.append(_create_default_bot())
 	else:
 		# Load existing bots
-		for loadout_id in GameState.active_loadout_ids:
-			var loadout = GameState.get_loadout(loadout_id)
+		for loadout_id in _game_state.active_loadout_ids:
+			var loadout = _game_state.get_loadout(loadout_id)
 			if not loadout.is_empty():
 				squad.append(loadout)
 
@@ -51,7 +54,7 @@ func _load_parts() -> void:
 	if not DataLoader:
 		return
 	
-	for part in DataLoader.get_all_parts():
+	for part in _data_loader.get_all_parts():
 		if not part is Dictionary:
 			continue
 		
@@ -60,7 +63,7 @@ func _load_parts() -> void:
 		var cost: int = part.get("cost", 0)
 		
 		var display: String = name
-		if not GameState.is_arcade_mode():
+		if not _game_state.is_arcade_mode():
 			display += " - " + str(cost) + " CR"
 		
 		match category:
@@ -106,7 +109,7 @@ func _calculate_team_weight() -> float:
 		for slot in ["chassis", "armor", "weapon"]:
 			var part_id: String = bot.get(slot, "")
 			if not part_id.is_empty():
-				var part: Dictionary = DataLoader.get_part(part_id)
+				var part: Dictionary = _data_loader.get_part(part_id)
 				if not part.is_empty():
 					total += part.get("weight", 0.0)
 	
@@ -173,11 +176,11 @@ func _on_weapon_selected(index: int) -> void:
 
 func _on_test_battle() -> void:
 	# Save squad and go to battle
-	GameState.active_loadout_ids.clear()
+	_game_state.active_loadout_ids.clear()
 	for bot in squad:
-		GameState.add_loadout(bot)
+		_game_state.add_loadout(bot)
 		if bot.get("enabled", true):
-			GameState.active_loadout_ids.append(bot["id"])
+			_game_state.active_loadout_ids.append(bot["id"])
 	
 	get_tree().change_scene_to_file("res://scenes/battle_screen.tscn")
 
