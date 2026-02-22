@@ -3,6 +3,12 @@ class_name BattleManager
 ## Manages combat simulation: spawning, updates, win/loss detection.
 ## OPTIMIZED: Cached lookups, reduced allocations, streamlined signals
 
+const BotClass = preload("res://src/entities/bot.gd")
+
+@onready var _data_loader = get_node("/root/DataLoader")
+@onready var _game_state = get_node("/root/GameState")
+@onready var _simulation_manager = get_node("/root/SimulationManager")
+
 # Arena reference
 var arena: Arena = null
 var current_arena_data: Dictionary = {}
@@ -104,8 +110,8 @@ signal battle_state_changed(new_state: BattleState, old_state: BattleState)
 signal countdown_tick(seconds_left: int)
 signal battle_ended(result: BattleResult)
 signal rewards_calculated(rewards: Dictionary)
-signal bot_spawned(bot: Bot, team: int)
-signal bot_destroyed(bot: Bot, team: int)
+signal bot_spawned(bot: Node, team: int)
+signal bot_destroyed(bot: Node, team: int)
 
 # References
 var battle_screen: Control = null
@@ -124,7 +130,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_PAUSABLE
 
 func setup_battle(arena_id: String, player_loadouts: Array) -> bool:
-	current_arena_data = DataLoader.get_arena(arena_id)
+	current_arena_data = _data_loader.get_arena(arena_id)
 	if current_arena_data.is_empty():
 		push_error("BattleManager: Invalid arena ID: %s" % arena_id)
 		return false
@@ -247,8 +253,8 @@ func _generate_spawn_points(team: int, count: int) -> Array[Vector2]:
 	
 	return points
 
-func _spawn_bot(config: Dictionary, team_id: int, spawn_pos: Vector2) -> Bot:
-	var bot: Bot = Bot.new()
+func _spawn_bot(config: Dictionary, team_id: int, spawn_pos: Vector2) -> Node:
+	var bot = BotClass.new()
 	
 	var chassis_id: String = config.get("chassis", "akaumin_dl2_100")
 	var plating_id: String = config.get("plating", config.get("armor", ["santrin_auro"])[0] if config.has("armor") else "santrin_auro")
@@ -266,8 +272,7 @@ func _spawn_bot(config: Dictionary, team_id: int, spawn_pos: Vector2) -> Bot:
 	
 	add_child(bot)
 	
-	if SimulationManager:
-		SimulationManager.register_bot(bot)
+	_simulation_manager.register_bot(bot)
 	
 	bot_spawned.emit(bot, team_id)
 	return bot
@@ -398,12 +403,12 @@ func _calculate_rewards() -> void:
 		"entry_fee": current_arena_data.get("entry_fee", 0)
 	}
 	
-	if GameState and _current_result.result_type == BattleResult.ResultType.VICTORY:
-		GameState.add_credits(rewards["credits"])
+	_game_state and _current_result.result_type == BattleResult.ResultType.VICTORY:
+		_game_state.add_credits(rewards["credits"])
 	
 	rewards_calculated.emit(rewards)
 
-func _on_bot_destroyed(bot: Bot) -> void:
+func _on_bot_destroyed(bot: Node) -> void:
 	if bot.team == 0:
 		stats["player_bots_lost"] = stats.get("player_bots_lost", 0) + 1
 	else:
