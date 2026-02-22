@@ -432,10 +432,6 @@ func start_campaign_battle(arena_id: String) -> void:
 		battle_manager.start_battle()
 
 
-func on_hide() -> void:
-	visible = false
-	battle_manager.end_battle_early()
-
 # ============================================================================
 # SELECTION INDICATOR METHODS
 # ============================================================================

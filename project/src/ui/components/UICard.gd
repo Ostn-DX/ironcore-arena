@@ -10,7 +10,7 @@ class_name UICard
 @export var show_shadow: bool = true
 
 @export var border_color: Color = Color("#00D4FF")
-@export var border_width: int = 0  ; 0 = no border
+@export var border_width: int = 0  # 0 = no border
 
 @export var is_selected: bool = false:
 	set(value):

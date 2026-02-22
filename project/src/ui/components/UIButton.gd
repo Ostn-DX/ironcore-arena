@@ -6,11 +6,11 @@ class_name UIButton
 @export var button_style: ButtonStyle = ButtonStyle.PRIMARY
 
 enum ButtonStyle {
-	PRIMARY,    ; Teal accent
-	SECONDARY,  ; Gray
-	DANGER,     ; Red
-	SUCCESS,    ; Green
-	GHOST       ; Transparent with border
+	PRIMARY,    # Teal accent
+	SECONDARY,  # Gray
+	DANGER,     # Red
+	SUCCESS,    # Green
+	GHOST       # Transparent with border
 }
 
 @export var corner_radius: int = 8

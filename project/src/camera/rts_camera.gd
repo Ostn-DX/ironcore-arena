@@ -107,7 +107,7 @@ func _input(event: InputEvent) -> void:
 	# Middle click drag panning
 	if event is InputEventMouseMotion and is_panning:
 		var delta: Vector2 = event.position - last_mouse_pos
-		target_position -= delta / zoom.x  ; Account for zoom in pan calculation
+		target_position -= delta / zoom.x  # Account for zoom in pan calculation
 		last_mouse_pos = event.position
 	
 	# Edge scrolling

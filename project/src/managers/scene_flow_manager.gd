@@ -229,7 +229,7 @@ func _open_campaign_map() -> void:
 	_hide_main_menu()
 	
 	var campaign: Control = campaign_screen_scene.instantiate()
-		campaign.name = "CampaignScreen"
+	campaign.name = "CampaignScreen"
 	
 	# Connect campaign signals
 	if campaign.has_signal("arena_selected"):

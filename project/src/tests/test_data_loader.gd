@@ -15,7 +15,7 @@ func before_all() -> void:
 # --- Parts ---
 
 func test_get_part_wpn_mg_t1_returns_non_null() -> void:
-	var part := _loader.get_part("wpn_mg_t1")
+	var part: Dictionary = _loader.get_part("wpn_mg_t1")
 	assert_not_null(part, "wpn_mg_t1 should exist")
 
 
@@ -37,14 +37,14 @@ func test_get_part_wpn_mg_t1_has_stats() -> void:
 
 
 func test_get_all_parts_count() -> void:
-	var parts := _loader.get_all_parts()
+	var parts: Array = _loader.get_all_parts()
 	assert_eq(parts.size(), 15, "Should have 15 parts in vertical slice")
 
 
 # --- Arenas ---
 
 func test_get_arena_training_returns_non_null() -> void:
-	var arena := _loader.get_arena("arena_training")
+	var arena: Dictionary = _loader.get_arena("arena_training")
 	assert_not_null(arena, "arena_training should exist")
 
 
@@ -54,14 +54,14 @@ func test_get_arena_training_has_id() -> void:
 
 
 func test_get_all_arenas_count() -> void:
-	var arenas := _loader.get_all_arenas()
+	var arenas: Array = _loader.get_all_arenas()
 	assert_eq(arenas.size(), 3, "Should have 3 arenas in vertical slice")
 
 
 # --- Bots ---
 
 func test_get_bot_starter_scout() -> void:
-	var bot := _loader.get_bot("bot_starter_scout")
+	var bot: Dictionary = _loader.get_bot("bot_starter_scout")
 	assert_not_null(bot, "bot_starter_scout should exist")
 	assert_eq(bot["chassis"], "chassis_light_t1")
 
@@ -73,7 +73,7 @@ func test_get_all_bots_count() -> void:
 # --- Enemies ---
 
 func test_get_enemy_scout_t1() -> void:
-	var enemy := _loader.get_enemy("enemy_scout_t1")
+	var enemy: Dictionary = _loader.get_enemy("enemy_scout_t1")
 	assert_not_null(enemy, "enemy_scout_t1 should exist")
 	assert_eq(enemy["ai_profile"], "ai_aggressive")
 
@@ -85,7 +85,7 @@ func test_get_all_enemies_count() -> void:
 # --- Campaign ---
 
 func test_get_campaign_node_01() -> void:
-	var node := _loader.get_campaign_node("node_01_training")
+	var node: Dictionary = _loader.get_campaign_node("node_01_training")
 	assert_not_null(node, "node_01_training should exist")
 	assert_eq(node["arena_id"], "arena_training")
 
@@ -97,13 +97,13 @@ func test_get_all_campaign_nodes_count() -> void:
 # --- Economy ---
 
 func test_economy_config_loaded() -> void:
-	var econ := _loader.get_economy_config()
+	var econ: Dictionary = _loader.get_economy_config()
 	assert_true(econ.size() > 0, "Economy config should not be empty")
 	assert_eq(econ["starting_credits"], 200)
 
 
 func test_economy_has_repair_cost() -> void:
-	var econ := _loader.get_economy_config()
+	var econ: Dictionary = _loader.get_economy_config()
 	assert_eq(econ["repair_cost_per_hp"], 0.5)
 
 
@@ -132,7 +132,7 @@ func test_missing_campaign_node_returns_null() -> void:
 # --- Idempotent load ---
 
 func test_load_all_idempotent() -> void:
-	var count_before := _loader.get_all_parts().size()
+	var count_before: int = _loader.get_all_parts().size()
 	_loader.load_all()
-	var count_after := _loader.get_all_parts().size()
+	var count_after: int = _loader.get_all_parts().size()
 	assert_eq(count_before, count_after, "Calling load_all() twice should not duplicate data")

@@ -237,7 +237,7 @@ func _on_entity_destroyed(bot_id: int, team: int) -> void:
     if not is_tracking or not current_stats:
         return
     
-    var tick: int = _simulation_manager.current_tick if SimulationManager else 0
+    var tick: int = _simulation_manager.current_tick if _simulation_manager else 0
     
     if team == 0:
         current_stats.player_bots_destroyed += 1

@@ -34,7 +34,7 @@ var loadouts: Array[Dictionary] = []
 
 # Progress
 var completed_arenas: Array[String] = []
-var unlocked_arenas: Array[String] = ["arena_boot_camp"]  ; Start with first arena unlocked
+var unlocked_arenas: Array[String] = ["arena_boot_camp"]  # Start with first arena unlocked
 var campaign_progress: Dictionary = {"main": []}
 
 # Current active loadout IDs for battle

@@ -206,7 +206,7 @@ func _create_grid_floor() -> Image:
 
 func _create_wall(side: String) -> Image:
 	var img: Image = Image.create(32, 32, false, Image.FORMAT_RGBA8)
-	var color: Color = Color(0.4, 0.45, 0.4)  ; Wall color
+	var color: Color = Color(0.4, 0.45, 0.4)  # Wall color
 	
 	if side == "top":
 		# Lighter top

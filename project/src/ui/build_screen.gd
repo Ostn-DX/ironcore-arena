@@ -257,14 +257,3 @@ func _update_bot_display() -> void:
 		status += " [OVER!]"
 	weight_label.text = status
 	credits_label.text = "Credits: %d" % GameState.credits
-
-func _on_name_changed(new_name: String) -> void:
-	current_bot["name"] = new_name
-
-func _on_test_pressed() -> void:
-	GameState.add_loadout(current_bot.duplicate())
-	GameState.set_active_loadouts([current_bot["id"]])
-	get_tree().change_scene_to_file("res://scenes/battle_screen.tscn")
-
-func _on_back_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

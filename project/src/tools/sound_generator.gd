@@ -181,7 +181,7 @@ func save_sound(stream: AudioStreamWAV, path: String) -> void:
 	print("SoundGenerator: Would save sound to ", path)
 
 
-func generate_all_mvp_sounds() -> void:
+func generate_all_mvp_sounds() -> Dictionary:
 	## Generate all MVP sounds
 	print("SoundGenerator: Generating MVP sounds...")
 	

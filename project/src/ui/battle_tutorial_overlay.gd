@@ -176,7 +176,7 @@ func hide_tip() -> void:
 
 func _on_ok_pressed() -> void:
 	## Acknowledge the tip
-	if AudioManager:
+	if _audio_manager:
 		_audio_manager.play_ui_click()
 	
 	hide_tip()

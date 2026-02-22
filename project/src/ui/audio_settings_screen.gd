@@ -162,34 +162,33 @@ func _update_value_labels() -> void:
 func _on_master_changed(value: float) -> void:
 	var volume: float = value / 100.0
 	
-		_audio_manager.set_master_volume(volume)
+	_audio_manager.set_master_volume(volume)
 	master_value.text = "%d%%" % value
 
 
 func _on_sfx_changed(value: float) -> void:
 	var volume: float = value / 100.0
 	
-		_audio_manager.set_sfx_volume(volume)
+	_audio_manager.set_sfx_volume(volume)
 	sfx_value.text = "%d%%" % value
 
 
 func _on_music_changed(value: float) -> void:
 	var volume: float = value / 100.0
 	
-		_audio_manager.set_music_volume(volume)
+	_audio_manager.set_music_volume(volume)
 	music_value.text = "%d%%" % value
 
 
 func _on_ui_changed(value: float) -> void:
 	var volume: float = value / 100.0
 	
-		_audio_manager.set_ui_volume(volume)
+	_audio_manager.set_ui_volume(volume)
 	ui_value.text = "%d%%" % value
 
 
 func _on_mute_toggled(muted: bool) -> void:
-	
-		_audio_manager.mute_all(muted)
+	_audio_manager.mute_all(muted)
 
 
 func _on_test_sounds() -> void:

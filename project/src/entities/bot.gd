@@ -1,4 +1,5 @@
 extends RefCounted
+class_name Bot
 ## Bot entity — simulation data object.
 ## Pure data, no Node2D references. Simulation operates on these.
 

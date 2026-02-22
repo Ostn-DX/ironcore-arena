@@ -16,7 +16,7 @@ var _infinite_money: bool = false
 
 func _ready() -> void:
 	_setup_ui()
-	visible = false  ; Hidden by default
+	visible = false  # Hidden by default
 
 func _setup_ui() -> void:
 	# Semi-transparent background

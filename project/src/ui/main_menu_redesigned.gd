@@ -3,6 +3,8 @@ class_name MainMenuRedesigned
 ## Redesigned main menu matching Outhold aesthetic
 ## Dark navy background, long shadows, teal accents, connected nodes
 
+@onready var _game_state = get_node("/root/GameState")
+
 signal start_campaign_pressed
 signal start_arcade_pressed
 signal continue_pressed
@@ -292,13 +294,13 @@ func _has_save_file() -> bool:
 	return FileAccess.file_exists("user://ironcore_save.json")
 
 func _get_save_summary() -> String:
-	if not GameState:
+	if not _game_state:
 		return ""
 	
 	return "Tier %d | %d CR | %d arenas" % [
-		GameState.current_tier + 1,
-		GameState.credits,
-		GameState.completed_arenas.size()
+		_game_state.current_tier + 1,
+		_game_state.credits,
+		_game_state.completed_arenas.size()
 	]
 
 func _animate_entry() -> void:

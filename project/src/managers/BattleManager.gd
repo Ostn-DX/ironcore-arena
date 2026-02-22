@@ -3,8 +3,6 @@ class_name BattleManager
 ## Manages combat simulation: spawning, updates, win/loss detection.
 ## OPTIMIZED: Cached lookups, reduced allocations, streamlined signals
 
-const BotClass = preload("res://src/entities/bot.gd")
-
 @onready var _data_loader = get_node("/root/DataLoader")
 @onready var _game_state = get_node("/root/GameState")
 @onready var _simulation_manager = get_node("/root/SimulationManager")
@@ -110,8 +108,8 @@ signal battle_state_changed(new_state: BattleState, old_state: BattleState)
 signal countdown_tick(seconds_left: int)
 signal battle_ended(result: BattleResult)
 signal rewards_calculated(rewards: Dictionary)
-signal bot_spawned(bot: Node, team: int)
-signal bot_destroyed(bot: Node, team: int)
+signal bot_spawned(bot: Bot, team: int)
+signal bot_destroyed(bot: Bot, team: int)
 
 # References
 var battle_screen: Control = null
@@ -253,8 +251,9 @@ func _generate_spawn_points(team: int, count: int) -> Array[Vector2]:
 	
 	return points
 
-func _spawn_bot(config: Dictionary, team_id: int, spawn_pos: Vector2) -> Node:
-	var bot = BotClass.new()
+func _spawn_bot(config: Dictionary, team_id: int, spawn_pos: Vector2) -> Bot:
+	var bot_id: int = player_team.size() + enemy_team.size()
+	var bot = Bot.new(bot_id, team_id, spawn_pos)
 	
 	var chassis_id: String = config.get("chassis", "akaumin_dl2_100")
 	var plating_id: String = config.get("plating", config.get("armor", ["santrin_auro"])[0] if config.has("armor") else "santrin_auro")

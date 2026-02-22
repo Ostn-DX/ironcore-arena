@@ -3,6 +3,9 @@ class_name BuilderScreen
 ## Builder UI — drag-and-drop bot assembly
 ## Team of 5 bots, weight validation, stat preview
 
+@onready var _game_state = get_node("/root/GameState")
+@onready var _data_loader = get_node("/root/DataLoader")
+
 @onready var chassis_list: ItemList = $Panel/ChassisList
 @onready var plating_list: ItemList = $Panel/PlatingList  
 @onready var weapon_list: ItemList = $Panel/WeaponList
@@ -51,20 +54,20 @@ func _populate_component_lists() -> void:
 	weapon_list.clear()
 	
 	# Load all unlocked components
-	var tier = GameState.get_current_tier()
+	var tier = _game_state.current_tier
 	
 	# Chassis
-	for chassis in DataLoader.get_chassis_by_tier(tier):
+	for chassis in _data_loader.get_chassis_by_tier(tier):
 		var idx = chassis_list.add_item("%s (T%d)" % [chassis.name, chassis.tier])
 		chassis_list.set_item_metadata(idx, chassis.id)
 	
 	# Plating  
-	for plating in DataLoader.get_plating_by_tier(tier):
+	for plating in _data_loader.get_plating_by_tier(tier):
 		var idx = plating_list.add_item("%s (T%d)" % [plating.name, plating.tier])
 		plating_list.set_item_metadata(idx, plating.id)
 	
 	# Weapons
-	for weapon in DataLoader.get_weapons_by_tier(tier):
+	for weapon in _data_loader.get_weapons_by_tier(tier):
 		var idx = weapon_list.add_item("%s (T%d)" % [weapon.name, weapon.tier])
 		weapon_list.set_item_metadata(idx, weapon.id)
 

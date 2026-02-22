@@ -3,6 +3,8 @@ class_name BuildSlot
 ## Individual bot build slot in the builder
 ## Displays assembled bot, handles click to build/destroy
 
+@onready var _data_loader = get_node("/root/DataLoader")
+
 @onready var icon: TextureRect = $VBox/Icon
 @onready var name_label: Label = $VBox/NameLabel
 @onready var stats_label: Label = $VBox/StatsLabel

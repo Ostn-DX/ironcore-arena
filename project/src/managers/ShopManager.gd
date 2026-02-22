@@ -205,7 +205,7 @@ func purchase_component(component_id: String, quantity: int = 1) -> bool:
     var total_cost: int = component["cost"] * quantity
     
     # Deduct credits
-    
+    if _game_state:
         if not _game_state.spend_credits(total_cost):
             purchase_failed.emit(component_id, "Transaction failed")
             return false

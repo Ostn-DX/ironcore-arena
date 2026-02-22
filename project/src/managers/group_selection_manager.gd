@@ -221,12 +221,12 @@ func _issue_command_to_selection() -> void:
 
 func _get_enemy_at_position(pos: Vector2) -> Node2D:
 	## Check if position has an enemy unit
-	var units: Array[Node2D] = _get_selectable_units()  ; All units
+	var units: Array[Node2D] = _get_selectable_units()  # All units
 	
 	for unit in units:
 		if not unit.is_player_unit():
 			var dist: float = unit.global_position.distance_to(pos)
-			if dist < 30:  ; Selection radius
+			if dist < 30:  # Selection radius
 				return unit
 	
 	return null

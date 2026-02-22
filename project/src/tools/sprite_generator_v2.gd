@@ -14,14 +14,14 @@ const PALETTE: Dictionary = {
 	"bg_light": Color(0.30, 0.28, 0.25),
 	
 	# Units - muted mechanical
-	"green": Color(0.35, 0.65, 0.45),    ; Friendly
-	"blue": Color(0.35, 0.55, 0.75),     ; Heavy/defense
-	"purple": Color(0.55, 0.40, 0.70),   ; Elite
-	"grey": Color(0.50, 0.52, 0.55),     ; Neutral
+	"green": Color(0.35, 0.65, 0.45),    # Friendly
+	"blue": Color(0.35, 0.55, 0.75),     # Heavy/defense
+	"purple": Color(0.55, 0.40, 0.70),   # Elite
+	"grey": Color(0.50, 0.52, 0.55),     # Neutral
 	
 	# Attack - saturated
-	"yellow": Color(1.0, 0.85, 0.25),    ; Attack
-	"orange": Color(1.0, 0.60, 0.20),    ; Projectiles
+	"yellow": Color(1.0, 0.85, 0.25),    # Attack
+	"orange": Color(1.0, 0.60, 0.20),    # Projectiles
 	
 	# UI/Effects
 	"health_green": Color(0.2, 0.9, 0.4),
