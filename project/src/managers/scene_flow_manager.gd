@@ -1,14 +1,20 @@
 extends Node
 class_name SceneFlowManager
 ## SceneFlowManager - handles navigation between game screens.
-## WIRED UP: Connects all screens with proper signal flow
+## UPDATED: Integrated new Bible-compliant UI screens
 
-# Screen references
+# Screen references (old menu for compatibility)
 @onready var main_menu: Control = $ScreenManager/MainMenu
 
-# Preloaded scenes
+# NEW: Bible-compliant screen scenes
+var main_menu_screen_scene: PackedScene = preload("res://scenes/ui/screens/main_menu_screen.tscn")
+var career_submenu_scene: PackedScene = preload("res://scenes/ui/screens/career_submenu_screen.tscn")
+var career_hub_scene: PackedScene = preload("res://scenes/ui/screens/career_hub_screen.tscn")
+var builder_screen_scene: PackedScene = preload("res://scenes/ui/screens/builder_screen.tscn")
+
+# Legacy scenes (for compatibility)
 var battle_screen_scene: PackedScene = preload("res://scenes/battle_screen.tscn")
-var build_screen_scene: PackedScene = preload("res://scenes/build_screen.tscn")
+var old_build_screen_scene: PackedScene = preload("res://scenes/build_screen.tscn")
 var shop_screen_scene: PackedScene = preload("res://scenes/shop_screen.tscn")
 var campaign_screen_scene: PackedScene = preload("res://scenes/campaign_screen.tscn")
 var results_screen_scene: PackedScene = preload("res://scenes/results_screen.tscn")
@@ -23,6 +29,9 @@ var screen_stack: Array[Control] = []
 # Current arena for battles
 var _next_arena_id: String = "arena_boot_camp"
 
+# Bible B1.3: Track signal connections for cleanup
+var _connected_signals: Array[Dictionary] = []
+
 func _ready() -> void:
 	_setup_signals()
 	_show_main_menu()
@@ -31,34 +40,197 @@ func _ready() -> void:
 	get_tree().set_auto_accept_quit(false)
 
 func _setup_signals() -> void:
-	# Connect main menu signals - works with both old and redesigned menu
+	# Connect old main menu signals for compatibility
 	if main_menu:
-		# Try redesigned menu signals first
 		if main_menu.has_signal("start_campaign_pressed"):
-			main_menu.start_campaign_pressed.connect(_on_start_campaign)
-			main_menu.start_arcade_pressed.connect(_on_start_arcade)
-			main_menu.continue_pressed.connect(_on_continue_campaign)
-			main_menu.shop_pressed.connect(_on_open_shop)
-			main_menu.builder_pressed.connect(_on_open_builder)
-			main_menu.settings_pressed.connect(_on_open_settings)
-			main_menu.quit_pressed.connect(_on_quit)
-		else:
-			# Fallback to old menu signals
-			main_menu.start_campaign_pressed.connect(_on_start_campaign)
-			main_menu.start_arcade_pressed.connect(_on_start_arcade)
-			main_menu.continue_pressed.connect(_on_continue_campaign)
-			main_menu.shop_pressed.connect(_on_open_shop)
-			main_menu.builder_pressed.connect(_on_open_builder)
-			main_menu.settings_pressed.connect(_on_open_settings)
-			main_menu.credits_pressed.connect(_on_show_credits)
-			main_menu.quit_pressed.connect(_on_quit)
+			_safe_connect(main_menu, "start_campaign_pressed", _on_start_campaign)
+			_safe_connect(main_menu, "start_arcade_pressed", _on_start_arcade)
+			_safe_connect(main_menu, "continue_pressed", _on_continue_campaign)
+			_safe_connect(main_menu, "shop_pressed", _on_open_shop)
+			_safe_connect(main_menu, "builder_pressed", _on_open_builder)
+			_safe_connect(main_menu, "settings_pressed", _on_open_settings)
+			_safe_connect(main_menu, "quit_pressed", _on_quit)
+
+func _safe_connect(obj: Object, signal_name: String, callable: Callable) -> void:
+	## Bible B1.3: Safe signal connection pattern
+	if obj and is_instance_valid(obj):
+		if obj.has_signal(signal_name):
+			var sig = obj.get(signal_name)
+			if sig and not sig.is_connected(callable):
+				sig.connect(callable)
+				_connected_signals.append({"object": obj, "signal": signal_name, "callable": callable})
 
 func _notification(what: int) -> void:
 	# Auto-save when quitting
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		print("SceneFlow: Auto-saving before exit...")
-		SaveManager.save()
+		if SaveManager and is_instance_valid(SaveManager):
+			SaveManager.save()
 		get_tree().quit()
+
+func _exit_tree() -> void:
+	## Bible B1.3: Cleanup all signal connections
+	for conn in _connected_signals:
+		var obj = conn.get("object")
+		var sig_name = conn.get("signal")
+		var callable = conn.get("callable")
+		
+		if obj and is_instance_valid(obj) and obj.has_signal(sig_name):
+			var sig = obj.get(sig_name)
+			if sig and sig.is_connected(callable):
+				sig.disconnect(callable)
+	_connected_signals.clear()
+
+# ============================================================================
+# NEW BIBLE-COMPLIANT SCREEN NAVIGATION
+# ============================================================================
+
+func show_new_main_menu() -> void:
+	## Show the new Bible-compliant main menu
+	_hide_main_menu()
+	
+	var menu: Control = main_menu_screen_scene.instantiate()
+	menu.name = "MainMenuScreen"
+	
+	# Connect signals with Bible B1.3 pattern
+	if menu.has_signal("career_pressed"):
+		_safe_connect(menu, "career_pressed", _on_new_career_pressed)
+	if menu.has_signal("arcade_pressed"):
+		_safe_connect(menu, "arcade_pressed", _on_new_arcade_pressed)
+	if menu.has_signal("settings_pressed"):
+		_safe_connect(menu, "settings_pressed", _on_open_settings)
+	if menu.has_signal("exit_pressed"):
+		_safe_connect(menu, "exit_pressed", _on_quit)
+	
+	screen_manager.add_child(menu)
+	_switch_to_screen(menu, false)
+
+func _on_new_career_pressed() -> void:
+	## Navigate to career submenu
+	if current_screen and current_screen != main_menu:
+		current_screen.queue_free()
+	
+	var submenu: Control = career_submenu_scene.instantiate()
+	submenu.name = "CareerSubmenuScreen"
+	
+	if submenu.has_signal("continue_pressed"):
+		_safe_connect(submenu, "continue_pressed", _on_career_continue)
+	if submenu.has_signal("new_career_pressed"):
+		_safe_connect(submenu, "new_career_pressed", _on_career_new)
+	if submenu.has_signal("load_career_pressed"):
+		_safe_connect(submenu, "load_career_pressed", _on_career_load)
+	if submenu.has_signal("back_pressed"):
+		_safe_connect(submenu, "back_pressed", show_new_main_menu)
+	
+	screen_manager.add_child(submenu)
+	_switch_to_screen(submenu, false)
+
+func _on_new_arcade_pressed() -> void:
+	## Start arcade mode (all items unlocked)
+	print("SceneFlow: Starting arcade mode")
+	
+	if GameState and is_instance_valid(GameState):
+		GameState.set_game_mode("arcade")
+		GameState._give_all_parts()  # Unlock everything
+	
+	# Go straight to builder
+	show_new_builder()
+
+func _on_career_continue() -> void:
+	## Continue existing career
+	print("SceneFlow: Continuing career")
+	
+	if SaveManager and is_instance_valid(SaveManager):
+		SaveManager.load()
+	
+	if GameState and is_instance_valid(GameState):
+		GameState.set_game_mode("campaign")
+	
+	show_career_hub()
+
+func _on_career_new() -> void:
+	## Start new career
+	print("SceneFlow: Starting new career")
+	
+	if GameState and is_instance_valid(GameState):
+		GameState.set_game_mode("campaign")
+		GameState.delete_save()
+		GameState._give_starter_kit()
+	
+	show_career_hub()
+
+func _on_career_load() -> void:
+	## Load career (show load dialog - not implemented yet)
+	print("SceneFlow: Load career (TODO)")
+	# TODO: Implement save slot selection screen
+	_on_career_continue()  # Fallback to slot 0
+
+func show_career_hub() -> void:
+	## Show career hub with mission/bot management
+	if current_screen and current_screen != main_menu:
+		current_screen.queue_free()
+	
+	var hub: Control = career_hub_scene.instantiate()
+	hub.name = "CareerHubScreen"
+	
+	if hub.has_signal("next_mission_pressed"):
+		_safe_connect(hub, "next_mission_pressed", _on_hub_next_mission)
+	if hub.has_signal("missions_pressed"):
+		_safe_connect(hub, "missions_pressed", _on_hub_missions)
+	if hub.has_signal("bot_management_pressed"):
+		_safe_connect(hub, "bot_management_pressed", show_new_builder)
+	if hub.has_signal("back_pressed"):
+		_safe_connect(hub, "back_pressed", show_new_main_menu)
+	
+	screen_manager.add_child(hub)
+	_switch_to_screen(hub, false)
+
+func _on_hub_next_mission() -> void:
+	## Start next available mission
+	var next_arena: String = ""
+	if GameState and is_instance_valid(GameState):
+		next_arena = GameState.get_next_unlocked_arena()
+	
+	if next_arena.is_empty():
+		next_arena = "arena_training"
+	
+	start_battle(next_arena)
+
+func _on_hub_missions() -> void:
+	## Open mission selection (campaign map)
+	_open_campaign_map()
+
+func show_new_builder() -> void:
+	## Show new Bible-compliant builder
+	if current_screen and current_screen != main_menu:
+		current_screen.queue_free()
+	
+	var builder: Control = builder_screen_scene.instantiate()
+	builder.name = "BuilderScreen"
+	
+	if builder.has_signal("back_pressed"):
+		_safe_connect(builder, "back_pressed", _on_builder_back)
+	if builder.has_signal("deploy_pressed"):
+		_safe_connect(builder, "deploy_pressed", _on_builder_deploy)
+	
+	screen_manager.add_child(builder)
+	_switch_to_screen(builder, false)
+
+func _on_builder_back() -> void:
+	## Return to career hub from builder
+	if GameState and is_instance_valid(GameState):
+		if GameState.game_mode == "arcade":
+			show_new_main_menu()
+		else:
+			show_career_hub()
+
+func _on_builder_deploy() -> void:
+	## Deploy to mission select
+	_open_campaign_map()
+
+# ============================================================================
+# LEGACY SCREEN NAVIGATION (for compatibility)
+# ============================================================================
 
 func _show_main_menu() -> void:
 	# Show the main menu and hide others
@@ -74,7 +246,8 @@ func _show_main_menu() -> void:
 	current_screen = main_menu
 	
 	# Save progress when returning to menu
-	SaveManager.autosave()
+	if SaveManager and is_instance_valid(SaveManager):
+		SaveManager.autosave()
 
 func _hide_main_menu() -> void:
 	if main_menu:
@@ -115,7 +288,7 @@ func _go_back() -> void:
 		_show_main_menu()
 
 # ============================================================================
-# MAIN MENU HANDLERS
+# MAIN MENU HANDLERS (Legacy)
 # ============================================================================
 
 func _on_start_campaign() -> void:
@@ -167,48 +340,55 @@ func _on_open_builder() -> void:
 
 func _on_open_settings() -> void:
 	print("SceneFlow: Opening settings (not implemented)")
-	# TODO: Implement settings screen
 	pass
 
 func _on_show_credits() -> void:
 	print("SceneFlow: Showing credits (not implemented)")
-	# TODO: Implement credits screen
 	pass
 
 func _on_quit() -> void:
 	print("SceneFlow: Quitting game")
-	SaveManager.save()
+	if SaveManager and is_instance_valid(SaveManager):
+		SaveManager.save()
 	get_tree().quit()
 
 # ============================================================================
-# SCREEN OPENERS
+# LEGACY SCREEN OPENERS
 # ============================================================================
 
 func _open_builder() -> void:
 	_hide_main_menu()
 	
-	var builder: Control = build_screen_scene.instantiate()
+	var builder: Control = old_build_screen_scene.instantiate()
 	builder.name = "BuildScreen"
 	
 	# Connect builder signals
 	if builder.has_signal("back_pressed"):
-		builder.back_pressed.connect(_go_back)
+		_safe_connect(builder, "back_pressed", _go_back)
 	if builder.has_signal("test_battle_pressed"):
-		builder.test_battle_pressed.connect(_on_test_battle)
+		_safe_connect(builder, "test_battle_pressed", _on_test_battle)
 	if builder.has_signal("start_campaign_pressed"):
-		builder.start_campaign_pressed.connect(_on_builder_start_campaign)
+		_safe_connect(builder, "start_campaign_pressed", _on_builder_start_campaign)
 	
 	# Also check for button connections in scene
 	var back_btn: Button = builder.get_node_or_null("MarginContainer/VBox/BottomBar/BackBtn")
 	if back_btn:
-		back_btn.pressed.connect(_go_back)
+		_safe_connect_signal(back_btn, "pressed", _go_back)
 	
 	var test_btn: Button = builder.get_node_or_null("MarginContainer/VBox/BottomBar/TestBtn")
 	if test_btn:
-		test_btn.pressed.connect(_on_test_battle)
+		_safe_connect_signal(test_btn, "pressed", _on_test_battle)
 	
 	screen_manager.add_child(builder)
 	_switch_to_screen(builder)
+
+func _safe_connect_signal(obj: Object, signal_name: String, callable: Callable) -> void:
+	## Bible B1.3: Safe signal connection for objects
+	if obj and is_instance_valid(obj):
+		if obj.has_signal(signal_name):
+			var sig = obj.get(signal_name)
+			if sig and not sig.is_connected(callable):
+				sig.connect(callable)
 
 func _open_shop() -> void:
 	_hide_main_menu()
@@ -218,7 +398,7 @@ func _open_shop() -> void:
 	
 	# Connect shop closed signal
 	if shop.has_signal("shop_closed"):
-		shop.shop_closed.connect(_on_shop_closed)
+		_safe_connect(shop, "shop_closed", _on_shop_closed)
 	
 	screen_manager.add_child(shop)
 	_switch_to_screen(shop)
@@ -234,9 +414,9 @@ func _open_campaign_map() -> void:
 	
 	# Connect campaign signals
 	if campaign.has_signal("arena_selected"):
-		campaign.arena_selected.connect(_on_arena_selected)
+		_safe_connect(campaign, "arena_selected", _on_arena_selected)
 	if campaign.has_signal("back_pressed"):
-		campaign.back_pressed.connect(_go_back)
+		_safe_connect(campaign, "back_pressed", _go_back)
 	
 	screen_manager.add_child(campaign)
 	_switch_to_screen(campaign)
@@ -252,7 +432,9 @@ func _on_test_battle() -> void:
 func _on_builder_start_campaign() -> void:
 	# Builder signals it's ready to start
 	print("SceneFlow: Builder ready, starting campaign battle")
-	var next_arena: String = GameState.get_next_unlocked_arena()
+	var next_arena: String = ""
+	if GameState and is_instance_valid(GameState):
+		next_arena = GameState.get_next_unlocked_arena()
 	if next_arena.is_empty():
 		next_arena = "arena_training"
 	start_battle(next_arena)
@@ -280,7 +462,7 @@ func start_battle(arena_id: String) -> void:
 	
 	# Connect battle end signal
 	if battle.has_signal("battle_ended"):
-		battle.battle_ended.connect(_on_battle_ended)
+		_safe_connect(battle, "battle_ended", _on_battle_ended)
 	
 	screen_manager.add_child(battle)
 	_switch_to_screen(battle, false)  # Don't add battle to stack
@@ -295,8 +477,9 @@ func _on_battle_ended(result: Dictionary) -> void:
 	
 	# Update game state with results
 	if result.get("victory", false):
-		GameState.complete_arena(_next_arena_id)
-		GameState.add_credits(result.get("credits", 0))
+		if GameState and is_instance_valid(GameState):
+			GameState.complete_arena(_next_arena_id)
+			GameState.add_credits(result.get("credits", 0))
 	
 	# Show results screen
 	_show_results(result)
@@ -312,11 +495,11 @@ func _show_results(result: Dictionary) -> void:
 	
 	# Connect results signals
 	if results_screen.has_signal("continue_pressed"):
-		results_screen.continue_pressed.connect(_on_results_continue)
+		_safe_connect(results_screen, "continue_pressed", _on_results_continue)
 	if results_screen.has_signal("restart_pressed"):
-		results_screen.restart_pressed.connect(_on_results_restart)
+		_safe_connect(results_screen, "restart_pressed", _on_results_restart)
 	if results_screen.has_signal("menu_pressed"):
-		results_screen.menu_pressed.connect(_on_results_menu)
+		_safe_connect(results_screen, "menu_pressed", _on_results_menu)
 	
 	# Hide battle, show results
 	if current_screen:
@@ -331,7 +514,10 @@ func _on_results_continue() -> void:
 	if current_screen:
 		current_screen.queue_free()
 	
-	var next_arena: String = GameState.get_next_unlocked_arena()
+	var next_arena: String = ""
+	if GameState and is_instance_valid(GameState):
+		next_arena = GameState.get_next_unlocked_arena()
+	
 	if next_arena.is_empty():
 		_show_main_menu()  # All arenas complete
 	else:
@@ -360,16 +546,15 @@ func _input(event: InputEvent) -> void:
 			# ESC goes back or shows pause menu
 			if current_screen != main_menu:
 				_go_back()
-			else:
-				# On main menu, ESC could show quit confirm
-				pass
 		
 		# F5 for quick save (debug)
 		if event.pressed and event.keycode == KEY_F5:
 			print("SceneFlow: Quick save triggered")
-			SaveManager.save()
+			if SaveManager and is_instance_valid(SaveManager):
+				SaveManager.save()
 		
 		# F9 for quick load (debug)
 		if event.pressed and event.keycode == KEY_F9:
 			print("SceneFlow: Quick load triggered")
-			SaveManager.load()
+			if SaveManager and is_instance_valid(SaveManager):
+				SaveManager.load()

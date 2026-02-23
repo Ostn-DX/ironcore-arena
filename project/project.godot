@@ -17,6 +17,7 @@ config/windows_native_icon="res://assets/ui/icon.ico"
 
 [autoload]
 
+EventBus="*res://autoload/event_bus.gd"
 DataLoader="*res://autoload/DataLoader.gd"
 GameState="*res://autoload/GameState.gd"
 SimulationManager="*res://autoload/SimulationManager.gd"
