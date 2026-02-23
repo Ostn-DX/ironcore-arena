@@ -59,7 +59,7 @@ const CURRENT_VERSION: String = "0.1.0"
 
 func _ready() -> void:
 	load_game()
-	
+
 	# Give starter parts if new game
 	if owned_parts.is_empty():
 		_give_starter_kit()
@@ -67,34 +67,38 @@ func _ready() -> void:
 
 func _give_starter_kit() -> void:
 	## Give new player starting equipment
+	## UPDATED: Use actual component IDs from components.json
 	credits = 500
-	
-	# Starter parts
+
+	# Starter parts - matching components.json IDs
 	owned_parts = {
-		"chassis_light_t1": 2,
-		"wpn_mg_t1": 4,
-		"arm_plate_t1": 2,
-		"mob_wheels_t1": 2,
-		"sen_basic_t1": 2,
-		"utl_repair_t1": 1
+		"akaumin_dl2_100": 2,  # Light chassis (starter)
+		"torq_mk1": 1,         # Medium chassis
+		"santrin_auro": 4,     # Basic armor
+		"steel_guard": 2,      # Heavy armor
+		"puncher_mg": 4,       # Basic machine gun
+		"stinger_laser": 2,    # Laser weapon
 	}
-	
-	# Default loadout
+
+	# Default loadouts - 2 starter bots
 	loadouts = [
 		{
-			"id": "loadout_1",
-			"name": "Starter Scout",
-			"chassis": "chassis_light_t1",
-			"weapons": ["wpn_mg_t1"],
-			"armor": [],
-			"mobility": ["mob_wheels_t1"],
-			"sensors": ["sen_basic_t1"],
-			"utilities": [],
-			"ai_profile": "ai_balanced"
+			"name": "Striker Alpha",
+			"chassis": "akaumin_dl2_100",
+			"armor": "santrin_auro",
+			"weapon": "puncher_mg",
+			"enabled": true
+		},
+		{
+			"name": "Defender Beta",
+			"chassis": "torq_mk1",
+			"armor": "steel_guard",
+			"weapon": "stinger_laser",
+			"enabled": false
 		}
 	]
 	
-	active_loadout_ids = ["loadout_1"]
+	active_loadout_ids = ["0", "1"]
 	
 	parts_changed.emit()
 	loadouts_changed.emit()
@@ -142,13 +146,13 @@ func add_loadout(loadout: Dictionary) -> void:
 	if not loadout.has("id") or not loadout.has("name"):
 		push_error("Invalid loadout: missing id or name")
 		return
-	
+
 	# Remove existing loadout with same ID
 	for i in range(loadouts.size()):
 		if loadouts[i].get("id") == loadout["id"]:
 			loadouts.remove_at(i)
 			break
-	
+
 	loadouts.append(loadout)
 	loadouts_changed.emit()
 
@@ -202,24 +206,24 @@ func get_arenas_by_tier(tier: int) -> Array[String]:
 	## Get arena IDs available at a specific tier
 	var arenas: Array[String] = []
 	var all_arenas: Array = DataLoader.get_all_arenas() if DataLoader else []
-	
+
 	for arena in all_arenas:
 		if arena is Dictionary and arena.get("tier", 0) == tier:
 			arenas.append(arena.get("id", ""))
-	
+
 	return arenas
 
 
 func advance_tier() -> void:
 	## Advance to next tier and unlock new content
 	var new_tier: int = current_tier + 1
-	
+
 	# Unlock arenas for this tier
 	var tier_arenas: Array[String] = get_arenas_by_tier(new_tier)
 	for arena_id in tier_arenas:
 		unlock_arena(arena_id)
 		print("GameState: Unlocked tier %d arena - %s" % [new_tier, arena_id])
-	
+
 	current_tier = new_tier
 	print("GameState: Advanced to tier ", current_tier)
 
@@ -228,11 +232,11 @@ func can_advance_tier() -> bool:
 	## Check if player can advance to next tier
 	# Must complete all arenas in current tier
 	var current_tier_arenas: Array[String] = get_arenas_by_tier(current_tier)
-	
+
 	for arena_id in current_tier_arenas:
 		if not is_arena_completed(arena_id):
 			return false
-	
+
 	return true
 
 
@@ -248,7 +252,7 @@ func complete_arena(arena_id: String) -> void:
 	if not completed_arenas.has(arena_id):
 		completed_arenas.append(arena_id)
 		arena_completed.emit(arena_id)
-		
+
 		# Check for tier advancement
 		if can_advance_tier():
 			advance_tier()
@@ -304,7 +308,7 @@ func save_game() -> void:
 		"campaign_progress": campaign_progress,
 		"settings": settings
 	}
-	
+
 	var json_text: String = JSON.stringify(save_data, "\t")
 	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -319,59 +323,59 @@ func load_game() -> bool:
 	if not FileAccess.file_exists(SAVE_PATH):
 		print("No save file found, starting new game")
 		return false
-	
+
 	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
 	if not file:
 		push_error("Failed to load save: ", FileAccess.get_open_error())
 		return false
-	
+
 	var json_text: String = file.get_as_text()
 	file.close()
-	
+
 	var json: JSON = JSON.new()
 	var err: int = json.parse(json_text)
 	if err != OK:
 		push_error("Save file JSON parse error: ", json.get_error_message())
 		return false
-	
+
 	var data: Dictionary = json.data
-	
+
 	# Version check / migration could go here
 	var version: String = data.get("version", "0.0.0")
-	
+
 	credits = data.get("credits", 500)
 	current_tier = data.get("current_tier", 0)
 	owned_parts = data.get("owned_parts", {})
 	part_hp = data.get("part_hp", {})
-	
+
 	# Convert loaded arrays to typed arrays
 	var loaded_loadouts: Array = data.get("loadouts", [])
 	loadouts.clear()
 	for item in loaded_loadouts:
 		if item is Dictionary:
 			loadouts.append(item)
-	
+
 	var loaded_active_ids: Array = data.get("active_loadout_ids", [])
 	active_loadout_ids.clear()
 	for item in loaded_active_ids:
 		if item is String:
 			active_loadout_ids.append(item)
-	
+
 	var loaded_completed: Array = data.get("completed_arenas", [])
 	completed_arenas.clear()
 	for item in loaded_completed:
 		if item is String:
 			completed_arenas.append(item)
-	
+
 	var loaded_unlocked: Array = data.get("unlocked_arenas", ["roxtan_park"])
 	unlocked_arenas.clear()
 	for item in loaded_unlocked:
 		if item is String:
 			unlocked_arenas.append(item)
-	
+
 	campaign_progress = data.get("campaign_progress", {"main": []})
 	settings = data.get("settings", settings)
-	
+
 	print("Game loaded, version: ", version)
 	return true
 
