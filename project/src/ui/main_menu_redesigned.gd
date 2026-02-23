@@ -194,7 +194,7 @@ func _setup_title() -> void:
 	shadow.add_theme_font_size_override("font_size", 72)
 	shadow.modulate = Color(0, 0, 0, 0.3)
 	shadow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	shadow.position = Vector2(viewport_size.x / 2, 84)  # Centered
+	shadow.position = Vector2(viewport_size.x / 2, 20)  # Centered, higher up
 	add_child(shadow)
 	
 	# Title text
@@ -203,7 +203,7 @@ func _setup_title() -> void:
 	title.add_theme_font_size_override("font_size", 72)
 	title.modulate = COLOR_TEXT
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.position = Vector2(viewport_size.x / 2, 80)  # Centered
+	title.position = Vector2(viewport_size.x / 2, 16)  # Centered, higher up
 	add_child(title)
 	
 	# Subtitle
@@ -212,7 +212,7 @@ func _setup_title() -> void:
 	subtitle.add_theme_font_size_override("font_size", 36)
 	subtitle.modulate = COLOR_ACCENT
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.position = Vector2(get_viewport_rect().size.x / 2, 150)  # Below title
+	subtitle.position = Vector2(get_viewport_rect().size.x / 2, 160)  # Below title, above buttons
 	add_child(subtitle)
 
 func _center_menu() -> void:

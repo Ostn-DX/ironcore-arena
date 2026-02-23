@@ -50,6 +50,7 @@ func _setup_shadow() -> void:
 	_shadow_rect.position = shadow_offset
 	_shadow_rect.size = size
 	_shadow_rect.z_index = -1
+	_shadow_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_shadow_rect)
 
 func _update_style() -> void:
