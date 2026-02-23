@@ -211,9 +211,9 @@ func _setup_title() -> void:
 	subtitle.text = "ARENA"
 	subtitle.add_theme_font_size_override("font_size", 36)
 	subtitle.modulate = COLOR_ACCENT
-	subtitle.position = Vector2(0, 70)
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_container.add_child(subtitle)
+	subtitle.position = Vector2(get_viewport_rect().size.x / 2, 150)  # Below title
+	add_child(subtitle)
 
 func _center_menu() -> void:
 	## Center menu elements
