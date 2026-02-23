@@ -107,6 +107,7 @@ func _setup_ui() -> void:
 	
 	# Button container - responsive centering
 	button_container = VBoxContainer.new()
+	button_container.name = "ButtonContainer"
 	button_container.size = Vector2(200, 300)
 	button_container.add_theme_constant_override("separation", 10)
 	add_child(button_container)
@@ -178,10 +179,12 @@ func _setup_ui() -> void:
 func _center_button_container() -> void:
 	## Center the button container based on actual viewport size
 	var viewport_size: Vector2 = get_viewport_rect().size
-	button_container.position = Vector2(
-		(viewport_size.x - button_container.size.x) / 2,
-		(viewport_size.y - button_container.size.y) / 2
-	)
+	var container = get_node_or_null("ButtonContainer")
+	if container:
+		container.position = Vector2(
+			(viewport_size.x - container.size.x) / 2,
+			(viewport_size.y - container.size.y) / 2
+		)
 
 func _create_menu_button(text: String, callback: Callable, is_primary: bool = false) -> Button:
 	## Create a styled menu button

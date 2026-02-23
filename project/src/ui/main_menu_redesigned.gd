@@ -232,12 +232,12 @@ func _setup_menu_buttons() -> void:
 	# Main button container - centered
 	var container: VBoxContainer = VBoxContainer.new()
 	container.name = "MenuContainer"
-	# Wait a frame then center
-	await get_tree().process_frame
-	_center_menu()
 	container.size = Vector2(200, 400)
 	container.add_theme_constant_override("separation", 16)
 	add_child(container)
+	# Wait a frame then center (after it's in the tree)
+	await get_tree().process_frame
+	_center_menu()
 	
 	# Continue button (if save exists)
 	if _has_save_file():
