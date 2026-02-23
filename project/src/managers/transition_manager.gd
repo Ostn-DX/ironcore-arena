@@ -54,7 +54,10 @@ func fade_to_black(duration: float = 0.3, hold_time: float = 0.0) -> void:
 	if hold_time > 0:
 		tween.tween_interval(hold_time)
 	
-	tween.finished.connect(_on_fade_to_black_complete)
+	# Bible B1.3: Safe signal connection
+	if tween and is_instance_valid(tween):
+	    if not tween.finished.is_connected(_on_fade_to_black_complete):
+	        tween.finished.connect(_on_fade_to_black_complete)
 
 
 func fade_from_black(duration: float = 0.3) -> void:
@@ -66,7 +69,10 @@ func fade_from_black(duration: float = 0.3) -> void:
 	
 	var tween: Tween = create_tween()
 	tween.tween_property(overlay, "modulate:a", 0.0, duration)
-	tween.finished.connect(_on_fade_from_black_complete)
+	# Bible B1.3: Safe signal connection
+	if tween and is_instance_valid(tween):
+	    if not tween.finished.is_connected(_on_fade_from_black_complete):
+	        tween.finished.connect(_on_fade_from_black_complete)
 
 
 func cross_fade(from_screen: Control, to_screen: Control, duration: float = 0.3) -> void:
@@ -92,7 +98,10 @@ func cross_fade(from_screen: Control, to_screen: Control, duration: float = 0.3)
 	# Fade in new
 	var fade_in: Tween = create_tween()
 	fade_in.tween_property(to_screen, "modulate:a", 1.0, duration / 2)
-	fade_in.finished.connect(_on_transition_complete)
+	# Bible B1.3: Safe signal connection
+	if fade_in and is_instance_valid(fade_in):
+	    if not fade_in.finished.is_connected(_on_transition_complete):
+	        fade_in.finished.connect(_on_transition_complete)
 
 
 func slide_transition(screen: Control, direction: Vector2, duration: float = 0.3) -> void:
@@ -110,7 +119,10 @@ func slide_transition(screen: Control, direction: Vector2, duration: float = 0.3
 	tween.set_ease(Tween.EASE_IN_OUT)
 	tween.set_trans(Tween.TRANS_QUAD)
 	tween.tween_property(screen, "position", end_pos, duration)
-	tween.finished.connect(_on_transition_complete)
+	# Bible B1.3: Safe signal connection
+	if tween and is_instance_valid(tween):
+	    if not tween.finished.is_connected(_on_transition_complete):
+	        tween.finished.connect(_on_transition_complete)
 
 
 func wipe_transition(from_screen: Control, to_screen: Control, direction: Vector2 = Vector2.RIGHT, duration: float = 0.4) -> void:
@@ -140,7 +152,10 @@ func wipe_transition(from_screen: Control, to_screen: Control, direction: Vector
 		)
 		tween.tween_property(wipe, "position:x", 1280, duration / 2)
 	
-	tween.finished.connect(func():
+	# Bible B1.3: Safe signal connection
+	if tween and is_instance_valid(tween):
+	    if not tween.finished.is_connected(func():
+	        tween.finished.connect(func()
 		wipe.queue_free()
 		_on_transition_complete()
 	)
@@ -169,7 +184,10 @@ func flash_screen(color: Color = Color.WHITE, duration: float = 0.1) -> void:
 	
 	var tween: Tween = create_tween()
 	tween.tween_property(flash, "modulate:a", 0.0, duration)
-	tween.finished.connect(flash.queue_free)
+	# Bible B1.3: Safe signal connection
+	if tween and is_instance_valid(tween):
+	    if not tween.finished.is_connected(flash.queue_free):
+	        tween.finished.connect(flash.queue_free)
 
 
 func pulse_overlay(color: Color = Color.BLACK, count: int = 3, speed: float = 0.2) -> void:
@@ -182,7 +200,10 @@ func pulse_overlay(color: Color = Color.BLACK, count: int = 3, speed: float = 0.
 	tween.tween_property(overlay, "modulate:a", 0.5, speed)
 	tween.tween_property(overlay, "modulate:a", 0.0, speed)
 	
-	tween.finished.connect(func():
+	# Bible B1.3: Safe signal connection
+	if tween and is_instance_valid(tween):
+	    if not tween.finished.is_connected(func():
+	        tween.finished.connect(func()
 		overlay.visible = false
 	)
 

@@ -22,7 +22,10 @@ signal bot_removed
 
 
 func _ready():
-	remove_button.pressed.connect(_on_remove_pressed)
+	# Bible B1.3: Safe signal connection
+	if remove_button and is_instance_valid(remove_button):
+	    if not remove_button.pressed.is_connected(_on_remove_pressed):
+	        remove_button.pressed.connect(_on_remove_pressed)
 	gui_input.connect(_on_gui_input)
 	_update_empty_state()
 

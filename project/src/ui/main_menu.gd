@@ -201,7 +201,10 @@ func _create_menu_button(text: String, callback: Callable, is_primary: bool = fa
 		btn.add_theme_font_size_override("font_size", 18)
 	
 	# Connect signals
-	btn.pressed.connect(callback)
+	# Bible B1.3: Safe signal connection
+	if btn and is_instance_valid(btn):
+	    if not btn.pressed.is_connected(callback):
+	        btn.pressed.connect(callback)
 	btn.mouse_entered.connect(_on_button_hover)
 	
 	return btn

@@ -40,8 +40,14 @@ func _ready() -> void:
     # Create ShopManager
     shop_manager = ShopManager.new()
     shop_manager.name = "ShopManager"
-    shop_manager.component_purchased.connect(_on_component_purchased)
-    shop_manager.purchase_failed.connect(_on_purchase_failed)
+    
+    # Safe signal connections (Bible B1.3 pattern)
+    if shop_manager and is_instance_valid(shop_manager):
+        if not shop_manager.component_purchased.is_connected(_on_component_purchased):
+            shop_manager.component_purchased.connect(_on_component_purchased)
+        if not shop_manager.purchase_failed.is_connected(_on_purchase_failed):
+            shop_manager.purchase_failed.connect(_on_purchase_failed)
+    
     add_child(shop_manager)
     
     _setup_ui()
@@ -87,7 +93,10 @@ func _setup_ui() -> void:
         var btn: Button = Button.new()
         btn.text = category.capitalize()
         btn.size = Vector2(100, 35)
-        btn.pressed.connect(_on_category_pressed.bind(category))
+        # Bible B1.3: Safe signal connection
+        if btn and is_instance_valid(btn):
+            if not btn.pressed.is_connected(_on_category_pressed.bind(category):
+                btn.pressed.connect(_on_category_pressed.bind(category)
         category_bar.add_child(btn)
         category_buttons[category] = btn
     
@@ -106,7 +115,10 @@ func _setup_ui() -> void:
     tier_filter.add_item("Tier 2", 1)
     tier_filter.add_item("Tier 3", 2)
     tier_filter.add_item("Tier 4", 3)
-    tier_filter.item_selected.connect(_on_tier_selected)
+    # Bible B1.3: Safe signal connection
+    if tier_filter and is_instance_valid(tier_filter):
+        if not tier_filter.item_selected.is_connected(_on_tier_selected):
+            tier_filter.item_selected.connect(_on_tier_selected)
     add_child(tier_filter)
     
     # Close button
@@ -114,7 +126,10 @@ func _setup_ui() -> void:
     close_btn.text = "Close Shop"
     close_btn.position = Vector2(1150, 80)
     close_btn.size = Vector2(100, 35)
-    close_btn.pressed.connect(_on_close)
+    # Bible B1.3: Safe signal connection
+    if close_btn and is_instance_valid(close_btn):
+        if not close_btn.pressed.is_connected(_on_close):
+            close_btn.pressed.connect(_on_close)
     add_child(close_btn)
     
     # Component list (left side)
@@ -196,7 +211,10 @@ func _setup_ui() -> void:
     buy_button.position = Vector2(760, 570)
     buy_button.size = Vector2(200, 50)
     buy_button.disabled = true
-    buy_button.pressed.connect(_on_buy_pressed)
+    # Bible B1.3: Safe signal connection
+    if buy_button and is_instance_valid(buy_button):
+        if not buy_button.pressed.is_connected(_on_buy_pressed):
+            buy_button.pressed.connect(_on_buy_pressed)
     add_child(buy_button)
 
 
@@ -262,7 +280,10 @@ func _update_component_list() -> void:
             elif "tier" in can_buy["reason"].to_lower():
                 row.modulate = COLOR_LOCKED
         
-        row.pressed.connect(_on_component_selected.bind(component))
+        # Bible B1.3: Safe signal connection
+        if row and is_instance_valid(row):
+            if not row.pressed.is_connected(_on_component_selected.bind(component):
+                row.pressed.connect(_on_component_selected.bind(component)
         component_list.add_child(row)
 
 

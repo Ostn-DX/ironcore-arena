@@ -157,7 +157,10 @@ func _setup_ui() -> void:
 	continue_button.text = "Continue"
 	continue_button.position = Vector2(590, 490)
 	continue_button.size = Vector2(100, 40)
-	continue_button.pressed.connect(_on_continue)
+	# Bible B1.3: Safe signal connection
+	if continue_button and is_instance_valid(continue_button):
+	    if not continue_button.pressed.is_connected(_on_continue):
+	        continue_button.pressed.connect(_on_continue)
 	add_child(continue_button)
 	
 	# Skip button
@@ -165,7 +168,10 @@ func _setup_ui() -> void:
 	skip_button.text = "Skip Tutorial"
 	skip_button.position = Vector2(360, 490)
 	skip_button.size = Vector2(100, 40)
-	skip_button.pressed.connect(_on_skip)
+	# Bible B1.3: Safe signal connection
+	if skip_button and is_instance_valid(skip_button):
+	    if not skip_button.pressed.is_connected(_on_skip):
+	        skip_button.pressed.connect(_on_skip)
 	add_child(skip_button)
 
 

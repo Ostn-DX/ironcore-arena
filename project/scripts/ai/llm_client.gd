@@ -36,13 +36,19 @@ func _setup_http() -> void:
 	_http = HTTPRequest.new()
 	_http.timeout = request_timeout_seconds
 	add_child(_http)
-	_http.request_completed.connect(_on_request_completed)
+	# Bible B1.3: Safe signal connection
+	if _http and is_instance_valid(_http):
+	    if not _http.request_completed.is_connected(_on_request_completed):
+	        _http.request_completed.connect(_on_request_completed)
 
 func _check_ollama_connection() -> void:
 	## Verify Ollama is running
 	var check_http = HTTPRequest.new()
 	add_child(check_http)
-	check_http.request_completed.connect(_on_connection_check)
+	# Bible B1.3: Safe signal connection
+	if check_http and is_instance_valid(check_http):
+	    if not check_http.request_completed.is_connected(_on_connection_check):
+	        check_http.request_completed.connect(_on_connection_check)
 	check_http.request(OLLAMA_URL + "/tags")
 
 func _on_connection_check(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -224,7 +230,10 @@ func _refresh_loaded_models() -> void:
 	## Get list of models from Ollama
 	var http = HTTPRequest.new()
 	add_child(http)
-	http.request_completed.connect(_on_models_refreshed)
+	# Bible B1.3: Safe signal connection
+	if http and is_instance_valid(http):
+	    if not http.request_completed.is_connected(_on_models_refreshed):
+	        http.request_completed.connect(_on_models_refreshed)
 	http.request(OLLAMA_URL + "/tags")
 
 func _on_models_refreshed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:

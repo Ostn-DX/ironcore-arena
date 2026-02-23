@@ -37,8 +37,14 @@ func _ready() -> void:
 	_update_preview()
 	
 	# Connect button signals
-	back_btn.pressed.connect(_on_back_pressed)
-	test_btn.pressed.connect(_on_test_pressed)
+	# Bible B1.3: Safe signal connection
+	if back_btn and is_instance_valid(back_btn):
+	    if not back_btn.pressed.is_connected(_on_back_pressed):
+	        back_btn.pressed.connect(_on_back_pressed)
+	# Bible B1.3: Safe signal connection
+	if test_btn and is_instance_valid(test_btn):
+	    if not test_btn.pressed.is_connected(_on_test_pressed):
+	        test_btn.pressed.connect(_on_test_pressed)
 	
 	print("BuildScreen: Ready")
 
@@ -70,7 +76,10 @@ func _setup_shop_buttons() -> void:
 	for category in ["Chassis", "Armor", "Weapon/Heal"]:
 		var btn: Button = Button.new()
 		btn.text = category
-		btn.pressed.connect(_on_shop_category.bind(category.to_lower().replace("/", "_")))
+		# Bible B1.3: Safe signal connection
+		if btn and is_instance_valid(btn):
+		    if not btn.pressed.is_connected(_on_shop_category.bind(category.to_lower():
+		        btn.pressed.connect(_on_shop_category.bind(category.to_lower()
 		shop_buttons.add_child(btn)
 
 func _on_shop_category(category: String) -> void:

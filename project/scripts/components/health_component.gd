@@ -49,7 +49,10 @@ func _ready() -> void:
 		_invincibility_timer = Timer.new()
 		_invincibility_timer.one_shot = true
 		_invincibility_timer.wait_time = invincibility_time
-		_invincibility_timer.timeout.connect(_on_invincibility_timeout)
+		# Bible B1.3: Safe signal connection
+		if _invincibility_timer and is_instance_valid(_invincibility_timer):
+		    if not _invincibility_timer.timeout.is_connected(_on_invincibility_timeout):
+		        _invincibility_timer.timeout.connect(_on_invincibility_timeout)
 		add_child(_invincibility_timer)
 	
 	# Connect to EventBus for game-wide events

@@ -69,7 +69,10 @@ func _setup_ui() -> void:
 	var close_btn: Button = Button.new()
 	close_btn.text = "CLOSE (ESC)"
 	close_btn.custom_minimum_size = Vector2(200, 40)
-	close_btn.pressed.connect(hide_menu)
+	# Bible B1.3: Safe signal connection
+	if close_btn and is_instance_valid(close_btn):
+	    if not close_btn.pressed.is_connected(hide_menu):
+	        close_btn.pressed.connect(hide_menu)
 	container.add_child(close_btn)
 	
 	# Instructions
@@ -96,14 +99,20 @@ func _add_arena_button(parent: VBoxContainer, label: String, arena_id: String) -
 	var btn: Button = Button.new()
 	btn.text = label
 	btn.custom_minimum_size = Vector2(300, 35)
-	btn.pressed.connect(_on_arena_selected.bind(arena_id))
+	# Bible B1.3: Safe signal connection
+	if btn and is_instance_valid(btn):
+	    if not btn.pressed.is_connected(_on_arena_selected.bind(arena_id):
+	        btn.pressed.connect(_on_arena_selected.bind(arena_id)
 	parent.add_child(btn)
 
 func _add_action_button(parent: VBoxContainer, label: String, callback: Callable) -> void:
 	var btn: Button = Button.new()
 	btn.text = label
 	btn.custom_minimum_size = Vector2(300, 30)
-	btn.pressed.connect(callback)
+	# Bible B1.3: Safe signal connection
+	if btn and is_instance_valid(btn):
+	    if not btn.pressed.is_connected(callback):
+	        btn.pressed.connect(callback)
 	parent.add_child(btn)
 
 func _add_toggle_button(parent: VBoxContainer, label: String, callback: Callable) -> void:
@@ -111,7 +120,10 @@ func _add_toggle_button(parent: VBoxContainer, label: String, callback: Callable
 	btn.text = label + ": OFF"
 	btn.custom_minimum_size = Vector2(300, 30)
 	btn.toggle_mode = true
-	btn.toggled.connect(callback.bind(btn))
+	# Bible B1.3: Safe signal connection
+	if btn and is_instance_valid(btn):
+	    if not btn.toggled.is_connected(callback.bind(btn):
+	        btn.toggled.connect(callback.bind(btn)
 	parent.add_child(btn)
 
 func _input(event: InputEvent) -> void:

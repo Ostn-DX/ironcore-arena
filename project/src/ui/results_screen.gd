@@ -366,21 +366,30 @@ func _create_buttons() -> void:
 	var continue_btn: Button = Button.new()
 	continue_btn.text = "Continue" if is_victory else "Retry"
 	continue_btn.size = Vector2(120, 45)
-	continue_btn.pressed.connect(_on_continue)
+	# Bible B1.3: Safe signal connection
+	if continue_btn and is_instance_valid(continue_btn):
+	    if not continue_btn.pressed.is_connected(_on_continue):
+	        continue_btn.pressed.connect(_on_continue)
 	buttons_container.add_child(continue_btn)
 	
 	# Restart button
 	var restart_btn: Button = Button.new()
 	restart_btn.text = "Restart"
 	restart_btn.size = Vector2(120, 45)
-	restart_btn.pressed.connect(_on_restart)
+	# Bible B1.3: Safe signal connection
+	if restart_btn and is_instance_valid(restart_btn):
+	    if not restart_btn.pressed.is_connected(_on_restart):
+	        restart_btn.pressed.connect(_on_restart)
 	buttons_container.add_child(restart_btn)
 	
 	# Edit loadout button
 	var edit_btn: Button = Button.new()
 	edit_btn.text = "Edit Bot"
 	edit_btn.size = Vector2(120, 45)
-	edit_btn.pressed.connect(_on_edit_loadout)
+	# Bible B1.3: Safe signal connection
+	if edit_btn and is_instance_valid(edit_btn):
+	    if not edit_btn.pressed.is_connected(_on_edit_loadout):
+	        edit_btn.pressed.connect(_on_edit_loadout)
 	buttons_container.add_child(edit_btn)
 	
 	# Next arena button (only on victory)
@@ -388,7 +397,10 @@ func _create_buttons() -> void:
 		var next_btn: Button = Button.new()
 		next_btn.text = "Next →"
 		next_btn.size = Vector2(100, 45)
-		next_btn.pressed.connect(_on_next_arena)
+		# Bible B1.3: Safe signal connection
+		if next_btn and is_instance_valid(next_btn):
+		    if not next_btn.pressed.is_connected(_on_next_arena):
+		        next_btn.pressed.connect(_on_next_arena)
 		buttons_container.add_child(next_btn)
 
 func _animate_appear() -> void:

@@ -254,17 +254,26 @@ func _setup_menu_buttons() -> void:
 	# Continue button (if save exists)
 	if _has_save_file():
 		var continue_btn: UIButton = _create_menu_button("Continue", UIButton.ButtonStyle.PRIMARY)
-		continue_btn.pressed.connect(_on_continue)
+		# Bible B1.3: Safe signal connection
+		if continue_btn and is_instance_valid(continue_btn):
+		    if not continue_btn.pressed.is_connected(_on_continue):
+		        continue_btn.pressed.connect(_on_continue)
 		container.add_child(continue_btn)
 	
 	# New Campaign
 	var campaign_btn: UIButton = _create_menu_button("New Campaign", UIButton.ButtonStyle.SECONDARY)
-	campaign_btn.pressed.connect(_on_new_campaign)
+	# Bible B1.3: Safe signal connection
+	if campaign_btn and is_instance_valid(campaign_btn):
+	    if not campaign_btn.pressed.is_connected(_on_new_campaign):
+	        campaign_btn.pressed.connect(_on_new_campaign)
 	container.add_child(campaign_btn)
 	
 	# Arcade Mode
 	var arcade_btn: UIButton = _create_menu_button("Arcade Mode", UIButton.ButtonStyle.SECONDARY)
-	arcade_btn.pressed.connect(_on_arcade)
+	# Bible B1.3: Safe signal connection
+	if arcade_btn and is_instance_valid(arcade_btn):
+	    if not arcade_btn.pressed.is_connected(_on_arcade):
+	        arcade_btn.pressed.connect(_on_arcade)
 	container.add_child(arcade_btn)
 	
 	# Separator
@@ -274,12 +283,18 @@ func _setup_menu_buttons() -> void:
 	
 	# Bot Builder
 	var builder_btn: UIButton = _create_menu_button("Bot Builder", UIButton.ButtonStyle.GHOST)
-	builder_btn.pressed.connect(_on_builder)
+	# Bible B1.3: Safe signal connection
+	if builder_btn and is_instance_valid(builder_btn):
+	    if not builder_btn.pressed.is_connected(_on_builder):
+	        builder_btn.pressed.connect(_on_builder)
 	container.add_child(builder_btn)
 	
 	# Shop
 	var shop_btn: UIButton = _create_menu_button("Component Shop", UIButton.ButtonStyle.GHOST)
-	shop_btn.pressed.connect(_on_shop)
+	# Bible B1.3: Safe signal connection
+	if shop_btn and is_instance_valid(shop_btn):
+	    if not shop_btn.pressed.is_connected(_on_shop):
+	        shop_btn.pressed.connect(_on_shop)
 	container.add_child(shop_btn)
 	
 	# Separator
@@ -289,12 +304,18 @@ func _setup_menu_buttons() -> void:
 	
 	# Settings
 	var settings_btn: UIButton = _create_menu_button("Settings", UIButton.ButtonStyle.GHOST)
-	settings_btn.pressed.connect(_on_settings)
+	# Bible B1.3: Safe signal connection
+	if settings_btn and is_instance_valid(settings_btn):
+	    if not settings_btn.pressed.is_connected(_on_settings):
+	        settings_btn.pressed.connect(_on_settings)
 	container.add_child(settings_btn)
 	
 	# Quit
 	var quit_btn: UIButton = _create_menu_button("Quit", UIButton.ButtonStyle.DANGER)
-	quit_btn.pressed.connect(_on_quit)
+	# Bible B1.3: Safe signal connection
+	if quit_btn and is_instance_valid(quit_btn):
+	    if not quit_btn.pressed.is_connected(_on_quit):
+	        quit_btn.pressed.connect(_on_quit)
 	container.add_child(quit_btn)
 
 func _create_menu_button(text: String, style: UIButton.ButtonStyle) -> UIButton:

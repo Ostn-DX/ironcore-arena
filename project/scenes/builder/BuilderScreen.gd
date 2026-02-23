@@ -37,14 +37,32 @@ func _ready():
 	_update_weight_display()
 	
 	# Connect buttons
-	start_button.pressed.connect(_on_start_pressed)
-	save_button.pressed.connect(_on_save_pressed)
-	back_button.pressed.connect(_on_back_pressed)
+	# Bible B1.3: Safe signal connection
+	if start_button and is_instance_valid(start_button):
+	    if not start_button.pressed.is_connected(_on_start_pressed):
+	        start_button.pressed.connect(_on_start_pressed)
+	# Bible B1.3: Safe signal connection
+	if save_button and is_instance_valid(save_button):
+	    if not save_button.pressed.is_connected(_on_save_pressed):
+	        save_button.pressed.connect(_on_save_pressed)
+	# Bible B1.3: Safe signal connection
+	if back_button and is_instance_valid(back_button):
+	    if not back_button.pressed.is_connected(_on_back_pressed):
+	        back_button.pressed.connect(_on_back_pressed)
 	
 	# Connect list selections
-	chassis_list.item_selected.connect(_on_chassis_selected)
-	plating_list.item_selected.connect(_on_plating_selected)
-	weapon_list.item_selected.connect(_on_weapon_selected)
+	# Bible B1.3: Safe signal connection
+	if chassis_list and is_instance_valid(chassis_list):
+	    if not chassis_list.item_selected.is_connected(_on_chassis_selected):
+	        chassis_list.item_selected.connect(_on_chassis_selected)
+	# Bible B1.3: Safe signal connection
+	if plating_list and is_instance_valid(plating_list):
+	    if not plating_list.item_selected.is_connected(_on_plating_selected):
+	        plating_list.item_selected.connect(_on_plating_selected)
+	# Bible B1.3: Safe signal connection
+	if weapon_list and is_instance_valid(weapon_list):
+	    if not weapon_list.item_selected.is_connected(_on_weapon_selected):
+	        weapon_list.item_selected.connect(_on_weapon_selected)
 
 
 ## Populate component lists from DataLoader

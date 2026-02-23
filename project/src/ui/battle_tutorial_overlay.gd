@@ -93,7 +93,10 @@ func _setup_ui() -> void:
 	ok_button.text = "Got it!"
 	ok_button.position = Vector2(590, 395)
 	ok_button.size = Vector2(100, 30)
-	ok_button.pressed.connect(_on_ok_pressed)
+	# Bible B1.3: Safe signal connection
+	if ok_button and is_instance_valid(ok_button):
+	    if not ok_button.pressed.is_connected(_on_ok_pressed):
+	        ok_button.pressed.connect(_on_ok_pressed)
 	add_child(ok_button)
 
 
