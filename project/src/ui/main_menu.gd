@@ -205,7 +205,8 @@ func _create_menu_button(text: String, callback: Callable, is_primary: bool = fa
 	if btn and is_instance_valid(btn):
 	    if not btn.pressed.is_connected(callback):
 	        btn.pressed.connect(callback)
-	btn.mouse_entered.connect(_on_button_hover)
+	    if not btn.mouse_entered.is_connected(_on_button_hover):
+	        btn.mouse_entered.connect(_on_button_hover)
 	
 	return btn
 
