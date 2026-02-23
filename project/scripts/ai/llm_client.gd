@@ -70,7 +70,7 @@ func generate(prompt: String, options: Dictionary = {}) -> String:
 		return ""
 	
 	var request_id = _generate_request_id()
-	var model = options.get("model", default_model)
+	var model: String = options.get("model", default_model)
 	
 	var body = {
 		"model": model,
@@ -89,7 +89,7 @@ func generate(prompt: String, options: Dictionary = {}) -> String:
 	var json_body = JSON.stringify(body)
 	var headers = ["Content-Type: application/json"]
 	
-	var error = _http.request(OLLAMA_URL + "/generate", headers, HTTPClient.METHOD_POST, json_body)
+	var error: String = _http.request(OLLAMA_URL + "/generate", headers, HTTPClient.METHOD_POST, json_body)
 	if error != OK:
 		push_error("LLMClient: HTTP request failed: %d" % error)
 		request_failed.emit(request_id, "HTTP request failed")
@@ -127,7 +127,7 @@ Code:""" % [language, prompt]
 
 func generate_dialogue(character_name: String, context: String, tone: String = "neutral", options: Dictionary = {}) -> String:
 	## Generate character dialogue
-	var prompt = """You are %s, a character in Ironcore Arena (a mech combat game).
+	var prompt: String = """You are %s, a character in Ironcore Arena (a mech combat game).
 
 Context: %s
 Tone: %s
@@ -143,7 +143,7 @@ Respond with a single line of dialogue (max 100 characters). Be concise and impa
 
 func generate_quest_description(quest_type: String, difficulty: String, options: Dictionary = {}) -> String:
 	## Generate quest content
-	var prompt = """Generate a quest for Ironcore Arena (mech combat game).
+	var prompt: String = """Generate a quest for Ironcore Arena (mech combat game).
 
 Quest Type: %s
 Difficulty: %s
@@ -162,7 +162,7 @@ Format as JSON with keys: title, description, objective, reward""" % [quest_type
 
 func generate_item_description(item_type: String, rarity: String, options: Dictionary = {}) -> String:
 	## Generate item/flavor text
-	var prompt = """Generate an item for Ironcore Arena (mech combat game).
+	var prompt: String = """Generate an item for Ironcore Arena (mech combat game).
 
 Item Type: %s
 Rarity: %s
@@ -192,7 +192,7 @@ func load_model(model_name: String) -> bool:
 	var body = JSON.stringify({"model": model_name})
 	var headers = ["Content-Type: application/json"]
 	
-	var error = http.request(OLLAMA_URL + "/pull", headers, HTTPClient.METHOD_POST, body)
+	var error: String = http.request(OLLAMA_URL + "/pull", headers, HTTPClient.METHOD_POST, body)
 	if error != OK:
 		return false
 	
@@ -261,14 +261,14 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 		return
 	
 	var json = JSON.new()
-	var parse_result = json.parse(body.get_string_from_utf8())
+	var parse_result: int = json.parse(body.get_string_from_utf8())
 	
 	if parse_result != OK:
 		_push_error_to_active("JSON parse error: %s" % json.get_error_message())
 		return
 	
 	var response = json.data
-	var request_id = _active_requests.keys()[0] if not _active_requests.is_empty() else ""
+	var request_id: String = _active_requests.keys()[0] if not _active_requests.is_empty() else ""
 	
 	if request_id.is_empty():
 		return
@@ -287,7 +287,7 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 
 func _push_error_to_active(error_msg: String) -> void:
 	if not _active_requests.is_empty():
-		var request_id = _active_requests.keys()[0]
+		var request_id: int = _active_requests.keys()[0]
 		request_failed.emit(request_id, error_msg)
 		_active_requests.erase(request_id)
 

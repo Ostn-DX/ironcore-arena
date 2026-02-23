@@ -485,7 +485,7 @@ func _apply_damage(bot, damage: int, _source_id: int) -> void:
 		
 		# EventBus integration
 		if EventBus:
-			var attacker_team = 0 if bot.team == 1 else 1
+			var attacker_team: int = 0 if bot.team == 1 else 1
 			if bot.team == 0:  # Player took damage
 				EventBus.player_damaged.emit(damage, null)
 			else:  # Enemy took damage

@@ -33,7 +33,7 @@ func _ready():
 ## Build a bot in this slot
 func build_bot(chassis_id: String, plating_id: String, weapon_id: String = "") -> bool:
 	# Create bot instance with dummy simulation values (builder doesn't need sim params)
-	var bot = Bot.new(0, 0, Vector2.ZERO)
+	var bot: int = Bot.new(0, 0, Vector2.ZERO)
 	# TODO: Implement build configuration logic - Bot class needs build() method
 	# var success = bot.build(chassis_id, plating_id, weapon_id)
 	# if not success:

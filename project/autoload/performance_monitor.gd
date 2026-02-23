@@ -54,7 +54,7 @@ func _process(delta: float) -> void:
 		_last_log_time = Time.get_ticks_msec() / 1000.0
 
 func _update_frame_times(delta: float) -> void:
-	var frame_time_ms = delta * 1000.0
+	var frame_time_ms: float = delta * 1000.0
 	_frame_times.append(frame_time_ms)
 	
 	if _frame_times.size() > _max_frame_history:
@@ -110,12 +110,12 @@ func _estimate_vram_usage() -> float:
 	## This is an approximation - actual VRAM includes meshes, shaders, etc.
 	var texture_memory = Performance.get_monitor(Performance.RENDER_TEXTURE_MEM_USED)
 	# RTX 4080 Super has 16GB VRAM
-	var total_vram = 16.0 * 1024.0 * 1024.0 * 1024.0  # 16GB in bytes
+	var total_vram: float = 16.0 * 1024.0 * 1024.0 * 1024.0  # 16GB in bytes
 	return texture_memory / total_vram
 
 func _emit_warning(metric: String, value: float, threshold: float) -> void:
 	# Throttle warnings (max once per 5 seconds per metric)
-	var now = Time.get_ticks_msec() / 1000.0
+	var now: float = Time.get_ticks_msec() / 1000.0
 	if _warning_count.has(metric) and now - _warning_count[metric] < 5.0:
 		return
 	
@@ -174,7 +174,7 @@ func get_bottleneck() -> String:
 
 func export_report() -> String:
 	var summary = get_performance_summary()
-	var report = "Performance Report\n"
+	var report: String = "Performance Report\n"
 	report += "==================\n"
 	report += "FPS: %.1f (Target: %.1f)\n" % [summary.current_fps, target_fps]
 	report += "Frame Time: %.2fms (p99: %.2fms)\n" % [summary.process_ms, summary.p99_frame_time_ms]

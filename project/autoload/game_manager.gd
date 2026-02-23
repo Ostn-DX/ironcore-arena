@@ -117,9 +117,9 @@ func _save_before_quit() -> void:
 		SaveManager.save_game()
 
 func get_play_time_formatted() -> String:
-	var hours = int(play_time_seconds / 3600)
-	var minutes = int((play_time_seconds % 3600) / 60)
-	var seconds = int(play_time_seconds % 60)
+	var hours: int = int(play_time_seconds / 3600)
+	var minutes: int = int((play_time_seconds % 3600) / 60)
+	var seconds: int = int(play_time_seconds % 60)
 	return "%02d:%02d:%02d" % [hours, minutes, seconds]
 
 func _state_to_string(state: GameState) -> String:

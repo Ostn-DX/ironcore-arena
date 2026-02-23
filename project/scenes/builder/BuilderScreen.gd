@@ -76,17 +76,17 @@ func _populate_component_lists() -> void:
 	
 	# Chassis
 	for chassis in _data_loader.get_chassis_by_tier(tier):
-		var idx = chassis_list.add_item("%s (T%d)" % [chassis.name, chassis.tier])
+		var idx: String = chassis_list.add_item("%s (T%d)" % [chassis.name, chassis.tier])
 		chassis_list.set_item_metadata(idx, chassis.id)
 	
 	# Plating  
 	for plating in _data_loader.get_plating_by_tier(tier):
-		var idx = plating_list.add_item("%s (T%d)" % [plating.name, plating.tier])
+		var idx: String = plating_list.add_item("%s (T%d)" % [plating.name, plating.tier])
 		plating_list.set_item_metadata(idx, plating.id)
 	
 	# Weapons
 	for weapon in _data_loader.get_weapons_by_tier(tier):
-		var idx = weapon_list.add_item("%s (T%d)" % [weapon.name, weapon.tier])
+		var idx: String = weapon_list.add_item("%s (T%d)" % [weapon.name, weapon.tier])
 		weapon_list.set_item_metadata(idx, weapon.id)
 
 

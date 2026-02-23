@@ -28,7 +28,7 @@ func _ensure_save_directory() -> void:
 		return
 	
 	if not dir.dir_exists("saves"):
-		var err = dir.make_dir("saves")
+		var err: String = dir.make_dir("saves")
 		if err != OK:
 			push_error("SaveManager: Failed to create saves directory")
 
@@ -48,7 +48,7 @@ func save_game(slot: int = 0) -> Error:
 	var save_data = _collect_save_data()
 	
 	# Serialize
-	var json_string = JSON.stringify(save_data, "\t")
+	var json_string: String = JSON.stringify(save_data, "\t")
 	
 	# Write to file
 	var file_path = _get_save_path(slot)
@@ -226,7 +226,7 @@ func _apply_save_data(save_data: Dictionary) -> void:
 
 func _migrate_save_data(old_data: Dictionary) -> Dictionary:
 	## Handle save data migration between versions
-	var version = old_data.get("version", "0.0.0")
+	var version: String = old_data.get("version", "0.0.0")
 	
 	# Add migration logic here as versions change
 	if version == "0.9.0":

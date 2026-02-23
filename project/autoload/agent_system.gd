@@ -73,7 +73,7 @@ func get_agent_status(agent_name: String) -> String:
 	return agents[agent_name].status
 
 func get_all_status() -> Dictionary:
-	var status = {}
+	var status: Dictionary = {}
 	for name in agents:
 		status[name] = agents[name].get_full_status()
 	return status
@@ -81,7 +81,7 @@ func get_all_status() -> Dictionary:
 func _process_queue() -> void:
 	## Process queued tasks
 	while task_queue.size() > 0:
-		var task = task_queue[0]
+		var task: int = task_queue[0]
 		var agent = agents.get(task.agent)
 		
 		if agent and agent.is_available():

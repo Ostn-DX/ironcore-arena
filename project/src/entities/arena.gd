@@ -118,8 +118,8 @@ func _cache_spawn_markers() -> void:
 
 func _update_spawn_markers_from_data() -> void:
 	## Update marker positions from arena data if available
-	var player_spawns = arena_data.get("spawn_points_player", [])
-	var enemy_spawns = arena_data.get("spawn_points_enemy", [])
+	var player_spawns: Array = arena_data.get("spawn_points_player", [])
+	var enemy_spawns: Array = arena_data.get("spawn_points_enemy", [])
 	
 	for i in range(min(player_spawns.size(), player_spawn_markers.size())):
 		var data = player_spawns[i]
@@ -583,7 +583,7 @@ func get_spawn_markers(team: int) -> Array[Marker2D]:
 
 func get_random_spawn_position(team: int) -> Vector2:
 	## Get a random spawn position for a team
-	var markers = player_spawn_markers if team == 0 else enemy_spawn_markers
+	var markers: int = player_spawn_markers if team == 0 else enemy_spawn_markers
 	if markers.size() > 0:
 		return markers[randi() % markers.size()].position
 	
