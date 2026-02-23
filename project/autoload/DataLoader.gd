@@ -72,14 +72,92 @@ func get_part(id: String) -> Dictionary:
 	## Get any part by ID - routes to correct type
 	var part: Dictionary = get_chassis(id)
 	if not part.is_empty():
+		part["type"] = "chassis"
 		return part
 	
 	part = get_plating(id)
 	if not part.is_empty():
+		part["type"] = "armor"
 		return part
 	
 	part = get_weapon(id)
 	if not part.is_empty():
+		part["type"] = "weapon"
 		return part
 	
 	return {}
+
+
+## NEW: BuilderScreen compatibility methods
+
+func get_all_parts() -> Dictionary:
+	## Returns all parts unified as id -> data dictionary
+	## Used by BuilderScreen for shop and inventory
+	var all_parts: Dictionary = {}
+	
+	# Add all chassis
+	for id in _core.chassis_by_id:
+		var part: Dictionary = _core.chassis_by_id[id].duplicate()
+		part["type"] = "chassis"
+		all_parts[id] = part
+	
+	# Add all plating (armor)
+	for id in _core.plating_by_id:
+		var part: Dictionary = _core.plating_by_id[id].duplicate()
+		part["type"] = "armor"
+		all_parts[id] = part
+	
+	# Add all weapons
+	for id in _core.weapons_by_id:
+		var part: Dictionary = _core.weapons_by_id[id].duplicate()
+		part["type"] = "weapon"
+		all_parts[id] = part
+	
+	return all_parts
+
+
+func get_part_data(id: String) -> Dictionary:
+	## Alias for get_part() with guaranteed type field
+	## Used by BuilderScreen for item details
+	var part: Dictionary = get_part(id)
+	
+	# Ensure type field exists
+	if not part.has("type"):
+		part["type"] = "unknown"
+	
+	# Ensure required fields for BuilderScreen
+	if not part.has("name"):
+		part["name"] = id.capitalize()
+	
+	if not part.has("description"):
+		part["description"] = "No description available."
+	
+	if not part.has("manufacturer"):
+		part["manufacturer"] = "Unknown"
+	
+	# Add default stats if missing
+	if not part.has("weight"):
+		part["weight"] = 10
+	
+	if not part.has("damage") and part["type"] == "weapon":
+		part["damage"] = 10
+	
+	if not part.has("armor") and part["type"] == "armor":
+		part["armor"] = 5
+	
+	if not part.has("health") and part["type"] == "chassis":
+		part["health"] = 100
+	
+	return part
+
+
+func get_parts_by_type(part_type: String) -> Dictionary:
+	## Filter parts by type: "chassis", "armor", or "weapon"
+	var all_parts: Dictionary = get_all_parts()
+	var filtered: Dictionary = {}
+	
+	for id in all_parts:
+		if all_parts[id].get("type", "") == part_type:
+			filtered[id] = all_parts[id]
+	
+	return filtered
