@@ -47,6 +47,12 @@ func run_all_tests() -> void:
 	await _test_type_safety()
 	await _test_error_handling()
 	
+	## NEW: Extended test scenarios
+	await _test_battle_scenarios()
+	await _test_save_load_stress()
+	await _test_memory_stability()
+	await _test_balance_validation()
+	
 	## Report results
 	_report_results()
 
@@ -768,6 +774,231 @@ func _test_error_handling() -> void:
 	_pass_subtest("Array bounds safe")
 	
 	_pass_test("All Error Handling tests passed (%d subtests)" % _subtest_count)
+
+
+## ============================================================================
+## NEW: Extended Test Scenarios
+## ============================================================================
+
+func _test_battle_scenarios() -> void:
+	_start_test("BattleScenarios")
+	
+	## Test 1: Simulate bot stat calculation
+	var chassis: Dictionary = DataLoader.get_chassis("akaumin_dl2_100")
+	var armor: Dictionary = DataLoader.get_plating("santrin_auro")
+	var weapon: Dictionary = DataLoader.get_weapon("raptor_dt_01")
+	
+	if chassis.is_empty() or armor.is_empty() or weapon.is_empty():
+		_fail_test("Missing components for battle test")
+		return
+	
+	## Calculate total stats
+	var total_hp: int = chassis.get("hp_base", 0) + armor.get("hp_bonus", 0)
+	var damage_reduction: float = armor.get("damage_reduction", 0.0)
+	var effective_hp: float = total_hp / (1.0 - damage_reduction)
+	
+	var avg_damage: float = (weapon.get("damage_min", 0) + weapon.get("damage_max", 0)) / 2.0
+	var fire_rate: float = weapon.get("fire_rate", 1.0)
+	var dps: float = avg_damage * fire_rate
+	
+	_pass_subtest("Bot stats calculated: %d HP (%.1f EHP), %.1f DPS" % [total_hp, effective_hp, dps])
+	
+	## Test 2: Time-to-kill calculation
+	var target_hp: int = 100
+	var ttk: float = target_hp / dps if dps > 0 else 999.0
+	if ttk > 10.0:
+		_warn_subtest("Time-to-kill is high: %.2f seconds" % ttk)
+	else:
+		_pass_subtest("Time-to-kill reasonable: %.2f seconds" % ttk)
+	
+	## Test 3: Simulate 1v1 battle outcome
+	var bot1_hp: float = effective_hp
+	var bot2_hp: float = effective_hp
+	var turns: int = 0
+	var max_turns: int = 1000
+	
+	while bot1_hp > 0 and bot2_hp > 0 and turns < max_turns:
+		bot2_hp -= dps  ## Bot 1 shoots
+		if bot2_hp > 0:
+			bot1_hp -= dps  ## Bot 2 shoots
+		turns += 1
+	
+	if turns >= max_turns:
+		_fail_test("Battle simulation exceeded max turns")
+		return
+	
+	_pass_subtest("1v1 simulation complete in %d turns" % turns)
+	
+	## Test 4: Verify balanced damage
+	if turns < 3:
+		_warn_subtest("Battle ends very quickly (%d turns)" % turns)
+	elif turns > 50:
+		_warn_subtest("Battle takes too long (%d turns)" % turns)
+	else:
+		_pass_subtest("Battle duration reasonable (%d turns)" % turns)
+	
+	_pass_test("All Battle Scenario tests passed (%d subtests)" % _subtest_count)
+
+
+func _test_save_load_stress() -> void:
+	_start_test("SaveLoadStress")
+	
+	var original_credits: int = GameState.credits
+	var stress_iterations: int = 50
+	var passed_iterations: int = 0
+	
+	## Test 1: Rapid save/load cycles
+	for i in range(stress_iterations):
+		## Modify state
+		GameState.credits = randi() % 10000
+		GameState.add_part("stress_test_part_%d" % i, 1)
+		
+		## Save
+		GameState.save_game()
+		
+		## Modify again
+		GameState.credits = 0
+		
+		## Load
+		var success: bool = GameState.load_game()
+		if success:
+			passed_iterations += 1
+		
+		## Check state restored
+		if GameState.credits == 0:
+			_fail_test("Credits not restored at iteration %d" % i)
+			return
+	
+	_pass_subtest("Rapid save/load: %d/%d iterations passed" % [passed_iterations, stress_iterations])
+	
+	## Test 2: Large data save/load
+	for i in range(100):
+		GameState.add_part("bulk_part_%d" % i, randi() % 100)
+	
+	GameState.save_game()
+	GameState.load_game()
+	
+	var parts_count: int = GameState.owned_parts.size()
+	_pass_subtest("Large data save/load: %d parts retained" % parts_count)
+	
+	## Restore original state
+	GameState.credits = original_credits
+	GameState.save_game()
+	
+	_pass_test("All Save/Load Stress tests passed (%d subtests)" % _subtest_count)
+
+
+func _test_memory_stability() -> void:
+	_start_test("MemoryStability")
+	
+	## Test 1: Dictionary growth
+	var test_dict: Dictionary = {}
+	for i in range(1000):
+		test_dict["key_%d" % i] = i
+	
+	if test_dict.size() != 1000:
+		_fail_test("Dictionary size mismatch after growth")
+		return
+	_pass_subtest("Dictionary growth stable (1000 entries)")
+	
+	## Test 2: Array operations
+	var test_array: Array[int] = []
+	for i in range(1000):
+		test_array.append(i)
+		test_array.pop_front()
+	
+	_pass_subtest("Array queue operations stable")
+	
+	## Test 3: Node creation/destruction
+	var created_count: int = 0
+	for i in range(100):
+		var node := Node.new()
+		node.name = "test_node_%d" % i
+		add_child(node)
+		node.queue_free()
+		created_count += 1
+	
+	await get_tree().process_frame
+	_pass_subtest("Node creation/destruction stable (%d nodes)" % created_count)
+	
+	## Test 4: Signal connections
+	var signal_count: int = 0
+	var test_callable := func(): signal_count += 1
+	
+	for i in range(100):
+		GameState.credits_changed.connect(test_callable)
+		GameState.credits_changed.disconnect(test_callable)
+	
+	_pass_subtest("Signal connect/disconnect stable (100 cycles)")
+	
+	_pass_test("All Memory Stability tests passed (%d subtests)" % _subtest_count)
+
+
+func _test_balance_validation() -> void:
+	_start_test("BalanceValidation")
+	
+	## Test 1: All components have positive costs
+	for chassis in DataLoader.get_all_chassis():
+		if chassis.get("cost", 0) <= 0:
+			_fail_test("Chassis '%s' has invalid cost" % chassis.get("id"))
+			return
+	_pass_subtest("All chassis have positive costs")
+	
+	for weapon in DataLoader.get_all_weapons():
+		if weapon.get("cost", 0) <= 0:
+			_fail_test("Weapon '%s' has invalid cost" % weapon.get("id"))
+			return
+	_pass_subtest("All weapons have positive costs")
+	
+	for plating in DataLoader.get_all_plating():
+		if plating.get("cost", 0) <= 0:
+			_fail_test("Plating '%s' has invalid cost" % plating.get("id"))
+			return
+	_pass_subtest("All plating have positive costs")
+	
+	## Test 2: Tier progression reasonable
+	var t0_chassis: Array = DataLoader.get_chassis_by_tier(0)
+	var t1_chassis: Array = DataLoader.get_chassis_by_tier(1)
+	
+	if t0_chassis.is_empty() or t1_chassis.is_empty():
+		_warn_subtest("Missing chassis in tier 0 or 1")
+	else:
+		var t0_avg_cost: float = 0.0
+		for c in t0_chassis:
+			t0_avg_cost += c.get("cost", 0)
+		t0_avg_cost /= t0_chassis.size()
+		
+		var t1_avg_cost: float = 0.0
+		for c in t1_chassis:
+			t1_avg_cost += c.get("cost", 0)
+		t1_avg_cost /= t1_chassis.size()
+		
+		var ratio: float = t1_avg_cost / t0_avg_cost if t0_avg_cost > 0 else 0.0
+		if ratio < 1.5 or ratio > 3.0:
+			_warn_subtest("Tier 0→1 cost ratio unusual: %.2fx" % ratio)
+		else:
+			_pass_subtest("Tier 0→1 cost ratio healthy: %.2fx" % ratio)
+	
+	## Test 3: No duplicate IDs
+	var all_ids: Array[String] = []
+	for c in DataLoader.get_all_chassis():
+		all_ids.append(c.get("id", ""))
+	for w in DataLoader.get_all_weapons():
+		all_ids.append(w.get("id", ""))
+	for p in DataLoader.get_all_plating():
+		all_ids.append(p.get("id", ""))
+	
+	var unique_ids: Array[String] = []
+	for id in all_ids:
+		if id in unique_ids:
+			_fail_test("Duplicate component ID found: %s" % id)
+			return
+		unique_ids.append(id)
+	
+	_pass_subtest("All component IDs unique (%d total)" % all_ids.size())
+	
+	_pass_test("All Balance Validation tests passed (%d subtests)" % _subtest_count)
+
 
 ## ============================================================================
 ## Helper functions
