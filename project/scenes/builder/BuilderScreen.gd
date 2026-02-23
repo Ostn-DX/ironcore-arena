@@ -95,8 +95,12 @@ func _create_bot_slots() -> void:
 	for i in range(5):
 		var slot = BuildSlot.new()
 		slot.slot_index = i
-		slot.clicked.connect(_on_slot_clicked.bind(i))
-		slot.bot_assembled.connect(_on_bot_assembled.bind(i))
+		# Bible B1.3: Safe signal connections
+		if slot and is_instance_valid(slot):
+			if not slot.clicked.is_connected(_on_slot_clicked.bind(i)):
+				slot.clicked.connect(_on_slot_clicked.bind(i))
+			if not slot.bot_assembled.is_connected(_on_bot_assembled.bind(i)):
+				slot.bot_assembled.connect(_on_bot_assembled.bind(i))
 		bot_slots.add_child(slot)
 		current_team.append(slot)
 

@@ -36,8 +36,11 @@ func _ready() -> void:
 	print("GameManager: Initialized")
 	
 	# Connect to EventBus
-	EventBus.pause_requested.connect(_on_pause_requested)
-	EventBus.resume_requested.connect(_on_resume_requested)
+	if EventBus and is_instance_valid(EventBus):
+		if not EventBus.pause_requested.is_connected(_on_pause_requested):
+			EventBus.pause_requested.connect(_on_pause_requested)
+		if not EventBus.resume_requested.is_connected(_on_resume_requested):
+			EventBus.resume_requested.connect(_on_resume_requested)
 
 func _process(delta: float) -> void:
 	if current_state == GameState.BATTLE_ACTIVE and not is_paused:

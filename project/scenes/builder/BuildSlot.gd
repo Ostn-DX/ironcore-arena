@@ -26,7 +26,9 @@ func _ready():
 	if remove_button and is_instance_valid(remove_button):
 	    if not remove_button.pressed.is_connected(_on_remove_pressed):
 	        remove_button.pressed.connect(_on_remove_pressed)
-	gui_input.connect(_on_gui_input)
+	# Bible B1.3: Safe signal connection for self
+	if not gui_input.is_connected(_on_gui_input):
+		gui_input.connect(_on_gui_input)
 	_update_empty_state()
 
 

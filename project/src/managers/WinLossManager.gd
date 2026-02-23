@@ -106,7 +106,9 @@ func _connect_signals() -> void:
         if _simulation_manager and is_instance_valid(_simulation_manager):
             if not _simulation_manager.projectile_spawned.is_connected(_on_projectile_spawned):
                 _simulation_manager.projectile_spawned.connect(_on_projectile_spawned)
-        _simulation_manager.command_issued.connect(_on_command_issued)
+        if _simulation_manager and is_instance_valid(_simulation_manager):
+            if not _simulation_manager.command_issued.is_connected(_on_command_issued):
+                _simulation_manager.command_issued.connect(_on_command_issued)
 
 
 # ============================================================================
