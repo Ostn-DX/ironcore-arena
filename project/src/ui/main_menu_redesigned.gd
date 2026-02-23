@@ -185,21 +185,17 @@ func _create_node_connections() -> void:
 				_node_lines.append(line)
 
 func _setup_title() -> void:
-	# Main title with long shadow
-	var title_container: Control = Control.new()
-	title_container.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	title_container.position = Vector2(0, 80)
-	title_container.size = Vector2(0, 0)
-	add_child(title_container)
+	# Main title with long shadow - centered
+	var viewport_size: Vector2 = get_viewport_rect().size
 	
-	# Title shadow (offset)
+	# Title shadow
 	var shadow: Label = Label.new()
 	shadow.text = "IRONCORE"
 	shadow.add_theme_font_size_override("font_size", 72)
 	shadow.modulate = Color(0, 0, 0, 0.3)
-	shadow.position = Vector2(4, 4)
 	shadow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_container.add_child(shadow)
+	shadow.position = Vector2(viewport_size.x / 2, 84)  # Centered
+	add_child(shadow)
 	
 	# Title text
 	var title: Label = Label.new()
@@ -207,7 +203,8 @@ func _setup_title() -> void:
 	title.add_theme_font_size_override("font_size", 72)
 	title.modulate = COLOR_TEXT
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_container.add_child(title)
+	title.position = Vector2(viewport_size.x / 2, 80)  # Centered
+	add_child(title)
 	
 	# Subtitle
 	var subtitle: Label = Label.new()
