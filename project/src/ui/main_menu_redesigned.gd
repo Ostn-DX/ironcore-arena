@@ -219,14 +219,15 @@ func _setup_title() -> void:
 	title_container.add_child(subtitle)
 
 func _center_menu() -> void:
-	## Center menu elements based on actual viewport
-	var viewport_size: Vector2 = get_viewport_rect().size
+	## Center menu elements based on parent size
+	var parent_size: Vector2 = size  # This control fills the screen
 	var container = get_node_or_null("MenuContainer")
 	if container:
 		container.position = Vector2(
-			(viewport_size.x - container.size.x) / 2,
-			(viewport_size.y - container.size.y) / 2
+			(parent_size.x - container.size.x) / 2,
+			(parent_size.y - container.size.y) / 2
 		)
+		print("Menu centered at: ", container.position, " parent size: ", parent_size)
 
 func _setup_menu_buttons() -> void:
 	# Main button container - centered
