@@ -320,6 +320,36 @@ func _unlock_all_parts() -> void:
 	## DEPRECATED: Arcade mode now just sets credits high for free purchases
 	pass
 
+
+func _give_all_parts() -> void:
+	## Arcade mode: Unlock all parts for testing
+	## Bible: Add all components from DataLoader
+	if not DataLoader or not is_instance_valid(DataLoader):
+		push_warning("GameState: Cannot give all parts - DataLoader not available")
+		return
+	
+	## Add all chassis
+	for chassis in DataLoader.get_all_chassis():
+		var id: String = chassis.get("id", "")
+		if not id.is_empty():
+			owned_parts[id] = 99
+	
+	## Add all plating (armor)
+	for plating in DataLoader.get_all_plating():
+		var id: String = plating.get("id", "")
+		if not id.is_empty():
+			owned_parts[id] = 99
+	
+	## Add all weapons
+	for weapon in DataLoader.get_all_weapons():
+		var id: String = weapon.get("id", "")
+		if not id.is_empty():
+			owned_parts[id] = 99
+	
+	parts_changed.emit()
+	print("GameState: All parts unlocked for arcade mode")
+
+
 func is_arcade_mode() -> bool:
 	return game_mode == "arcade"
 
@@ -413,6 +443,12 @@ func load_game() -> bool:
 
 	print("Game loaded, version: ", version)
 	return true
+
+
+func save_exists(slot: int = 0) -> bool:
+	## Check if a save file exists
+	## Bible: Use FileAccess.file_exists for safe checking
+	return FileAccess.file_exists(SAVE_PATH)
 
 
 func delete_save() -> void:

@@ -111,8 +111,13 @@ func _activate_focused() -> void:
 		focused.emit_signal("pressed")
 
 func _play_intro_animation() -> void:
+	## Bible: Check if animation exists before playing
 	if _animation_player and is_instance_valid(_animation_player):
-		_animation_player.play("intro")
+		if _animation_player.has_animation("intro"):
+			_animation_player.play("intro")
+		else:
+			## No intro animation available, that's OK
+			pass
 
 func _on_career_pressed() -> void:
 	print("[MainMenu] Career button PRESSED")
