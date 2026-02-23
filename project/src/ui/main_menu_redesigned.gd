@@ -218,11 +218,23 @@ func _setup_title() -> void:
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title_container.add_child(subtitle)
 
+func _center_menu() -> void:
+	## Center menu elements based on actual viewport
+	var viewport_size: Vector2 = get_viewport_rect().size
+	# Find the container (first VBoxContainer child)
+	for child in get_children():
+		if child is VBoxContainer and child.name != "":
+			child.position = Vector2(
+				(viewport_size.x - child.size.x) / 2,
+				(viewport_size.y - child.size.y) / 2 + 50
+			)
+			break
+
 func _setup_menu_buttons() -> void:
 	# Main button container - centered
 	var container: VBoxContainer = VBoxContainer.new()
-	# Center button container manually
-	container.position = Vector2((1280 - 200) / 2, (720 - 400) / 2)
+	# Responsive centering
+	_call_deferred("_center_menu")
 	container.size = Vector2(200, 400)
 	container.add_theme_constant_override("separation", 16)
 	add_child(container)

@@ -66,7 +66,9 @@ func _setup_ui() -> void:
 	# Title container
 	var title_container: Control = Control.new()
 	title_container.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	title_container.position = Vector2(0, 80)  # Offset from top center
+	# Center horizontally based on viewport
+	var viewport_width: float = get_viewport_rect().size.x
+	title_container.position = Vector2(viewport_width / 2 - 640, 80)  # Offset from top center
 	title_container.size = Vector2(1280, 200)
 	add_child(title_container)
 	
@@ -103,13 +105,13 @@ func _setup_ui() -> void:
 	tagline.modulate = Color(0.5, 0.5, 0.5)
 	title_container.add_child(tagline)
 	
-	# Button container - manually centered
+	# Button container - responsive centering
 	button_container = VBoxContainer.new()
 	button_container.size = Vector2(200, 300)
-	# Center in viewport: (screen_width - container_width) / 2
-	button_container.position = Vector2((1280 - 200) / 2, (720 - 300) / 2)
 	button_container.add_theme_constant_override("separation", 10)
 	add_child(button_container)
+	# Defer centering until viewport is ready
+	_call_deferred("_center_button_container")
 	
 	# Continue button (only if save exists)
 	continue_btn = _create_menu_button("Continue", _on_continue, true)
@@ -171,6 +173,14 @@ func _setup_ui() -> void:
 	version_label.modulate = Color(0.4, 0.4, 0.4)
 	add_child(version_label)
 
+
+func _center_button_container() -> void:
+	## Center the button container based on actual viewport size
+	var viewport_size: Vector2 = get_viewport_rect().size
+	button_container.position = Vector2(
+		(viewport_size.x - button_container.size.x) / 2,
+		(viewport_size.y - button_container.size.y) / 2
+	)
 
 func _create_menu_button(text: String, callback: Callable, is_primary: bool = false) -> Button:
 	## Create a styled menu button
