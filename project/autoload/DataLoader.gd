@@ -67,3 +67,19 @@ func get_components_unlocked_at_tier(tier: int) -> Dictionary:
 
 func component_exists(id: String) -> bool:
 	return _core.component_exists(id)
+
+func get_part(id: String) -> Dictionary:
+	## Get any part by ID - routes to correct type
+	var part: Dictionary = get_chassis(id)
+	if not part.is_empty():
+		return part
+	
+	part = get_plating(id)
+	if not part.is_empty():
+		return part
+	
+	part = get_weapon(id)
+	if not part.is_empty():
+		return part
+	
+	return {}
