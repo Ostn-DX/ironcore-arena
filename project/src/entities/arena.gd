@@ -1,6 +1,6 @@
 extends Node2D
 class_name Arena
-## Arena — visual representation of the battle arena.
+## Arena - visual representation of the battle arena.
 ## Handles arena rendering, boundaries, obstacles, camera, and spawn points.
 
 enum ArenaTheme { ROXTAN_PARK, JUNKYARD, CHROMETEK, METALMASH }

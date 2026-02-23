@@ -1,6 +1,6 @@
 extends Node
 class_name SpriteGeneratorV2
-## SpriteGenerator V2 — generates sprites matching the Visual Design Blueprint.
+## SpriteGenerator V2 - generates sprites matching the Visual Design Blueprint.
 ## Retro-vector mechanical minimalism with soft arcade rendering.
 
 const CHASSIS_SIZE: int = 48
@@ -39,8 +39,8 @@ const TEAM_COLORS: Dictionary = {
 }
 
 # Lighting - single source upper left
-const LIGHT_DIR: Vector2 = Vector2(-0.7, -0.7)  ; Upper left
-const SHADOW_DIR: Vector2 = Vector2(0.5, 0.5)   ; Lower right
+const LIGHT_DIR: Vector2 = Vector2(-0.7, -0.7)  # Upper left
+const SHADOW_DIR: Vector2 = Vector2(0.5, 0.5)   # Lower right
 
 func _ready() -> void:
 	pass

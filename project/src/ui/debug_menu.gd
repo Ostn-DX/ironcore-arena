@@ -32,7 +32,7 @@ func _setup_ui() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.position = Vector2(540, 30)
 	title.size = Vector2(200, 40)
-	title.modulate = Color(1, 0.5, 0)  ; Orange for debug
+	title.modulate = Color(1, 0.5, 0)  # Orange for debug
 	add_child(title)
 	
 	# Container for buttons

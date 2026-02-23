@@ -1,5 +1,5 @@
 extends Control
-## SquadBuildScreen — manage multiple bots with team weight cap
+## SquadBuildScreen - manage multiple bots with team weight cap
 
 @onready var _game_state = get_node("/root/GameState")
 @onready var _data_loader = get_node("/root/DataLoader")

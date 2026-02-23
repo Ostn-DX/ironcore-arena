@@ -1,6 +1,6 @@
 extends CanvasLayer
 class_name TransitionManager
-## TransitionManager — handles smooth transitions between screens.
+## TransitionManager - handles smooth transitions between screens.
 ## Fade, slide, and custom transition effects.
 
 signal transition_started

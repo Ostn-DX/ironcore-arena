@@ -1,6 +1,6 @@
 extends Node
 class_name WinLossManager
-## WinLossManager — tracks battle statistics and determines victory conditions.
+## WinLossManager - tracks battle statistics and determines victory conditions.
 ## Works with BattleManager to provide detailed end-of-battle analysis.
 
 @onready var _simulation_manager = get_node("/root/SimulationManager")
@@ -321,7 +321,7 @@ func _log_event(event_type: String, data: Dictionary) -> void:
         event_log.pop_front()  # Remove oldest
     
     event_log.append({
-        "tick": _simulation_manager.current_tick if SimulationManager else 0,
+        "tick": _simulation_manager.current_tick if _simulation_manager else 0,
         "type": event_type,
         "data": data
     })

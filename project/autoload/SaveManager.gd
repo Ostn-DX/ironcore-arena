@@ -1,5 +1,5 @@
 extends Node
-## SaveManager singleton — handles save/load operations and autosave.
+## SaveManager singleton - handles save/load operations and autosave.
 ## Delegates to GameState for actual data management.
 
 signal save_completed(success: bool)

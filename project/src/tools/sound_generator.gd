@@ -1,6 +1,6 @@
 extends Node
 class_name SoundGenerator
-## SoundGenerator — generates placeholder sound effects using synthesis.
+## SoundGenerator - generates placeholder sound effects using synthesis.
 ## Uses Godot's audio generation capabilities for MVP sounds.
 
 const SAMPLE_RATE: int = 44100

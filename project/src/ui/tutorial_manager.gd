@@ -1,6 +1,6 @@
 extends Control
 class_name TutorialManager
-## TutorialManager — guides new players through game mechanics.
+## TutorialManager - guides new players through game mechanics.
 
 signal tutorial_completed
 signal tutorial_skipped

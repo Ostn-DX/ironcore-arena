@@ -4,9 +4,9 @@ extends EditorScript
 ## Generates all MVP sprites and tiles
 
 func _run() -> void:
-	print("=" * 50)
+	print("==================================================")
 	print("IRONCORE ARENA - PNG Generator")
-	print("=" * 50)
+	print("==================================================")
 	
 	# Create directories
 	DirAccess.make_dir_recursive_absolute("res://assets/sprites/v2/")
@@ -59,9 +59,9 @@ func _create_chassis(type: String, team: String, size: int) -> Image:
 	# Colors
 	var base: Color
 	if team == "player":
-		base = Color(0.18, 0.80, 0.44)  ; Green
+		base = Color(0.18, 0.80, 0.44)  # Green
 	else:
-		base = Color(0.95, 0.77, 0.06)  ; Yellow
+		base = Color(0.95, 0.77, 0.06)  # Yellow
 	
 	var center: int = size / 2
 	var radius: float = size * 0.35
@@ -102,8 +102,8 @@ func _create_weapon(type: String) -> Image:
 	var img: Image = Image.create(32, 32, false, Image.FORMAT_RGBA8)
 	img.fill(Color.TRANSPARENT)
 	
-	var base: Color = Color(0.38, 0.43, 0.52)  ; Slate
-	var accent: Color = Color(1.0, 0.42, 0.21)  ; Orange
+	var base: Color = Color(0.38, 0.43, 0.52)  # Slate
+	var accent: Color = Color(1.0, 0.42, 0.21)  # Orange
 	
 	match type:
 		"machine_gun":
@@ -224,9 +224,9 @@ func _create_spawn(team: String) -> Image:
 	
 	var color: Color
 	if team == "player":
-		color = Color(0.2, 0.6, 1.0)  ; Blue
+		color = Color(0.2, 0.6, 1.0)  # Blue
 	else:
-		color = Color(1.0, 0.3, 0.3)  ; Red
+		color = Color(1.0, 0.3, 0.3)  # Red
 	
 	var center: int = 16
 	

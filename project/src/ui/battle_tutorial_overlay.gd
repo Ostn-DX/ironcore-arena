@@ -1,6 +1,6 @@
 extends Control
 class_name BattleTutorialOverlay
-## BattleTutorialOverlay — shows contextual tips during first battle.
+## BattleTutorialOverlay - shows contextual tips during first battle.
 
 signal tip_acknowledged
 

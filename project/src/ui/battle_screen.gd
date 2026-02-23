@@ -1,5 +1,8 @@
 extends Control
-## BattleScreen — arena view, HUD, command input.
+const BattleManager = preload("res://src/managers/BattleManager.gd")
+const Arena = preload("res://src/entities/arena.gd")
+const ResultsScreen = preload("res://src/ui/results_screen.gd")
+## BattleScreen - arena view, HUD, command input.
 ## OPTIMIZED: Removed debug prints, cached lookups, streamlined visual updates
 ## WIRED UP: Proper signal flow to SceneFlowManager
 
@@ -76,7 +79,8 @@ func _setup_ui() -> void:
 	countdown_label.text = "3"
 	countdown_label.add_theme_font_size_override("font_size", 72)
 	countdown_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	countdown_label.position = Vector2(540, 260)
+	countdown_label.set_anchors_preset(Control.PRESET_CENTER)
+	countdown_label.position = Vector2(0, -100)
 	countdown_label.size = Vector2(200, 200)
 	countdown_label.visible = false
 	add_child(countdown_label)

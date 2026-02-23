@@ -1,6 +1,6 @@
 extends Node
 class_name SpriteGenerator
-## SpriteGenerator — generates placeholder sprites for MVP.
+## SpriteGenerator - generates placeholder sprites for MVP.
 ## Creates simple geometric bot sprites programmatically.
 
 const SPRITE_SIZE: int = 64

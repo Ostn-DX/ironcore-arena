@@ -1,6 +1,6 @@
 extends RefCounted
 ## Deterministic random number generator for simulation.
-## Seeded from battle hash — same seed produces identical results.
+## Seeded from battle hash - same seed produces identical results.
 
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _seed: int = 0

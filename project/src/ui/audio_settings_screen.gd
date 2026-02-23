@@ -1,6 +1,6 @@
 extends Control
 class_name AudioSettingsScreen
-## AudioSettingsScreen — UI for adjusting audio settings.
+## AudioSettingsScreen - UI for adjusting audio settings.
 
 signal back_pressed
 
@@ -203,6 +203,6 @@ func _on_test_sounds() -> void:
 
 func _on_back() -> void:
 	## Save settings and go back
-	
+	if _audio_manager:
 		_audio_manager.play_ui_cancel()
 	back_pressed.emit()

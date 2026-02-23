@@ -1,5 +1,5 @@
 extends RefCounted
-## Projectile entity — simulation data object.
+## Projectile entity - simulation data object.
 ## Ballistics, beams, and melee handled here.
 
 const TICKS_PER_SECOND: float = 60.0
@@ -134,7 +134,7 @@ func resolve_hit(target_bot: Dictionary, rng: RandomNumberGenerator) -> Dictiona
 	var _dist: float = distance_traveled
 	var _wpn_stats: Dictionary = {}  # Would need to pass this in properly
 	
-	# Apply resistances (simplified — would need target bot's armor data)
+	# Apply resistances (simplified - would need target bot's armor data)
 	var resistance: float = 0.0
 	if damage_type == "ballistic":
 		resistance = target_bot.get("resist_ballistic", 0.0)

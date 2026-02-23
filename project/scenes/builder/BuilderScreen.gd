@@ -1,6 +1,6 @@
 extends Control
 class_name BuilderScreen
-## Builder UI — drag-and-drop bot assembly
+## Builder UI - drag-and-drop bot assembly
 ## Team of 5 bots, weight validation, stat preview
 
 @onready var _game_state = get_node("/root/GameState")
@@ -121,7 +121,7 @@ func _on_weapon_selected(index: int) -> void:
 	selected_weapon = weapon_list.get_item_metadata(index)
 
 
-## Slot clicked — assemble bot with selected parts
+## Slot clicked - assemble bot with selected parts
 func _on_slot_clicked(index: int) -> void:
 	var slot = current_team[index]
 	
@@ -176,5 +176,5 @@ func _export_team_config() -> Array:
 
 ## Show error popup
 func _show_error(message: String) -> void:
-	# Simple error display — could be a popup
+	# Simple error display - could be a popup
 	push_warning("Builder Error: %s" % message)

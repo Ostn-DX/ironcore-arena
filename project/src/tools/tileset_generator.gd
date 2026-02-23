@@ -1,6 +1,6 @@
 extends Node
 class_name TilesetGenerator
-## TilesetGenerator — generates placeholder tilesets for arenas.
+## TilesetGenerator - generates placeholder tilesets for arenas.
 
 const TILE_SIZE: int = 32
 

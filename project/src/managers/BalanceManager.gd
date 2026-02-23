@@ -1,6 +1,6 @@
 extends Node
 class_name BalanceManager
-## BalanceManager — centralizes all game balance values.
+## BalanceManager - centralizes all game balance values.
 ## Makes it easy to tweak numbers without digging through code.
 
 const BALANCE_VERSION: String = "0.1.0"

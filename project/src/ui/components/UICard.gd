@@ -85,7 +85,7 @@ func _update_styleboxes() -> void:
 	# Border style
 	if _border_panel and border_width > 0:
 		var border_style := StyleBoxFlat.new()
-		border_style.bg_color = Color(0, 0, 0, 0)  ; Transparent fill
+		border_style.bg_color = Color(0, 0, 0, 0)  # Transparent fill
 		border_style.border_color = border_color if is_selected else Color(0, 0, 0, 0)
 		border_style.border_width_left = border_width
 		border_style.border_width_top = border_width

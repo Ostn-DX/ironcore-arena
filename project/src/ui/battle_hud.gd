@@ -1,6 +1,7 @@
-extends Control
 class_name BattleHUD
-## BattleHUD — heads-up display during battles.
+extends Control
+const BattleManager = preload("res://src/managers/BattleManager.gd")
+## BattleHUD - heads-up display during battles.
 ## Shows battle status, team info, and controls.
 
 signal pause_requested

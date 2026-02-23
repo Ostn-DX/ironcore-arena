@@ -1,15 +1,19 @@
 extends RefCounted
 class_name Bot
-## Bot entity — simulation data object.
+## Bot entity - simulation data object.
 ## Pure data, no Node2D references. Simulation operates on these.
 
 const TICKS_PER_SECOND: float = 60.0
 const DT: float = 1.0 / TICKS_PER_SECOND
 
+## Bot states for lifecycle management
+enum State { ACTIVE, DESTROYED }
+
 # Identity
 var sim_id: int = -1
 var team: int = 0  # 0 = player, 1 = enemy
 var bot_name: String = "Bot"
+var state: State = State.ACTIVE
 
 # Physics
 var position: Vector2 = Vector2.ZERO
@@ -132,6 +136,7 @@ func take_damage(amount: int) -> void:
 	hp = maxi(0, hp - amount)
 	if hp <= 0:
 		is_alive = false
+		state = State.DESTROYED
 
 
 func apply_status_effect(effect: Dictionary) -> void:

@@ -1,5 +1,5 @@
 extends SceneTree
-## IntegrationTest — validates core game systems work together.
+## IntegrationTest - validates core game systems work together.
 ## Run with: godot --script src/tests/integration_test.gd
 
 var tests_passed: int = 0

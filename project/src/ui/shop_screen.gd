@@ -1,6 +1,7 @@
-extends Control
 class_name ShopScreen
-## ShopScreen — UI for browsing and purchasing components.
+extends Control
+const ShopManager = preload("res://src/managers/ShopManager.gd")
+## ShopScreen - UI for browsing and purchasing components.
 
 signal shop_closed
 signal component_selected(component_id: String)

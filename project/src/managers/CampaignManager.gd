@@ -1,6 +1,6 @@
 extends Node
 class_name CampaignManager
-## CampaignManager — handles campaign progression and arena configurations.
+## CampaignManager - handles campaign progression and arena configurations.
 
 signal arena_unlocked(arena_id: String)
 signal campaign_completed(campaign_id: String)
@@ -145,7 +145,7 @@ func get_arena_difficulty(arena_id: String) -> String:
 
 func get_arena_display_info(arena_id: String) -> Dictionary:
 	## Get combined display info for an arena
-	var arena_data: Dictionary = _data_loader.get_arena(arena_id) if DataLoader else {}
+	var arena_data: Dictionary = _data_loader.get_arena(arena_id) if _data_loader else {}
 	var config: Dictionary = get_arena_config(arena_id)
 	
 	return {
@@ -158,8 +158,8 @@ func get_arena_display_info(arena_id: String) -> Dictionary:
 		"weight_limit": arena_data.get("weight_limit", 120),
 		"par_time": arena_data.get("par_time", 120),
 		"base_reward": arena_data.get("base_reward", 100),
-		"is_completed": _game_state.is_arena_completed(arena_id) if GameState else false,
-		"is_unlocked": _game_state.is_arena_unlocked(arena_id) if GameState else false
+		"is_completed": _game_state.is_arena_completed(arena_id) if _game_state else false,
+		"is_unlocked": _game_state.is_arena_unlocked(arena_id) if _game_state else false
 	}
 
 

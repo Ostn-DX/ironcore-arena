@@ -1,5 +1,5 @@
 extends Control
-## BuildScreen — Bot Arena 3 style with Shop, Inventory, My Bots
+## BuildScreen - Bot Arena 3 style with Shop, Inventory, My Bots
 ## WIRED UP: Signals connected to SceneFlowManager
 
 signal back_pressed
@@ -257,3 +257,14 @@ func _update_bot_display() -> void:
 		status += " [OVER!]"
 	weight_label.text = status
 	credits_label.text = "Credits: %d" % GameState.credits
+
+
+func _save_current_bot() -> void:
+	## Save current bot configuration to GameState
+	GameState.save_loadout(current_bot)
+
+
+func _load_saved_bots() -> void:
+	## Load saved bot configurations
+	if GameState.loadouts.size() > 0:
+		current_bot = GameState.loadouts[0].duplicate()

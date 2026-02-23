@@ -1,6 +1,6 @@
 extends Node
 class_name SceneFlowManager
-## SceneFlowManager — handles navigation between game screens.
+## SceneFlowManager - handles navigation between game screens.
 ## WIRED UP: Connects all screens with proper signal flow
 
 # Screen references
@@ -11,6 +11,7 @@ var battle_screen_scene: PackedScene = preload("res://scenes/battle_screen.tscn"
 var build_screen_scene: PackedScene = preload("res://scenes/build_screen.tscn")
 var shop_screen_scene: PackedScene = preload("res://scenes/shop_screen.tscn")
 var campaign_screen_scene: PackedScene = preload("res://scenes/campaign_screen.tscn")
+var results_screen_scene: PackedScene = preload("res://scenes/results_screen.tscn")
 
 # Active screens
 var current_screen: Control = null
@@ -282,7 +283,7 @@ func start_battle(arena_id: String) -> void:
 		battle.battle_ended.connect(_on_battle_ended)
 	
 	screen_manager.add_child(battle)
-	_switch_to_screen(battle, false)  ; Don't add battle to stack
+	_switch_to_screen(battle, false)  # Don't add battle to stack
 	
 	# Start the battle
 	if battle.has_method("start_campaign_battle"):
@@ -332,7 +333,7 @@ func _on_results_continue() -> void:
 	
 	var next_arena: String = GameState.get_next_unlocked_arena()
 	if next_arena.is_empty():
-		_show_main_menu()  ; All arenas complete
+		_show_main_menu()  # All arenas complete
 	else:
 		_open_campaign_map()
 

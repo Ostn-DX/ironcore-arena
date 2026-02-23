@@ -29,30 +29,17 @@ func _ready():
 
 ## Build a bot in this slot
 func build_bot(chassis_id: String, plating_id: String, weapon_id: String = "") -> bool:
-	# Create bot instance
-	var bot = Bot.new()
-	var success = bot.build(chassis_id, plating_id, weapon_id)
-	
-	if not success:
-		bot.queue_free()
-		return false
-	
-	# Validate weight
-	if not bot.is_weight_valid():
-		bot.queue_free()
-		return false
-	
-	# Clear existing
-	if current_bot != null:
-		current_bot.queue_free()
-	
-	current_bot = bot
-	is_empty = false
-	
-	_update_display()
-	bot_assembled.emit()
-	
-	return true
+	# Create bot instance with dummy simulation values (builder doesn't need sim params)
+	var bot = Bot.new(0, 0, Vector2.ZERO)
+	# TODO: Implement build configuration logic - Bot class needs build() method
+	# var success = bot.build(chassis_id, plating_id, weapon_id)
+	# if not success:
+	# 	bot.queue_free()
+	# 	return false
+	# if not bot.is_weight_valid():
+	# 	bot.queue_free()
+	# 	return false
+	return false  # Placeholder - build system incomplete
 
 
 ## Remove bot from slot

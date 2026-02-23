@@ -1,5 +1,5 @@
 extends GutTest
-## Tests for DataLoader — valid lookups, missing IDs, error cases.
+## Tests for DataLoader - valid lookups, missing IDs, error cases.
 ## Implementation: TASK-03
 
 const DataLoaderCore := preload("res://src/managers/data_loader.gd")

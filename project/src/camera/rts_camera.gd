@@ -160,9 +160,11 @@ func _clamp_to_bounds() -> void:
 	
 	# Handle case where arena is smaller than viewport
 	if min_x > max_x:
-		min_x = max_x = arena_bounds.get_center().x
+		min_x = arena_bounds.get_center().x
+		max_x = min_x
 	if min_y > max_y:
-		min_y = max_y = arena_bounds.get_center().y
+		min_y = arena_bounds.get_center().y
+		max_y = min_y
 	
 	# Clamp target position
 	target_position.x = clampf(target_position.x, min_x, max_x)

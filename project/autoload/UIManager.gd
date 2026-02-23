@@ -1,5 +1,5 @@
 extends Node
-## UIManager singleton — manages screen transitions and input routing.
+## UIManager singleton - manages screen transitions and input routing.
 ## OPTIMIZED: Removed debug prints, streamlined screen management
 
 signal screen_changed(screen_name: String)

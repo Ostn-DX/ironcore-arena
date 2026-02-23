@@ -1,5 +1,5 @@
 extends Node
-## DataLoader singleton — loads and caches all game data at startup.
+## DataLoader singleton - loads and caches all game data at startup.
 ## Provides indexed access to chassis, plating, weapons, and arenas.
 
 const DataLoaderCore := preload("res://src/managers/data_loader.gd")

@@ -1,3 +1,3 @@
 extends RefCounted
-## UIManager core logic — screen transition management.
+## UIManager core logic - screen transition management.
 ## Implementation: TASK-16

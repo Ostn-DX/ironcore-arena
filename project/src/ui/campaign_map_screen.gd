@@ -1,6 +1,6 @@
 extends Control
 class_name CampaignMapScreen
-## CampaignMapScreen — displays the campaign map with arena nodes.
+## CampaignMapScreen - displays the campaign map with arena nodes.
 
 signal arena_selected(arena_id: String)
 signal back_pressed

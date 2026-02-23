@@ -1,6 +1,8 @@
 extends Control
 class_name ResultsScreen
-## ResultsScreen — displays detailed battle results, stats, and rewards.
+const BattleManager = preload("res://src/managers/BattleManager.gd")
+const Arena = preload("res://src/entities/arena.gd")
+## ResultsScreen - displays detailed battle results, stats, and rewards.
 ## Shown after battle ends with options to continue, restart, or edit loadout.
 
 signal continue_pressed
@@ -102,7 +104,7 @@ func _create_background() -> void:
 	background = Panel.new()
 	background.set_anchors_preset(Control.PRESET_CENTER)
 	background.size = Vector2(600, 650)
-	background.position = Vector2(340, 35)  # Center in 1280x720
+	# Position handled by anchor preset
 	add_child(background)
 	
 	# Panel style
@@ -153,7 +155,8 @@ func _create_grade_display() -> void:
 	grade_label.text = grade
 	grade_label.add_theme_font_size_override("font_size", 96)
 	grade_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	grade_label.position = Vector2(540, 120)
+	grade_label.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	grade_label.position = Vector2(0, 120)
 	grade_label.size = Vector2(200, 100)
 	
 	# Color based on grade
@@ -174,7 +177,8 @@ func _create_grade_display() -> void:
 	grade_text.text = "Grade"
 	grade_text.add_theme_font_size_override("font_size", 16)
 	grade_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	grade_text.position = Vector2(540, 210)
+	grade_text.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	grade_text.position = Vector2(0, 210)
 	grade_text.size = Vector2(200, 25)
 	grade_text.modulate = Color(0.6, 0.6, 0.6)
 	add_child(grade_text)
@@ -206,7 +210,8 @@ func _create_condition_display() -> void:
 func _create_stats_section() -> void:
 	## Container for stats
 	stats_container = VBoxContainer.new()
-	stats_container.position = Vector2(380, 290)
+	stats_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	stats_container.position = Vector2(0, 290)
 	stats_container.size = Vector2(520, 220)
 	stats_container.add_theme_constant_override("separation", 6)
 	add_child(stats_container)
@@ -297,7 +302,8 @@ func _add_stat_row(label: String, value: String, extra: String = "") -> void:
 func _create_rewards_section() -> void:
 	## Rewards container
 	rewards_container = HBoxContainer.new()
-	rewards_container.position = Vector2(380, 530)
+	rewards_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	rewards_container.position = Vector2(0, 530)
 	rewards_container.size = Vector2(520, 80)
 	rewards_container.alignment = BoxContainer.ALIGNMENT_CENTER
 	add_child(rewards_container)

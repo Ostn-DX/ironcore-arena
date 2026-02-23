@@ -1,5 +1,7 @@
 extends Node
 class_name BattleManager
+const Bot = preload("res://src/entities/bot.gd")
+const Arena = preload("res://src/entities/arena.gd")
 ## Manages combat simulation: spawning, updates, win/loss detection.
 ## OPTIMIZED: Cached lookups, reduced allocations, streamlined signals
 

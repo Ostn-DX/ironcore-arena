@@ -1,5 +1,5 @@
 extends Node
-## GameState singleton — holds player profile: owned parts, credits,
+## GameState singleton - holds player profile: owned parts, credits,
 ## loadouts, completed arenas, campaign progress. Emits signals on change.
 
 signal credits_changed(new_amount: int)

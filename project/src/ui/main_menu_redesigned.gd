@@ -1,5 +1,6 @@
-extends Control
 class_name MainMenuRedesigned
+extends Control
+const UIButton = preload("res://src/ui/components/UIButton.gd")
 ## Redesigned main menu matching Outhold aesthetic
 ## Dark navy background, long shadows, teal accents, connected nodes
 
@@ -186,7 +187,8 @@ func _create_node_connections() -> void:
 func _setup_title() -> void:
 	# Main title with long shadow
 	var title_container: Control = Control.new()
-	title_container.position = Vector2(640, 80)
+	title_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	title_container.position = Vector2(0, 80)
 	title_container.size = Vector2(0, 0)
 	add_child(title_container)
 	
@@ -219,7 +221,8 @@ func _setup_title() -> void:
 func _setup_menu_buttons() -> void:
 	# Main button container - centered
 	var container: VBoxContainer = VBoxContainer.new()
-	container.position = Vector2(540, 220)
+	container.set_anchors_preset(Control.PRESET_CENTER)
+	container.position = Vector2(-100, -100)  # Center offset, not absolute
 	container.size = Vector2(200, 400)
 	container.add_theme_constant_override("separation", 16)
 	add_child(container)

@@ -1,5 +1,5 @@
 extends RefCounted
-## DataLoader core logic — JSON parsing and data caching.
+## DataLoader core logic - JSON parsing and data caching.
 ## Loads component database and provides indexed access.
 
 const COMPONENTS_PATH: String = "res://../data/components.json"
