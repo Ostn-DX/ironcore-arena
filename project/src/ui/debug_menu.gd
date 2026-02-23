@@ -197,7 +197,7 @@ func _kill_enemies() -> void:
 	if _simulation_manager:
 		for bot_id in _simulation_manager.bots:
 			var bot = _simulation_manager.bots[bot_id]
-			if bot.team == 1:  ; Enemy team
+			if bot.team == 1:  # Enemy team
 				bot.take_damage(9999)
 
 func is_visible() -> bool:

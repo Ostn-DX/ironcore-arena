@@ -426,6 +426,10 @@ func _spawn_projectile(bot, direction: Vector2, wpn_data: Dictionary) -> void:
 	
 	if not headless:
 		projectile_spawned.emit(proj.proj_id, proj.position, direction)
+		
+		# EventBus integration
+		if EventBus:
+			EventBus.weapon_fired.emit(str(bot.sim_id), bot, bot.position + direction * 50)
 
 func _process_projectiles() -> void:
 	var to_destroy: Array[int] = []
@@ -478,8 +482,21 @@ func _apply_damage(bot, damage: int, _source_id: int) -> void:
 	
 	if not headless:
 		entity_damaged.emit(bot.sim_id, bot.hp, bot.max_hp)
+		
+		# EventBus integration
+		if EventBus:
+			var attacker_team = 0 if bot.team == 1 else 1
+			if bot.team == 0:  # Player took damage
+				EventBus.player_damaged.emit(damage, null)
+			else:  # Enemy took damage
+				EventBus.player_healed.emit(damage)  # Using healed as damage dealt to enemy
+		
 		if not bot.is_alive:
 			entity_destroyed.emit(bot.sim_id, bot.team)
+			
+			# EventBus integration
+			if EventBus:
+				EventBus.bot_destroyed.emit(str(bot.sim_id), bot.position, bot.team)
 
 func _process_status_effects() -> void:
 	for bot_id in bots:
@@ -531,6 +548,15 @@ func _end_battle(result: String) -> void:
 	is_running = false
 	if not headless:
 		battle_ended.emit(result, current_tick)
+		
+		# EventBus integration
+		if EventBus:
+			var result_dict = {
+				"result": result,
+				"ticks": current_tick,
+				"time_seconds": current_tick / TICKS_PER_SECOND
+			}
+			EventBus.battle_ended.emit(result, result_dict)
 
 func _load_part_data() -> void:
 	_part_data = {}

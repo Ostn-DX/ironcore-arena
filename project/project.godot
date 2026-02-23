@@ -24,6 +24,10 @@ UIManager="*res://autoload/UIManager.gd"
 SaveManager="*res://autoload/SaveManager.gd"
 AudioManager="*res://autoload/AudioManager.gd"
 VFXManager="*res://autoload/VFXManager.gd"
+EventBus="*res://autoload/event_bus.gd"
+GameManager="*res://autoload/game_manager.gd"
+PerformanceMonitor="*res://autoload/performance_monitor.gd"
+AgentSystem="*res://autoload/agent_system.gd"
 
 [display]
 

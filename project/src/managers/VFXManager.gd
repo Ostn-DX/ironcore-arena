@@ -1,6 +1,6 @@
 extends Node
-class_name VFXManager
 ## VFXManager - handles visual effects, particles, and screen effects.
+## Note: This is NOT using class_name because VFXManager is an autoload singleton
 
 # Effect types
 enum EffectType {

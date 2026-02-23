@@ -134,7 +134,7 @@ func _test_battle_manager() -> void:
 		_fail("Cannot create BattleManager")
 		return
 	
-	add_child(battle_manager)
+	get_root().add_child(battle_manager)
 	
 	# Test battle setup
 	var player_loadouts: Array = [{
@@ -167,7 +167,7 @@ func _test_shop_manager() -> void:
 		_fail("Cannot create ShopManager")
 		return
 	
-	add_child(shop_manager)
+	get_root().add_child(shop_manager)
 	shop_manager._ready()
 	
 	# Test available components

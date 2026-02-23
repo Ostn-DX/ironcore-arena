@@ -1,6 +1,7 @@
 extends Node
 ## GameState singleton - holds player profile: owned parts, credits,
 ## loadouts, completed arenas, campaign progress. Emits signals on change.
+## INTEGRATED: Now uses SaveManager for persistence
 
 signal credits_changed(new_amount: int)
 signal parts_changed()
@@ -56,13 +57,27 @@ var game_mode: String = "campaign"
 const SAVE_PATH: String = "user://ironcore_save.json"
 const CURRENT_VERSION: String = "0.1.0"
 
+# Current save slot
+var current_save_slot: int = 0
 
 func _ready() -> void:
-	load_game()
+	# Try new SaveManager first, fallback to legacy
+	if SaveManager:
+		load_game()
+	else:
+		_load_game_legacy()
 	
 	# Give starter parts if new game
 	if owned_parts.is_empty():
 		_give_starter_kit()
+	
+	# Connect to EventBus
+	if EventBus:
+		EventBus.credits_changed.connect(_on_credits_changed)
+
+func _on_credits_changed(new_amount: int, _delta: int) -> void:
+	# Sync EventBus credits to GameState
+	credits = new_amount
 
 
 func _give_starter_kit() -> void:
@@ -288,9 +303,38 @@ func is_campaign_mode() -> bool:
 	return game_mode == "campaign"
 
 
-# --- Save / Load ---
+# --- Save / Load (Integrated with SaveManager) ---
 
 func save_game() -> void:
+	## Save using new SaveManager if available, else fallback
+	if SaveManager:
+		_save_with_manager()
+	else:
+		_save_legacy()
+
+func _save_with_manager() -> void:
+	## Use the new SaveManager system
+	# Prepare save data
+	var save_data: Dictionary = {
+		"version": CURRENT_VERSION,
+		"credits": credits,
+		"current_tier": current_tier,
+		"owned_parts": owned_parts,
+		"part_hp": part_hp,
+		"loadouts": loadouts,
+		"active_loadout_ids": active_loadout_ids,
+		"completed_arenas": completed_arenas,
+		"unlocked_arenas": unlocked_arenas,
+		"campaign_progress": campaign_progress,
+		"settings": settings
+	}
+	
+	# Store in SaveManager and save
+	SaveManager.current_save_data = save_data
+	SaveManager.save_game(current_save_slot)
+
+func _save_legacy() -> void:
+	## Fallback to legacy save system
 	var save_data: Dictionary = {
 		"version": CURRENT_VERSION,
 		"credits": credits,
@@ -314,29 +358,32 @@ func save_game() -> void:
 	else:
 		push_error("Failed to save game: ", FileAccess.get_open_error())
 
-
 func load_game() -> bool:
-	if not FileAccess.file_exists(SAVE_PATH):
-		print("No save file found, starting new game")
+	## Load using new SaveManager if available
+	if SaveManager:
+		return _load_with_manager()
+	else:
+		return _load_game_legacy()
+
+func _load_with_manager() -> bool:
+	## Use the new SaveManager system
+	if not SaveManager.save_exists(current_save_slot):
+		print("No save found in SaveManager, starting new game")
 		return false
 	
-	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
-	if not file:
-		push_error("Failed to load save: ", FileAccess.get_open_error())
-		return false
-	
-	var json_text: String = file.get_as_text()
-	file.close()
-	
-	var json: JSON = JSON.new()
-	var err: int = json.parse(json_text)
+	var err = SaveManager.load_game(current_save_slot)
 	if err != OK:
-		push_error("Save file JSON parse error: ", json.get_error_message())
+		push_error("SaveManager failed to load: ", err)
 		return false
 	
-	var data: Dictionary = json.data
-	
-	# Version check / migration could go here
+	# Apply loaded data
+	var data = SaveManager.current_save_data
+	_apply_save_data(data)
+	print("Game loaded via SaveManager from slot ", current_save_slot)
+	return true
+
+func _apply_save_data(data: Dictionary) -> void:
+	## Apply save data to GameState
 	var version: String = data.get("version", "0.0.0")
 	
 	credits = data.get("credits", 500)
@@ -363,7 +410,7 @@ func load_game() -> bool:
 		if item is String:
 			completed_arenas.append(item)
 	
-	var loaded_unlocked: Array = data.get("unlocked_arenas", ["roxtan_park"])
+	var loaded_unlocked: Array = data.get("unlocked_arenas", ["arena_boot_camp"])
 	unlocked_arenas.clear()
 	for item in loaded_unlocked:
 		if item is String:
@@ -371,12 +418,45 @@ func load_game() -> bool:
 	
 	campaign_progress = data.get("campaign_progress", {"main": []})
 	settings = data.get("settings", settings)
+
+func _load_game_legacy() -> bool:
+	## Fallback to legacy load system
+	if not FileAccess.file_exists(SAVE_PATH):
+		print("No save file found, starting new game")
+		return false
 	
-	print("Game loaded, version: ", version)
+	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if not file:
+		push_error("Failed to load save: ", FileAccess.get_open_error())
+		return false
+	
+	var json_text: String = file.get_as_text()
+	file.close()
+	
+	var json: JSON = JSON.new()
+	var err: int = json.parse(json_text)
+	if err != OK:
+		push_error("Save file JSON parse error: ", json.get_error_message())
+		return false
+	
+	var data: Dictionary = json.data
+	_apply_save_data(data)
+	
+	print("Game loaded via legacy system, version: ", data.get("version", "unknown"))
 	return true
 
-
 func delete_save() -> void:
+	## Delete save using SaveManager if available
+	if SaveManager:
+		SaveManager.delete_save(current_save_slot)
+	
+	# Also delete legacy save
 	if FileAccess.file_exists(SAVE_PATH):
 		DirAccess.remove_absolute(SAVE_PATH)
 		print("Save file deleted")
+
+func save_exists() -> bool:
+	## Check if save exists in SaveManager or legacy
+	if SaveManager and SaveManager.save_exists(current_save_slot):
+		return true
+	return FileAccess.file_exists(SAVE_PATH)

@@ -228,7 +228,9 @@ func _update_button_visibility() -> void:
 
 
 func _has_save_file() -> bool:
-	## Check if a save file exists
+	## Check if a save file exists (using SaveManager or legacy)
+	if SaveManager and SaveManager.save_exists(0):
+		return true
 	return FileAccess.file_exists("user://ironcore_save.json")
 
 
@@ -259,6 +261,10 @@ func _on_continue() -> void:
 	print("MainMenu: Continue campaign")
 	get_node("/root/GameState").set_game_mode("campaign")
 	continue_pressed.emit()
+	
+	# Notify GameManager of state change
+	if GameManager:
+		GameManager.change_state(GameManager.GameState.HANGAR)
 
 
 func _on_new_campaign() -> void:
@@ -269,12 +275,19 @@ func _on_new_campaign() -> void:
 	if _has_save_file():
 		# In a real implementation, show a confirmation dialog
 		print("MainMenu: Warning - overwriting existing save")
-		get_node("/root/GameState").delete_save()
-		get_node("/root/GameState").set_game_mode("campaign")
-	else:
-		get_node("/root/GameState").set_game_mode("campaign")
+		# Use SaveManager if available, else GameState
+		if SaveManager:
+			SaveManager.delete_save(0)
+		else:
+			get_node("/root/GameState").delete_save()
+		
+	get_node("/root/GameState").set_game_mode("campaign")
 	
 	start_campaign_pressed.emit()
+	
+	# Notify GameManager of state change
+	if GameManager:
+		GameManager.change_state(GameManager.GameState.HANGAR)
 
 
 func _on_arcade() -> void:

@@ -48,9 +48,9 @@ func _run() -> void:
 		tiles[filename].save_png(path)
 		print("  ✓ " + path)
 	
-	print("\n" + "=" * 50)
+	print("\n==================================================")
 	print("COMPLETE!")
-	print("=" * 50)
+	print("==================================================")
 
 func _create_chassis(type: String, team: String, size: int) -> Image:
 	var img: Image = Image.create(size, size, false, Image.FORMAT_RGBA8)
