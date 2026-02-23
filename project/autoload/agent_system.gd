@@ -29,10 +29,19 @@ func _register_default_agents() -> void:
 	register_agent(BalanceAgent.new())
 
 func register_agent(agent: Agent) -> void:
+	if not agent or not is_instance_valid(agent):
+		push_warning("AgentSystem: Cannot register invalid agent")
+		return
+	
 	agents[agent.agent_name] = agent
-	agent.task_completed.connect(_on_agent_task_completed)
-	agent.task_failed.connect(_on_agent_task_failed)
-	agent.status_changed.connect(_on_agent_status_changed)
+	
+	if not agent.task_completed.is_connected(_on_agent_task_completed):
+		agent.task_completed.connect(_on_agent_task_completed)
+	if not agent.task_failed.is_connected(_on_agent_task_failed):
+		agent.task_failed.connect(_on_agent_task_failed)
+	if not agent.status_changed.is_connected(_on_agent_status_changed):
+		agent.status_changed.connect(_on_agent_status_changed)
+	
 	add_child(agent)
 	print("AgentSystem: Registered agent '%s'" % agent.agent_name)
 

@@ -30,7 +30,9 @@ func _create_selection_box() -> void:
 	add_child(selection_box)
 	
 	# Draw the box in _draw
-	selection_box.draw.connect(_draw_selection_box)
+	if selection_box and is_instance_valid(selection_box):
+		if not selection_box.draw.is_connected(_draw_selection_box):
+			selection_box.draw.connect(_draw_selection_box)
 
 func _draw_selection_box() -> void:
 	if not is_selecting:

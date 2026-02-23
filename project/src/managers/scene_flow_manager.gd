@@ -32,25 +32,43 @@ func _ready() -> void:
 
 func _setup_signals() -> void:
 	# Connect main menu signals - works with both old and redesigned menu
-	if main_menu:
-		# Try redesigned menu signals first
-		if main_menu.has_signal("start_campaign_pressed"):
+	if not main_menu or not is_instance_valid(main_menu):
+		push_warning("SceneFlow: Main menu not available for signal setup")
+		return
+	
+	# Try redesigned menu signals first
+	if main_menu.has_signal("start_campaign_pressed"):
+		if not main_menu.start_campaign_pressed.is_connected(_on_start_campaign):
 			main_menu.start_campaign_pressed.connect(_on_start_campaign)
+		if not main_menu.start_arcade_pressed.is_connected(_on_start_arcade):
 			main_menu.start_arcade_pressed.connect(_on_start_arcade)
+		if not main_menu.continue_pressed.is_connected(_on_continue_campaign):
 			main_menu.continue_pressed.connect(_on_continue_campaign)
+		if not main_menu.shop_pressed.is_connected(_on_open_shop):
 			main_menu.shop_pressed.connect(_on_open_shop)
+		if not main_menu.builder_pressed.is_connected(_on_open_builder):
 			main_menu.builder_pressed.connect(_on_open_builder)
+		if not main_menu.settings_pressed.is_connected(_on_open_settings):
 			main_menu.settings_pressed.connect(_on_open_settings)
+		if not main_menu.quit_pressed.is_connected(_on_quit):
 			main_menu.quit_pressed.connect(_on_quit)
-		else:
-			# Fallback to old menu signals
+	else:
+		# Fallback to old menu signals
+		if not main_menu.start_campaign_pressed.is_connected(_on_start_campaign):
 			main_menu.start_campaign_pressed.connect(_on_start_campaign)
+		if not main_menu.start_arcade_pressed.is_connected(_on_start_arcade):
 			main_menu.start_arcade_pressed.connect(_on_start_arcade)
+		if not main_menu.continue_pressed.is_connected(_on_continue_campaign):
 			main_menu.continue_pressed.connect(_on_continue_campaign)
+		if not main_menu.shop_pressed.is_connected(_on_open_shop):
 			main_menu.shop_pressed.connect(_on_open_shop)
+		if not main_menu.builder_pressed.is_connected(_on_open_builder):
 			main_menu.builder_pressed.connect(_on_open_builder)
+		if not main_menu.settings_pressed.is_connected(_on_open_settings):
 			main_menu.settings_pressed.connect(_on_open_settings)
+		if main_menu.has_signal("credits_pressed") and not main_menu.credits_pressed.is_connected(_on_show_credits):
 			main_menu.credits_pressed.connect(_on_show_credits)
+		if not main_menu.quit_pressed.is_connected(_on_quit):
 			main_menu.quit_pressed.connect(_on_quit)
 
 func _notification(what: int) -> void:

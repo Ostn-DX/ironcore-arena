@@ -60,18 +60,31 @@ func on_hide() -> void:
 	battle_manager.end_battle_early()
 
 func _setup_signals() -> void:
-	battle_manager.battle_started.connect(_on_battle_started)
-	battle_manager.battle_state_changed.connect(_on_battle_state_changed)
-	battle_manager.countdown_tick.connect(_on_countdown_tick)
-	battle_manager.battle_ended.connect(_on_battle_ended)
-	battle_manager.rewards_calculated.connect(_on_rewards_calculated)
+	if battle_manager and is_instance_valid(battle_manager):
+		if not battle_manager.battle_started.is_connected(_on_battle_started):
+			battle_manager.battle_started.connect(_on_battle_started)
+		if not battle_manager.battle_state_changed.is_connected(_on_battle_state_changed):
+			battle_manager.battle_state_changed.connect(_on_battle_state_changed)
+		if not battle_manager.countdown_tick.is_connected(_on_countdown_tick):
+			battle_manager.countdown_tick.connect(_on_countdown_tick)
+		if not battle_manager.battle_ended.is_connected(_on_battle_ended):
+			battle_manager.battle_ended.connect(_on_battle_ended)
+		if not battle_manager.rewards_calculated.is_connected(_on_rewards_calculated):
+			battle_manager.rewards_calculated.connect(_on_rewards_calculated)
 	
-	_simulation_manager.entity_moved.connect(_on_entity_moved)
-	_simulation_manager.entity_damaged.connect(_on_entity_damaged)
-	_simulation_manager.entity_destroyed.connect(_on_entity_destroyed)
-	_simulation_manager.projectile_spawned.connect(_on_projectile_spawned)
-	_simulation_manager.projectile_destroyed.connect(_on_projectile_destroyed)
-	_simulation_manager.tick_processed.connect(_on_tick_processed)
+	if _simulation_manager and is_instance_valid(_simulation_manager):
+		if not _simulation_manager.entity_moved.is_connected(_on_entity_moved):
+			_simulation_manager.entity_moved.connect(_on_entity_moved)
+		if not _simulation_manager.entity_damaged.is_connected(_on_entity_damaged):
+			_simulation_manager.entity_damaged.connect(_on_entity_damaged)
+		if not _simulation_manager.entity_destroyed.is_connected(_on_entity_destroyed):
+			_simulation_manager.entity_destroyed.connect(_on_entity_destroyed)
+		if not _simulation_manager.projectile_spawned.is_connected(_on_projectile_spawned):
+			_simulation_manager.projectile_spawned.connect(_on_projectile_spawned)
+		if not _simulation_manager.projectile_destroyed.is_connected(_on_projectile_destroyed):
+			_simulation_manager.projectile_destroyed.connect(_on_projectile_destroyed)
+		if not _simulation_manager.tick_processed.is_connected(_on_tick_processed):
+			_simulation_manager.tick_processed.connect(_on_tick_processed)
 
 func _setup_ui() -> void:
 	countdown_label = Label.new()
@@ -87,10 +100,15 @@ func _setup_ui() -> void:
 	
 	var results_scene: PackedScene = preload("res://scenes/results_screen.tscn")
 	results_screen = results_scene.instantiate()
-	results_screen.continue_pressed.connect(_on_results_continue)
-	results_screen.restart_pressed.connect(_on_results_restart)
-	results_screen.edit_loadout_pressed.connect(_on_results_edit)
-	results_screen.next_arena_pressed.connect(_on_results_next)
+	if results_screen and is_instance_valid(results_screen):
+		if not results_screen.continue_pressed.is_connected(_on_results_continue):
+			results_screen.continue_pressed.connect(_on_results_continue)
+		if not results_screen.restart_pressed.is_connected(_on_results_restart):
+			results_screen.restart_pressed.connect(_on_results_restart)
+		if not results_screen.edit_loadout_pressed.is_connected(_on_results_edit):
+			results_screen.edit_loadout_pressed.connect(_on_results_edit)
+		if not results_screen.next_arena_pressed.is_connected(_on_results_next):
+			results_screen.next_arena_pressed.connect(_on_results_next)
 	add_child(results_screen)
 
 func _setup_arena(arena_data: Dictionary) -> void:
