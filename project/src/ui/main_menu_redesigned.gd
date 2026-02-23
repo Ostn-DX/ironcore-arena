@@ -188,7 +188,7 @@ func _setup_title() -> void:
 	# Main title with long shadow
 	var title_container: Control = Control.new()
 	title_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	title_container.position = Vector2(0, 80)
+	title_container.position = Vector2(-640, 80)
 	title_container.size = Vector2(0, 0)
 	add_child(title_container)
 	
@@ -222,7 +222,7 @@ func _setup_menu_buttons() -> void:
 	# Main button container - centered
 	var container: VBoxContainer = VBoxContainer.new()
 	container.set_anchors_preset(Control.PRESET_CENTER)
-	container.position = Vector2(-100, -100)  # Center offset, not absolute
+	container.position = Vector2(-100, -150)  # Center offset
 	container.size = Vector2(200, 400)
 	container.add_theme_constant_override("separation", 16)
 	add_child(container)

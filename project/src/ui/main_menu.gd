@@ -66,7 +66,7 @@ func _setup_ui() -> void:
 	# Title container
 	var title_container: Control = Control.new()
 	title_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	title_container.position = Vector2(0, 80)  # Offset from top center
+	title_container.position = Vector2(-640, 80)  # Offset to center (half of 1280)  # Offset from top center
 	title_container.size = Vector2(1280, 200)
 	add_child(title_container)
 	
@@ -106,7 +106,7 @@ func _setup_ui() -> void:
 	# Button container
 	button_container = VBoxContainer.new()
 	button_container.set_anchors_preset(Control.PRESET_CENTER)
-	# Position is handled by anchor preset
+	button_container.position = Vector2(-110, -150)  # Center the container itself
 	button_container.size = Vector2(200, 300)
 	button_container.add_theme_constant_override("separation", 10)
 	add_child(button_container)
