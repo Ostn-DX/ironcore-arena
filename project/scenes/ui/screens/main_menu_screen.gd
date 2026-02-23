@@ -23,28 +23,43 @@ var _focusable_buttons: Array[Button] = []
 var _focused_index: int = 0
 
 func _ready() -> void:
+	print("[MainMenu] _ready() called")
 	## Bible B1.3: Safe signal connections
 	_setup_button_signals()
 	_setup_keyboard_navigation()
 	_play_intro_animation()
+	print("[MainMenu] Setup complete")
 
 func _setup_button_signals() -> void:
+	print("[MainMenu] Setting up button signals...")
 	## Bible B1.3: Check is_connected before connecting
 	if _career_button and is_instance_valid(_career_button):
 		if not _career_button.pressed.is_connected(_on_career_pressed):
 			_career_button.pressed.connect(_on_career_pressed)
+		print("[MainMenu] Career button connected")
+	else:
+		push_warning("[MainMenu] Career button not found!")
 	
 	if _arcade_button and is_instance_valid(_arcade_button):
 		if not _arcade_button.pressed.is_connected(_on_arcade_pressed):
 			_arcade_button.pressed.connect(_on_arcade_pressed)
+		print("[MainMenu] Arcade button connected")
+	else:
+		push_warning("[MainMenu] Arcade button not found!")
 	
 	if _settings_button and is_instance_valid(_settings_button):
 		if not _settings_button.pressed.is_connected(_on_settings_pressed):
 			_settings_button.pressed.connect(_on_settings_pressed)
+		print("[MainMenu] Settings button connected")
+	else:
+		push_warning("[MainMenu] Settings button not found!")
 	
 	if _exit_button and is_instance_valid(_exit_button):
 		if not _exit_button.pressed.is_connected(_on_exit_pressed):
 			_exit_button.pressed.connect(_on_exit_pressed)
+		print("[MainMenu] Exit button connected")
+	else:
+		push_warning("[MainMenu] Exit button not found!")
 
 func _setup_keyboard_navigation() -> void:
 	## Build focus list for arrow key navigation
@@ -100,19 +115,23 @@ func _play_intro_animation() -> void:
 		_animation_player.play("intro")
 
 func _on_career_pressed() -> void:
+	print("[MainMenu] Career button PRESSED")
 	## Bible B1.3: Check validity before emit
 	if is_instance_valid(self):
 		career_pressed.emit()
 
 func _on_arcade_pressed() -> void:
+	print("[MainMenu] Arcade button PRESSED")
 	if is_instance_valid(self):
 		arcade_pressed.emit()
 
 func _on_settings_pressed() -> void:
+	print("[MainMenu] Settings button PRESSED")
 	if is_instance_valid(self):
 		settings_pressed.emit()
 
 func _on_exit_pressed() -> void:
+	print("[MainMenu] Exit button PRESSED")
 	if is_instance_valid(self):
 		exit_pressed.emit()
 

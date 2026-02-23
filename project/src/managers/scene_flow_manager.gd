@@ -34,10 +34,22 @@ var _connected_signals: Array[Dictionary] = []
 
 func _ready() -> void:
 	_setup_signals()
-	_show_main_menu()
+	
+	## NEW: Show Bible-compliant menu instead of old menu
+	## Hide old menu completely
+	if main_menu:
+		main_menu.visible = false
+		main_menu.process_mode = Node.PROCESS_MODE_DISABLED
+	
+	## Show new menu after brief delay to ensure everything loaded
+	call_deferred("_show_new_menu_deferred")
 	
 	# Auto-save on exit
 	get_tree().set_auto_accept_quit(false)
+
+func _show_new_menu_deferred() -> void:
+	## Use new Bible-compliant menu
+	show_new_main_menu()
 
 func _setup_signals() -> void:
 	# Connect old main menu signals for compatibility
@@ -87,10 +99,27 @@ func _exit_tree() -> void:
 
 func show_new_main_menu() -> void:
 	## Show the new Bible-compliant main menu
+	print("SceneFlow: Showing NEW main menu")
 	_hide_main_menu()
 	
+	## Ensure screen_manager is valid
+	if not screen_manager or not is_instance_valid(screen_manager):
+		push_error("SceneFlow: screen_manager is null!")
+		return
+	
 	var menu: Control = main_menu_screen_scene.instantiate()
+	if not menu:
+		push_error("SceneFlow: Failed to instantiate main menu!")
+		return
+		
 	menu.name = "MainMenuScreen"
+	
+	## Ensure menu fills screen and processes input
+	menu.anchor_right = 1.0
+	menu.anchor_bottom = 1.0
+	menu.offset_right = 0
+	menu.offset_bottom = 0
+	menu.process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	# Connect signals with Bible B1.3 pattern
 	if menu.has_signal("career_pressed"):
@@ -103,7 +132,10 @@ func show_new_main_menu() -> void:
 		_safe_connect(menu, "exit_pressed", _on_quit)
 	
 	screen_manager.add_child(menu)
+	print("SceneFlow: New menu added to screen_manager")
+	
 	_switch_to_screen(menu, false)
+	print("SceneFlow: New menu is now current_screen")
 
 func _on_new_career_pressed() -> void:
 	## Navigate to career submenu
@@ -250,10 +282,22 @@ func _show_main_menu() -> void:
 		SaveManager.autosave()
 
 func _hide_main_menu() -> void:
-	if main_menu:
+	## Aggressively hide old menu - multiple safety checks
+	if main_menu and is_instance_valid(main_menu):
 		main_menu.visible = false
+		main_menu.process_mode = Node.PROCESS_MODE_DISABLED
 		if main_menu.has_method("hide_menu"):
 			main_menu.hide_menu()
+		print("SceneFlow: Old main menu hidden")
+	else:
+		print("SceneFlow: Old main menu reference invalid")
+	
+	## Also try to find and hide by name as fallback
+	var old_menu := screen_manager.get_node_or_null("MainMenu")
+	if old_menu and is_instance_valid(old_menu):
+		old_menu.visible = false
+		old_menu.process_mode = Node.PROCESS_MODE_DISABLED
+		print("SceneFlow: Old menu (by name) hidden")
 
 func _switch_to_screen(new_screen: Control, add_to_stack: bool = true) -> void:
 	# Switch to a new screen with transition
