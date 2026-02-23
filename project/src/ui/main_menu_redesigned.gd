@@ -243,7 +243,9 @@ func _setup_menu_buttons() -> void:
 	container.name = "MenuContainer"
 	container.size = Vector2(200, 400)
 	container.add_theme_constant_override("separation", 16)
+	container.mouse_filter = Control.MOUSE_FILTER_PASS  # Let clicks pass through to children
 	add_child(container)
+	print("Menu container added")
 	# Wait a frame then center (after it's in the tree)
 	await get_tree().process_frame
 	_center_menu()
@@ -300,6 +302,8 @@ func _create_menu_button(text: String, style: UIButton.ButtonStyle) -> UIButton:
 	btn.button_style = style
 	btn.custom_minimum_size = Vector2(200, 48)
 	btn.add_theme_font_size_override("font_size", 18)
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP  # Ensure clicks are captured
+	print("Created button: ", text)
 	return btn
 
 func _setup_save_info() -> void:
@@ -338,6 +342,7 @@ func _on_continue() -> void:
 	continue_pressed.emit()
 
 func _on_new_campaign() -> void:
+	print("New Campaign clicked!")
 	start_campaign_pressed.emit()
 
 func _on_arcade() -> void:
