@@ -124,11 +124,22 @@ func add_part(part_id: String, quantity: int = 1) -> void:
 
 
 func remove_part(part_id: String, quantity: int = 1) -> bool:
+	## Bible: Validate inputs
+	if part_id.is_empty():
+		push_warning("remove_part called with empty part_id")
+		return false
+	
+	if quantity <= 0:
+		push_warning("remove_part called with invalid quantity: %d" % quantity)
+		return false
+	
 	if not owned_parts.has(part_id) or owned_parts[part_id] < quantity:
 		return false
+	
 	owned_parts[part_id] -= quantity
 	if owned_parts[part_id] <= 0:
 		owned_parts.erase(part_id)
+	
 	parts_changed.emit()
 	return true
 
@@ -142,16 +153,40 @@ func get_part_quantity(part_id: String) -> int:
 
 
 func add_loadout(loadout: Dictionary) -> void:
-	# Validate loadout has required fields
-	if not loadout.has("id") or not loadout.has("name"):
-		push_error("Invalid loadout: missing id or name")
+	## Bible: Validate loadout has required fields
+	if not loadout is Dictionary:
+		push_error("Invalid loadout: not a Dictionary")
 		return
+	
+	if not loadout.has("name"):
+		push_error("Invalid loadout: missing name")
+		return
+	
+	## Ensure name is not empty
+	var loadout_name: String = loadout.get("name", "")
+	if loadout_name.strip_edges().is_empty():
+		push_error("Invalid loadout: name cannot be empty")
+		return
+	
+	## Generate ID if not provided
+	if not loadout.has("id"):
+		loadout["id"] = "loadout_%d_%d" % [Time.get_unix_time_from_system(), randi()]
 
-	# Remove existing loadout with same ID
+	## Remove existing loadout with same ID
 	for i in range(loadouts.size()):
 		if loadouts[i].get("id") == loadout["id"]:
 			loadouts.remove_at(i)
 			break
+
+	## Bible: Sanitize loadout data
+	if not loadout.has("chassis"):
+		loadout["chassis"] = ""
+	if not loadout.has("armor"):
+		loadout["armor"] = ""
+	if not loadout.has("weapon"):
+		loadout["weapon"] = ""
+	if not loadout.has("enabled"):
+		loadout["enabled"] = true
 
 	loadouts.append(loadout)
 	loadouts_changed.emit()

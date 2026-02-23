@@ -70,6 +70,11 @@ func component_exists(id: String) -> bool:
 
 func get_part(id: String) -> Dictionary:
 	## Get any part by ID - routes to correct type
+	## Bible: Validate input
+	if id.is_empty():
+		push_warning("DataLoader: get_part called with empty ID")
+		return {}
+	
 	var part: Dictionary = get_chassis(id)
 	if not part.is_empty():
 		part["type"] = "chassis"
@@ -85,6 +90,8 @@ func get_part(id: String) -> Dictionary:
 		part["type"] = "weapon"
 		return part
 	
+	## Bible: Log when part not found (helps debugging)
+	push_warning("DataLoader: Part not found: %s" % id)
 	return {}
 
 
