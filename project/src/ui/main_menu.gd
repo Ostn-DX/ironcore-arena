@@ -110,8 +110,9 @@ func _setup_ui() -> void:
 	button_container.size = Vector2(200, 300)
 	button_container.add_theme_constant_override("separation", 10)
 	add_child(button_container)
-	# Defer centering until viewport is ready
-	_call_deferred("_center_button_container")
+	# Wait a frame for viewport to be ready, then center
+	await get_tree().process_frame
+	_center_button_container()
 	
 	# Continue button (only if save exists)
 	continue_btn = _create_menu_button("Continue", _on_continue, true)

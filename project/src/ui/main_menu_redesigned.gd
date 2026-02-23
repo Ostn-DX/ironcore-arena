@@ -221,20 +221,20 @@ func _setup_title() -> void:
 func _center_menu() -> void:
 	## Center menu elements based on actual viewport
 	var viewport_size: Vector2 = get_viewport_rect().size
-	# Find the container (first VBoxContainer child)
-	for child in get_children():
-		if child is VBoxContainer and child.name != "":
-			child.position = Vector2(
-				(viewport_size.x - child.size.x) / 2,
-				(viewport_size.y - child.size.y) / 2 + 50
-			)
-			break
+	var container = get_node_or_null("MenuContainer")
+	if container:
+		container.position = Vector2(
+			(viewport_size.x - container.size.x) / 2,
+			(viewport_size.y - container.size.y) / 2
+		)
 
 func _setup_menu_buttons() -> void:
 	# Main button container - centered
 	var container: VBoxContainer = VBoxContainer.new()
-	# Responsive centering
-	_call_deferred("_center_menu")
+	container.name = "MenuContainer"
+	# Wait a frame then center
+	await get_tree().process_frame
+	_center_menu()
 	container.size = Vector2(200, 400)
 	container.add_theme_constant_override("separation", 16)
 	add_child(container)
