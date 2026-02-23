@@ -219,15 +219,26 @@ func _setup_title() -> void:
 	title_container.add_child(subtitle)
 
 func _center_menu() -> void:
-	## Center menu elements based on parent size
-	var parent_size: Vector2 = size  # This control fills the screen
+	## Center menu elements
 	var container = get_node_or_null("MenuContainer")
-	if container:
-		container.position = Vector2(
-			(parent_size.x - container.size.x) / 2,
-			(parent_size.y - container.size.y) / 2
-		)
-		print("Menu centered at: ", container.position, " parent size: ", parent_size)
+	if not container:
+		return
+		
+	# Get parent size (this control fills screen)
+	var parent_size: Vector2 = size
+	
+	# Calculate center position
+	var center_x: float = (parent_size.x - container.size.x) / 2
+	var center_y: float = (parent_size.y - container.size.y) / 2
+	
+	# Hardcoded fallback for testing
+	if center_x < 0 or center_x > parent_size.x:
+		center_x = 476  # (1152 - 200) / 2
+	if center_y < 0 or center_y > parent_size.y:
+		center_y = 124  # (648 - 400) / 2
+	
+	container.position = Vector2(center_x, center_y)
+	print("Menu centered at: ", container.position, " parent size: ", parent_size)
 
 func _setup_menu_buttons() -> void:
 	# Main button container - centered
