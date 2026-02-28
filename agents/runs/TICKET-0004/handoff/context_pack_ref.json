@@ -1,0 +1,16 @@
+{
+  "ticket_id": "TICKET-0004",
+  "pack_path": "tools/context_packs/TICKET-0004",
+  "manifest_path": "tools/context_packs/TICKET-0004/manifest.json",
+  "allowed_file_count": 1,
+  "vault_note_count": 1,
+  "files": [
+    "project_summary.md",
+    "invariants.md",
+    "conventions.md",
+    "ticket.md",
+    "allowed_files/agents/context/conventions.md",
+    "vault_notes/10_Regression_Harness/Simulation_Test_Suite.md"
+  ],
+  "generated_at": "2026-02-28T01:03:10Z"
+}

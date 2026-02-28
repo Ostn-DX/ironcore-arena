@@ -1,0 +1,56 @@
+{
+  "audit_date": "2026-02-28",
+  "generated_at": "2026-02-28T01:13:20Z",
+  "simulated": true,
+  "overall_status": "DRIFT_DETECTED",
+  "vault_validation": "FAIL",
+  "dev_gate": "FAIL",
+  "runs_scanned": 10,
+  "gate_failures": 5,
+  "gate_failure_rate": 0.5,
+  "missing_manifests": 2,
+  "tampered_packs": 1,
+  "repeated_files": {
+    "agents/context/conventions.md": 7,
+    "agents/context/invariants.md": 6,
+    "agents/context/project_summary.md": 5
+  },
+  "drift_violations": [
+    {
+      "indicator": "gate_failure_rate",
+      "actual": 50.0,
+      "threshold": 30.0,
+      "severity": "critical",
+      "remediation": "Gate failure rate 50.0% >= 30% threshold. Open each failing REPORT.md, identify the first failing step, and re-run `python tools/run_ticket.py` after fixing root causes."
+    },
+    {
+      "indicator": "repeated_file_modifications",
+      "actual": 7.0,
+      "threshold": 5.0,
+      "severity": "warning",
+      "remediation": "File(s) modified in 7+ distinct runs: `agents/context/conventions.md` (7x), `agents/context/invariants.md` (6x), `agents/context/project_summary.md` (5x). This may indicate churn \u2014 create a focused stabilisation ticket to converge these files to a final state."
+    },
+    {
+      "indicator": "vault_validation_failures",
+      "actual": 1.0,
+      "threshold": 1.0,
+      "severity": "critical",
+      "remediation": "Vault validation failed. Run `python tools/validate_vault.py` to list all frontmatter errors in Studio_OS/. Fix each file before any further pipeline runs."
+    },
+    {
+      "indicator": "missing_manifest_count",
+      "actual": 2.0,
+      "threshold": 1.0,
+      "severity": "critical",
+      "remediation": "2 run(s) have no context pack manifest \u2014 the enforcement pipeline was bypassed. Identify which tickets are affected and re-run them: `python tools/run_ticket.py --ticket <path>`."
+    },
+    {
+      "indicator": "tampered_pack_count",
+      "actual": 1.0,
+      "threshold": 1.0,
+      "severity": "critical",
+      "remediation": "1 context pack(s) failed SHA-256 integrity check. Files were modified outside the enforcement pipeline. Rebuild affected packs: `python tools/build_context_pack.py <ticket.md>`."
+    }
+  ],
+  "auto_ticket_generated": "AUDIT-0001"
+}

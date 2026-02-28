@@ -1,4 +1,4 @@
-# Ironcore Arena Development Gate
+﻿# Ironcore Arena Development Gate
 # Validates vault, context packs, and build before committing
 #
 # Usage: .\tools\dev_gate.ps1 [-SkipGodot]
@@ -28,11 +28,11 @@ $Reset = "`e[0m"
 
 function Write-Status($message, $status) {
     if ($status -eq "PASS") {
-        Write-Host "${Green}✓${Reset} $message"
+        Write-Host "${Green}[OK]${Reset} $message"
     } elseif ($status -eq "FAIL") {
-        Write-Host "${Red}✗${Reset} $message"
+        Write-Host "${Red}[FAIL]${Reset} $message"
     } elseif ($status -eq "INFO") {
-        Write-Host "${Yellow}→${Reset} $message"
+        Write-Host "${Yellow}->${Reset} $message"
     }
 }
 
@@ -177,7 +177,7 @@ try {
     
     Write-Status "Matches completed: $($matchReport.total_matches)" "INFO"
     Write-Status "Crashes: $crashCount" $(if ($crashCount -eq 0) { "PASS" } else { "FAIL" })
-    Write-Status "Timeouts: $timeoutCount" $(if $timeoutCount -eq 0) { "PASS" } else { "INFO" })
+    Write-Status "Timeouts: $timeoutCount" $(if ($timeoutCount -eq 0) { "PASS" } else { "INFO" })
     Write-Status "Avg duration: $([math]::Round($avgDuration, 2))s" "INFO"
     
     if ($crashCount -gt 0) {
@@ -193,7 +193,7 @@ try {
 }
 
 Write-Host ""
-Write-Status "STAGE 1: PASSED ✓" "PASS"
+Write-Status "STAGE 1: PASSED [OK]" "PASS"
 Write-Host ""
 
 # =============================================================================
@@ -249,7 +249,7 @@ try {
         # Show failed transitions
         foreach ($transition in $uiReport.transitions) {
             if (-not $transition.success) {
-                Write-Status "  $($transition.from) → $($transition.to): $($transition.error)" "FAIL"
+                Write-Status "  $($transition.from) -> $($transition.to): $($transition.error)" "FAIL"
             }
         }
         
@@ -263,7 +263,7 @@ try {
 }
 
 Write-Host ""
-Write-Status "STAGE 2: PASSED ✓" "PASS"
+Write-Status "STAGE 2: PASSED [OK]" "PASS"
 Write-Host ""
 
 # =============================================================================
@@ -272,7 +272,7 @@ Write-Host ""
 Pop-Location
 
 Write-Host "================================"
-Write-Status "DEVELOPMENT GATE: PASSED ✓" "PASS"
+Write-Status "DEVELOPMENT GATE: PASSED [OK]" "PASS"
 Write-Host "================================"
 Write-Host ""
 Write-Status "Match tests: OK" "PASS"

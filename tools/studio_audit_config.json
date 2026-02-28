@@ -1,0 +1,30 @@
+{
+  "_comment": "studio_audit_config.json — thresholds for drift detection. All fields are required.",
+
+  "runs_to_scan": 10,
+
+  "thresholds": {
+    "_comment": "gate_failure_rate: fraction (0.0–1.0) of scanned runs that may be FAILED before flagging drift",
+    "gate_failure_rate": 0.3,
+
+    "_comment": "repeated_file_modifications: a single file appearing in this many distinct runs triggers a warning",
+    "repeated_file_modifications": 5,
+
+    "_comment": "vault_validation_failures: set to 1 to flag any vault validation failure as a violation",
+    "vault_validation_failures": 1,
+
+    "_comment": "missing_manifest_count: runs with no context pack manifest — indicates pipeline was bypassed",
+    "missing_manifest_count": 1,
+
+    "_comment": "tampered_pack_count: runs where verify_manifest detected hash mismatches",
+    "tampered_pack_count": 1
+  },
+
+  "auto_ticket": {
+    "_comment": "enabled: false disables ticket generation (audit still runs and reports)",
+    "enabled": true,
+
+    "_comment": "prefix: ticket ID prefix for auto-generated remediation tickets (e.g. AUDIT-0001)",
+    "prefix": "AUDIT"
+  }
+}
