@@ -1,0 +1,166 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.19",
+    "lastTouchedAt": "2026-02-20T17:08:25.757Z"
+  },
+  "env": {
+    "shellEnv": {
+      "enabled": false
+    },
+    "vars": {
+      "HEARTBEAT_INTERVAL": "900",
+      "ANTHROPIC_API_KEY": "YOUR_ANTHROPIC_KEY_HERE",
+      "OPENAI_API_KEY": "YOUR_OPENAI_KEY_HERE",
+      "OPENROUTER_API_KEY": "YOUR_OPENROUTER_KEY_HERE"
+    }
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-19T16:58:35.084Z",
+    "lastRunVersion": "2026.2.19",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local"
+  },
+  "auth": {
+    "profiles": {
+      "kimi-coding:default": {
+        "provider": "kimi-coding",
+        "mode": "api_key"
+      },
+      "anthropic:default": {
+        "provider": "anthropic",
+        "mode": "api_key"
+      },
+      "openai:default": {
+        "provider": "openai",
+        "mode": "api_key"
+      },
+      "openrouter:default": {
+        "provider": "openrouter",
+        "mode": "api_key"
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "anthropic/claude-opus-4-20250514"
+      },
+      "models": {
+        "kimi-coding/k2p5": {
+          "alias": "Kimi K2.5 - Chat/Casual"
+        },
+        "groq/llama-3.1-8b-instant": {
+          "alias": "Llama 3.1 - Quick Tasks"
+        },
+        "anthropic/claude-opus-4-20250514": {
+          "alias": "Claude Opus 4 - Complex Code/Debug"
+        },
+        "anthropic/claude-sonnet-4-20250514": {
+          "alias": "Claude Sonnet - Balanced Code"
+        },
+        "openai/o3": {
+          "alias": "GPT o3 - Advanced Coding"
+        },
+        "openai/gpt-4o": {
+          "alias": "GPT-4o - General Code"
+        },
+        "openai/gpt-4o-mini": {
+          "alias": "GPT-4o Mini - Cheap Tasks"
+        },
+        "openrouter/openai/gpt-4o": {
+          "alias": "GPT-4o via OpenRouter"
+        },
+        "openrouter/openai/o3-mini": {
+          "alias": "o3 Mini via OpenRouter"
+        }
+      },
+      "workspace": "/home/node/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "session-memory": {
+          "enabled": true
+        },
+        "command-logger": {
+          "enabled": true
+        },
+        "bootstrap-extra-files": {
+          "enabled": true
+        },
+        "boot-md": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "open",
+      "botToken": "8445203089:AAEOLSd5NvGam2FBbL4cS159xgtOWzIyScA",
+      "allowFrom": [
+        "*"
+      ],
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "localhost",
+    "auth": {
+      "mode": "token",
+      "token": "49265a22e4f7b48a15a715267fcfc98cc0ed733d67900b2b"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap",
+        "camera.clip",
+        "screen.record",
+        "calendar.add",
+        "contacts.add",
+        "reminders.add"
+      ]
+    }
+  },
+  "skills": {
+    "entries": {
+      "nano-banana-pro": {
+        "apiKey": "AIzaSyBiAoqka0I9MvBOlvS-YrV7s8Q756qjlB4"
+      },
+      "openai-whisper-api": {
+        "apiKey": "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"
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      }
+    }
+  }
+}
