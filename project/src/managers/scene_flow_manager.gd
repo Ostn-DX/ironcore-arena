@@ -159,6 +159,7 @@ func _show_main_menu() -> void:
 func _hide_main_menu() -> void:
 	if main_menu:
 		main_menu.visible = false
+		main_menu.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block input when hidden
 		if main_menu.has_method("hide_menu"):
 			main_menu.hide_menu()
 
