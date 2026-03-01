@@ -9,7 +9,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
 script = ExtResource("1_build")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -19,7 +18,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 color = Color(0.08, 0.08, 0.12, 1.0)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
@@ -29,7 +27,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
@@ -37,67 +34,55 @@ theme_override_constants/margin_bottom = 20
 
 [node name="VBox" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-mouse_filter = 1
 theme_override_constants/separation = 20
 
 [node name="TopRow" type="HBoxContainer" parent="MarginContainer/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-mouse_filter = 1
 theme_override_constants/separation = 20
 
 [node name="ShopPanel" type="VBoxContainer" parent="MarginContainer/VBox/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-mouse_filter = 1
 
 [node name="Title" type="Label" parent="MarginContainer/VBox/TopRow/ShopPanel"]
 layout_mode = 2
 text = "SHOP"
 horizontal_alignment = 1
-mouse_filter = 2
 
 [node name="ShopButtons" type="HBoxContainer" parent="MarginContainer/VBox/TopRow/ShopPanel"]
 layout_mode = 2
 alignment = 1
-mouse_filter = 1
 
 [node name="ShopList" type="ItemList" parent="MarginContainer/VBox/TopRow/ShopPanel"]
 layout_mode = 2
 size_flags_vertical = 3
-mouse_filter = 1
 
 [node name="InventoryPanel" type="VBoxContainer" parent="MarginContainer/VBox/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-mouse_filter = 1
 
 [node name="Title" type="Label" parent="MarginContainer/VBox/TopRow/InventoryPanel"]
 layout_mode = 2
 text = "INVENTORY"
 horizontal_alignment = 1
-mouse_filter = 2
 
 [node name="InventoryList" type="ItemList" parent="MarginContainer/VBox/TopRow/InventoryPanel"]
 layout_mode = 2
 size_flags_vertical = 3
-mouse_filter = 1
 
 [node name="MyBotsPanel" type="VBoxContainer" parent="MarginContainer/VBox/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-mouse_filter = 1
 
 [node name="Title" type="Label" parent="MarginContainer/VBox/TopRow/MyBotsPanel"]
 layout_mode = 2
 text = "MY BOTS"
 horizontal_alignment = 1
-mouse_filter = 2
 
 [node name="MyBotsList" type="ItemList" parent="MarginContainer/VBox/TopRow/MyBotsPanel"]
 layout_mode = 2
 size_flags_vertical = 3
-mouse_filter = 1
 
 [node name="BotNameEdit" type="LineEdit" parent="MarginContainer/VBox/TopRow/MyBotsPanel"]
 layout_mode = 2
@@ -106,7 +91,6 @@ placeholder_text = "Bot Name"
 [node name="PreviewPanel" type="Panel" parent="MarginContainer/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 150)
-mouse_filter = 1
 
 [node name="PreviewLabel" type="Label" parent="MarginContainer/VBox/PreviewPanel"]
 layout_mode = 1
@@ -121,54 +105,39 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 text = "Select an item"
 autowrap_mode = 3
-mouse_filter = 2
 
-[node name="ActionButton" type="Button" parent="MarginContainer/VBox/PreviewPanel"]
+[node name="WeightLabel" type="Label" parent="MarginContainer/VBox/PreviewPanel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -30.0
+offset_right = 150.0
+offset_bottom = -10.0
+grow_vertical = 0
+text = "Weight: 0 / 0 kg"
+
+[node name="CreditsLabel" type="Label" parent="MarginContainer/VBox/PreviewPanel"]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -100.0
-offset_top = -40.0
+offset_left = -150.0
+offset_top = -30.0
 offset_right = -10.0
 offset_bottom = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 0
-text = "Purchase"
-visible = false
+text = "Credits: 0"
 
 [node name="BottomBar" type="HBoxContainer" parent="MarginContainer/VBox"]
 layout_mode = 2
 alignment = 1
-mouse_filter = 1
-
-[node name="WeightLabel" type="Label" parent="MarginContainer/VBox/BottomBar"]
-layout_mode = 2
-text = "Weight: 0 / 0 kg"
-mouse_filter = 2
-
-[node name="CreditsLabel" type="Label" parent="MarginContainer/VBox/BottomBar"]
-layout_mode = 2
-text = "Credits: 0"
-mouse_filter = 2
-
-[node name="TestBtn" type="Button" parent="MarginContainer/VBox/BottomBar"]
-layout_mode = 2
-mouse_filter = 0
-text = "Test Battle"
-
-[node name="BackBtn" type="Button" parent="MarginContainer/VBox/BottomBar"]
-layout_mode = 2
-mouse_filter = 0
-text = "Back"
 
 [connection signal="item_selected" from="MarginContainer/VBox/TopRow/ShopPanel/ShopList" to="." method="_on_shop_selected"]
 [connection signal="item_selected" from="MarginContainer/VBox/TopRow/InventoryPanel/InventoryList" to="." method="_on_inventory_selected"]
 [connection signal="item_selected" from="MarginContainer/VBox/TopRow/MyBotsPanel/MyBotsList" to="." method="_on_my_bot_selected"]
 [connection signal="text_changed" from="MarginContainer/VBox/TopRow/MyBotsPanel/BotNameEdit" to="." method="_on_name_changed"]
-[connection signal="pressed" from="MarginContainer/VBox/PreviewPanel/ActionButton" to="." method="_on_action_pressed"]
-[connection signal="pressed" from="MarginContainer/VBox/BottomBar/TestBtn" to="." method="_on_test_pressed"]
-[connection signal="pressed" from="MarginContainer/VBox/BottomBar/BackBtn" to="." method="_on_back_pressed"]

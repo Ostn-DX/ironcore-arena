@@ -1,6 +1,6 @@
 extends Control
 ## BuildScreen - Bot Arena 3 style with Shop, Inventory, My Bots
-## WIRED UP: Signals connected to SceneFlowManager
+## REBUILT: Using UIButton for proper hit detection
 
 signal back_pressed
 signal test_battle_pressed
@@ -17,53 +17,48 @@ var current_bot: Dictionary = {
 	"weapon": "wpn_mg_t1"
 }
 
+# References to scene nodes
 @onready var shop_buttons: HBoxContainer = $MarginContainer/VBox/TopRow/ShopPanel/ShopButtons
 @onready var shop_list: ItemList = $MarginContainer/VBox/TopRow/ShopPanel/ShopList
 @onready var inventory_list: ItemList = $MarginContainer/VBox/TopRow/InventoryPanel/InventoryList
 @onready var my_bots_list: ItemList = $MarginContainer/VBox/TopRow/MyBotsPanel/MyBotsList
 @onready var preview_label: Label = $MarginContainer/VBox/PreviewPanel/PreviewLabel
-@onready var action_button: Button = $MarginContainer/VBox/PreviewPanel/ActionButton
 @onready var bot_name_edit: LineEdit = $MarginContainer/VBox/TopRow/MyBotsPanel/BotNameEdit
-@onready var weight_label: Label = $MarginContainer/VBox/BottomBar/WeightLabel
-@onready var credits_label: Label = $MarginContainer/VBox/BottomBar/CreditsLabel
-@onready var test_btn: Button = $MarginContainer/VBox/BottomBar/TestBtn
-@onready var back_btn: Button = $MarginContainer/VBox/BottomBar/BackBtn
+@onready var weight_label: Label = $MarginContainer/VBox/PreviewPanel/WeightLabel
+@onready var credits_label: Label = $MarginContainer/VBox/PreviewPanel/CreditsLabel
+
+# UIButton references (created programmatically)
+var test_btn: UIButton
+var back_btn: UIButton
+var action_button: UIButton
+
+const UIButton = preload("res://src/ui/components/UIButton.gd")
 
 func _ready() -> void:
-	_setup_shop_buttons()
+	print("BuildScreen: _ready started")
+	
+	# Setup mouse filters on containers
+	_setup_container_filters()
+	
+	# Create UIButtons
+	_create_action_buttons()
+	_create_shop_buttons()
+	
+	# Load data
 	_load_inventory()
 	_load_my_bots()
 	_update_bot_display()
 	_update_preview()
 	
-	# Connect button signals
-	back_btn.pressed.connect(_on_back_pressed)
-	test_btn.pressed.connect(_on_test_pressed)
-	
-	# CRITICAL FIX: Set all containers to PASS mouse input
-	_setup_mouse_filters()
-	
-	print("BuildScreen: Ready - Mouse filters configured")
-	
-	# DEBUG: Check if signals are connected
-	print("BuildScreen: Test Battle signal connected: ", test_btn.pressed.is_connected(_on_test_pressed))
-	print("BuildScreen: Back signal connected: ", back_btn.pressed.is_connected(_on_back_pressed))
-	
-	# Ensure buttons can receive focus
-	test_btn.focus_mode = Control.FOCUS_ALL
-	back_btn.focus_mode = Control.FOCUS_ALL
-	
-	# LAST RESORT: Replace buttons with fresh ones
-	call_deferred("_replace_broken_buttons")
+	print("BuildScreen: _ready complete")
 
-func _setup_mouse_filters() -> void:
-	## Fix mouse filters for entire UI hierarchy
+func _setup_container_filters() -> void:
+	## Set all containers to PASS, labels to IGNORE
 	
-	# Root and background
-	mouse_filter = Control.MOUSE_FILTER_PASS
+	# Background
 	$Background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
-	# All containers should PASS
+	# All containers PASS
 	$MarginContainer.mouse_filter = Control.MOUSE_FILTER_PASS
 	$MarginContainer/VBox.mouse_filter = Control.MOUSE_FILTER_PASS
 	$MarginContainer/VBox/TopRow.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -71,74 +66,65 @@ func _setup_mouse_filters() -> void:
 	$MarginContainer/VBox/TopRow/ShopPanel/ShopButtons.mouse_filter = Control.MOUSE_FILTER_PASS
 	$MarginContainer/VBox/TopRow/InventoryPanel.mouse_filter = Control.MOUSE_FILTER_PASS
 	$MarginContainer/VBox/TopRow/MyBotsPanel.mouse_filter = Control.MOUSE_FILTER_PASS
-	
-	# Preview panel - critical fix
 	$MarginContainer/VBox/PreviewPanel.mouse_filter = Control.MOUSE_FILTER_PASS
 	
-	# Bottom bar
-	$MarginContainer/VBox/BottomBar.mouse_filter = Control.MOUSE_FILTER_PASS
-	
-	# All buttons must STOP to capture input
-	test_btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	back_btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	action_button.mouse_filter = Control.MOUSE_FILTER_STOP
-	
-	# ItemLists should PASS (not steal button clicks)
-	shop_list.mouse_filter = Control.MOUSE_FILTER_PASS
-	inventory_list.mouse_filter = Control.MOUSE_FILTER_PASS
-	my_bots_list.mouse_filter = Control.MOUSE_FILTER_PASS
-	
-	# Labels should IGNORE
+	# Labels IGNORE
 	$MarginContainer/VBox/TopRow/ShopPanel/Title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	$MarginContainer/VBox/TopRow/InventoryPanel/Title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	$MarginContainer/VBox/TopRow/MyBotsPanel/Title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	preview_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	weight_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	credits_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	# ItemLists PASS
+	shop_list.mouse_filter = Control.MOUSE_FILTER_PASS
+	inventory_list.mouse_filter = Control.MOUSE_FILTER_PASS
+	my_bots_list.mouse_filter = Control.MOUSE_FILTER_PASS
 
-func _replace_broken_buttons() -> void:
-	## Replace scene buttons with programmatically created ones
-	print("BuildScreen: Replacing broken buttons...")
+func _create_action_buttons() -> void:
+	## Create Test Battle and Back UIButtons
 	
-	# Get parent container
-	var bottom_bar = $MarginContainer/VBox/BottomBar
+	var bottom_bar: HBoxContainer = $MarginContainer/VBox/BottomBar
 	
-	# Hide old buttons instead of removing
-	if test_btn:
-		test_btn.visible = false
-	if back_btn:
-		back_btn.visible = false
+	# Clear any old buttons
+	for child in bottom_bar.get_children():
+		child.queue_free()
 	
-	# Create new Test Battle button
-	var new_test_btn: Button = Button.new()
-	new_test_btn.text = "Test Battle"
-	new_test_btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	new_test_btn.focus_mode = Control.FOCUS_ALL
-	new_test_btn.pressed.connect(_on_test_pressed)
-	new_test_btn.top_level = true  # Don't be affected by parent transforms/filters
-	new_test_btn.position = Vector2(580, 680)  # Absolute position
-	add_child(new_test_btn)
+	# Create Test Battle button
+	test_btn = UIButton.new()
+	test_btn.text = "Test Battle"
+	test_btn.button_style = UIButton.ButtonStyle.SECONDARY
+	test_btn.custom_minimum_size = Vector2(120, 40)
+	test_btn.size = Vector2(120, 40)
+	test_btn.pressed.connect(_on_test_pressed)
+	bottom_bar.add_child(test_btn)
+	print("BuildScreen: Created Test Battle UIButton")
 	
-	# Create new Back button
-	var new_back_btn: Button = Button.new()
-	new_back_btn.text = "Back"
-	new_back_btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	new_back_btn.focus_mode = Control.FOCUS_ALL
-	new_back_btn.pressed.connect(_on_back_pressed)
-	new_back_btn.top_level = true
-	new_back_btn.position = Vector2(680, 680)
-	add_child(new_back_btn)
+	# Spacer
+	var spacer: Control = Control.new()
+	spacer.custom_minimum_size = Vector2(20, 0)
+	bottom_bar.add_child(spacer)
 	
-	print("BuildScreen: Buttons replaced successfully at positions ", new_test_btn.position, " and ", new_back_btn.position)
+	# Create Back button
+	back_btn = UIButton.new()
+	back_btn.text = "Back"
+	back_btn.button_style = UIButton.ButtonStyle.GHOST
+	back_btn.custom_minimum_size = Vector2(80, 40)
+	back_btn.size = Vector2(80, 40)
+	back_btn.pressed.connect(_on_back_pressed)
+	bottom_bar.add_child(back_btn)
+	print("BuildScreen: Created Back UIButton")
 
-func _setup_shop_buttons() -> void:
+func _create_shop_buttons() -> void:
+	## Create shop category buttons using UIButton
+	
 	var categories := ["Chassis", "Armor", "Weapon/Heal"]
 	for category in categories:
-		var btn: Button = Button.new()
+		var btn: UIButton = UIButton.new()
 		btn.text = category
+		btn.button_style = UIButton.ButtonStyle.GHOST
+		btn.custom_minimum_size = Vector2(80, 32)
 		btn.pressed.connect(_on_shop_category_selected.bind(category))
-		btn.mouse_filter = Control.MOUSE_FILTER_STOP  # Ensure shop buttons work too
 		shop_buttons.add_child(btn)
+		print("BuildScreen: Created shop button: ", category)
 	
 	# Show all by default
 	_show_shop_category("Chassis")
@@ -172,23 +158,6 @@ func _on_my_bot_selected(index: int) -> void:
 func _on_name_changed(new_text: String) -> void:
 	current_bot.name = new_text
 
-func _on_action_pressed() -> void:
-	if selected_part.is_empty():
-		return
-	
-	if action_button.text == "Purchase":
-		var price: int = selected_part.get("price", 0)
-		if GameState.spend_credits(price):
-			GameState.add_part_to_inventory(selected_part.id)
-			_load_inventory()
-			_update_preview()
-	elif action_button.text == "Equip":
-		var slot: String = selected_part.get("slot", "")
-		if not slot.is_empty():
-			current_bot[slot] = selected_part.id
-			_update_bot_display()
-			_update_preview()
-
 func _load_inventory() -> void:
 	inventory_list.clear()
 	
@@ -221,7 +190,6 @@ func _update_bot_display() -> void:
 func _update_preview() -> void:
 	if selected_part.is_empty():
 		preview_label.text = "Select an item"
-		action_button.visible = false
 		return
 	
 	var description: String = selected_part.get("description", "No description")
@@ -232,23 +200,6 @@ func _update_preview() -> void:
 		stats_text += "\n%s: %s" % [stat_name.capitalize(), str(stats[stat_name])]
 	
 	preview_label.text = "%s\n%s" % [description, stats_text]
-	
-	# Determine action button state
-	var is_owned: bool = selected_part.id in GameState.inventory
-	var can_afford: bool = GameState.credits >= selected_part.get("price", 0)
-	
-	if is_owned:
-		action_button.text = "Equip"
-		action_button.visible = true
-		action_button.disabled = false
-	elif can_afford:
-		action_button.text = "Purchase"
-		action_button.visible = true
-		action_button.disabled = false
-	else:
-		action_button.text = "Can't Afford"
-		action_button.visible = true
-		action_button.disabled = true
 
 func _on_test_pressed() -> void:
 	print("BuildScreen: Test Battle pressed!")
@@ -259,10 +210,6 @@ func _on_back_pressed() -> void:
 	print("BuildScreen: Back pressed!")
 	GameState.save_build(current_bot)
 	back_pressed.emit()
-
-func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		print("BuildScreen _gui_input: button=", event.button_index, " pressed=", event.pressed, " pos=", event.position)
 
 func on_show() -> void:
 	_update_bot_display()
