@@ -44,6 +44,17 @@ func _ready() -> void:
 	_setup_mouse_filters()
 	
 	print("BuildScreen: Ready - Mouse filters configured")
+	
+	# DEBUG: Check if signals are connected
+	print("BuildScreen: Test Battle signal connected: ", test_btn.pressed.is_connected(_on_test_pressed))
+	print("BuildScreen: Back signal connected: ", back_btn.pressed.is_connected(_on_back_pressed))
+	
+	# Ensure buttons can receive focus
+	test_btn.focus_mode = Control.FOCUS_ALL
+	back_btn.focus_mode = Control.FOCUS_ALL
+	
+	# LAST RESORT: Replace buttons with fresh ones
+	call_deferred("_replace_broken_buttons")
 
 func _setup_mouse_filters() -> void:
 	## Fix mouse filters for entire UI hierarchy
@@ -84,6 +95,41 @@ func _setup_mouse_filters() -> void:
 	preview_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	weight_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	credits_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+func _replace_broken_buttons() -> void:
+	## Replace scene buttons with programmatically created ones
+	print("BuildScreen: Replacing broken buttons...")
+	
+	# Get parent container
+	var bottom_bar = $MarginContainer/VBox/BottomBar
+	
+	# Hide old buttons instead of removing
+	if test_btn:
+		test_btn.visible = false
+	if back_btn:
+		back_btn.visible = false
+	
+	# Create new Test Battle button
+	var new_test_btn: Button = Button.new()
+	new_test_btn.text = "Test Battle"
+	new_test_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	new_test_btn.focus_mode = Control.FOCUS_ALL
+	new_test_btn.pressed.connect(_on_test_pressed)
+	new_test_btn.top_level = true  # Don't be affected by parent transforms/filters
+	new_test_btn.position = Vector2(580, 680)  # Absolute position
+	add_child(new_test_btn)
+	
+	# Create new Back button
+	var new_back_btn: Button = Button.new()
+	new_back_btn.text = "Back"
+	new_back_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	new_back_btn.focus_mode = Control.FOCUS_ALL
+	new_back_btn.pressed.connect(_on_back_pressed)
+	new_back_btn.top_level = true
+	new_back_btn.position = Vector2(680, 680)
+	add_child(new_back_btn)
+	
+	print("BuildScreen: Buttons replaced successfully at positions ", new_test_btn.position, " and ", new_back_btn.position)
 
 func _setup_shop_buttons() -> void:
 	var categories := ["Chassis", "Armor", "Weapon/Heal"]
@@ -213,6 +259,10 @@ func _on_back_pressed() -> void:
 	print("BuildScreen: Back pressed!")
 	GameState.save_build(current_bot)
 	back_pressed.emit()
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		print("BuildScreen _gui_input: button=", event.button_index, " pressed=", event.pressed, " pos=", event.position)
 
 func on_show() -> void:
 	_update_bot_display()
