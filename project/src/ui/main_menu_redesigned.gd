@@ -40,6 +40,7 @@ func _setup_background() -> void:
 	var bg: ColorRect = ColorRect.new()
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.color = COLOR_BG
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block clicks
 	add_child(bg)
 	
 	# Subtle grid pattern
@@ -50,6 +51,7 @@ func _create_grid_pattern() -> Control:
 	var container: Control = Control.new()
 	container.set_anchors_preset(Control.PRESET_FULL_RECT)
 	container.modulate.a = 0.05
+	container.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block clicks
 	
 	# Draw faint dots
 	var spacing: int = 40
@@ -59,6 +61,7 @@ func _create_grid_pattern() -> Control:
 			dot.size = Vector2(2, 2)
 			dot.position = Vector2(x, y)
 			dot.color = COLOR_ACCENT
+			dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			container.add_child(dot)
 	
 	return container
@@ -85,6 +88,7 @@ func _create_decorative_node(pos: Vector2, is_active: bool) -> void:
 	var container: Control = Control.new()
 	container.position = pos
 	container.size = Vector2(48, 48)
+	container.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Visual only, don't block clicks
 	
 	# Shadow
 	var shadow: ColorRect = ColorRect.new()
@@ -92,11 +96,13 @@ func _create_decorative_node(pos: Vector2, is_active: bool) -> void:
 	shadow.position = Vector2(4, 4)
 	shadow.size = Vector2(48, 48)
 	shadow.z_index = -1
+	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	container.add_child(shadow)
 	
 	# Node body
 	var body: Panel = Panel.new()
 	body.size = Vector2(48, 48)
+	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	var style := StyleBoxFlat.new()
 	if is_active:
@@ -149,10 +155,12 @@ func _create_node_icon(is_active: bool) -> Control:
 	# Simple geometric icon
 	var icon: Control = Control.new()
 	icon.size = Vector2(24, 24)
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	var shape: ColorRect = ColorRect.new()
 	shape.size = Vector2(24, 24)
 	shape.color = icon_color
+	shape.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	icon.add_child(shape)
 	
 	return icon
@@ -195,7 +203,8 @@ func _setup_title() -> void:
 	shadow.add_theme_font_size_override("font_size", 72)
 	shadow.modulate = Color(0, 0, 0, 0.3)
 	shadow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	shadow.position = Vector2(viewport_size.x / 2, 20)  # Centered, higher up
+	shadow.position = Vector2(viewport_size.x / 2, 20)
+	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block clicks
 	add_child(shadow)
 	
 	# Title text
@@ -204,7 +213,8 @@ func _setup_title() -> void:
 	title.add_theme_font_size_override("font_size", 72)
 	title.modulate = COLOR_TEXT
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.position = Vector2(viewport_size.x / 2, 16)  # Centered, higher up
+	title.position = Vector2(viewport_size.x / 2, 16)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block clicks
 	add_child(title)
 	
 	# Subtitle
@@ -213,7 +223,8 @@ func _setup_title() -> void:
 	subtitle.add_theme_font_size_override("font_size", 36)
 	subtitle.modulate = COLOR_ACCENT
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.position = Vector2(get_viewport_rect().size.x / 2, 160)  # Below title, above buttons
+	subtitle.position = Vector2(get_viewport_rect().size.x / 2, 160)
+	subtitle.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block clicks
 	add_child(subtitle)
 
 func _center_menu() -> void:
