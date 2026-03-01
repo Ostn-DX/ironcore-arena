@@ -40,7 +40,36 @@ func _ready() -> void:
 	back_btn.pressed.connect(_on_back_pressed)
 	test_btn.pressed.connect(_on_test_pressed)
 	
-	print("BuildScreen: Ready")
+	# FIX: Set ALL parent containers to PASS mouse input
+	var margin = $MarginContainer
+	var vbox = $MarginContainer/VBox
+	var bottom_bar = $MarginContainer/VBox/BottomBar
+	
+	margin.mouse_filter = Control.MOUSE_FILTER_PASS
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
+	bottom_bar.mouse_filter = Control.MOUSE_FILTER_PASS
+	
+	# FIX: Buttons must STOP to capture input
+	test_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	back_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	action_button.mouse_filter = Control.MOUSE_FILTER_STOP
+	
+	# Also fix ItemLists to not steal button input
+	shop_list.mouse_filter = Control.MOUSE_FILTER_PASS
+	inventory_list.mouse_filter = Control.MOUSE_FILTER_PASS
+	my_bots_list.mouse_filter = Control.MOUSE_FILTER_PASS
+	
+	# FIX: Buttons must STOP to capture input
+	back_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	test_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	
+	# Debug output
+	print("BuildScreen mouse filters:")
+	print("  MarginContainer: ", margin.mouse_filter)
+	print("  VBox: ", vbox.mouse_filter)
+	print("  BottomBar: ", bottom_bar.mouse_filter)
+	print("  BackBtn: ", back_btn.mouse_filter)
+	print("  TestBtn: ", test_btn.mouse_filter)
 
 func on_show() -> void:
 	# Called when screen becomes visible

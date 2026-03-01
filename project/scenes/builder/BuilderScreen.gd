@@ -1,5 +1,4 @@
 extends Control
-class_name BuilderScreen
 ## Builder UI - drag-and-drop bot assembly
 ## Team of 5 bots, weight validation, stat preview
 

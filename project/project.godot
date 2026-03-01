@@ -25,7 +25,8 @@ UIManager="*res://autoload/UIManager.gd"
 SaveManager="*res://autoload/SaveManager.gd"
 AudioManager="*res://autoload/AudioManager.gd"
 VFXManager="*res://autoload/VFXManager.gd"
-AutomatedTestRunner="*res://autoload/automated_test_runner.gd"
+; AutomatedTestRunner="*res://autoload/automated_test_runner.gd"  ; DISABLED for UI testing
+DebugManager="*res://autoload/debug_manager.gd"
 
 [display]
 

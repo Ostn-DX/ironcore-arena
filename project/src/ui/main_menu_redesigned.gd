@@ -33,6 +33,7 @@ func _ready() -> void:
 	_setup_menu_buttons()
 	_setup_save_info()
 	_animate_entry()
+	print("[DEBUG] MainMenu _ready complete")
 
 func _setup_background() -> void:
 	# Main dark background
@@ -245,7 +246,8 @@ func _setup_menu_buttons() -> void:
 	container.add_theme_constant_override("separation", 16)
 	container.mouse_filter = Control.MOUSE_FILTER_PASS  # Let clicks pass through to children
 	add_child(container)
-	print("Menu container added")
+	print("[DEBUG] Menu container added, mouse_filter: ", container.mouse_filter)
+	
 	# Wait a frame then center (after it's in the tree)
 	await get_tree().process_frame
 	_center_menu()
@@ -255,16 +257,19 @@ func _setup_menu_buttons() -> void:
 		var continue_btn: UIButton = _create_menu_button("Continue", UIButton.ButtonStyle.PRIMARY)
 		continue_btn.pressed.connect(_on_continue)
 		container.add_child(continue_btn)
+		_log_button_state(continue_btn)
 	
 	# New Campaign
 	var campaign_btn: UIButton = _create_menu_button("New Campaign", UIButton.ButtonStyle.SECONDARY)
 	campaign_btn.pressed.connect(_on_new_campaign)
 	container.add_child(campaign_btn)
+	_log_button_state(campaign_btn)
 	
 	# Arcade Mode
 	var arcade_btn: UIButton = _create_menu_button("Arcade Mode", UIButton.ButtonStyle.SECONDARY)
 	arcade_btn.pressed.connect(_on_arcade)
 	container.add_child(arcade_btn)
+	_log_button_state(arcade_btn)
 	
 	# Separator
 	var spacer: Control = Control.new()
@@ -275,11 +280,13 @@ func _setup_menu_buttons() -> void:
 	var builder_btn: UIButton = _create_menu_button("Bot Builder", UIButton.ButtonStyle.GHOST)
 	builder_btn.pressed.connect(_on_builder)
 	container.add_child(builder_btn)
+	_log_button_state(builder_btn)
 	
 	# Shop
 	var shop_btn: UIButton = _create_menu_button("Component Shop", UIButton.ButtonStyle.GHOST)
 	shop_btn.pressed.connect(_on_shop)
 	container.add_child(shop_btn)
+	_log_button_state(shop_btn)
 	
 	# Separator
 	var spacer2: Control = Control.new()
@@ -290,11 +297,27 @@ func _setup_menu_buttons() -> void:
 	var settings_btn: UIButton = _create_menu_button("Settings", UIButton.ButtonStyle.GHOST)
 	settings_btn.pressed.connect(_on_settings)
 	container.add_child(settings_btn)
+	_log_button_state(settings_btn)
 	
 	# Quit
 	var quit_btn: UIButton = _create_menu_button("Quit", UIButton.ButtonStyle.DANGER)
 	quit_btn.pressed.connect(_on_quit)
 	container.add_child(quit_btn)
+	_log_button_state(quit_btn)
+	
+	print("[DEBUG] All buttons created and logged")
+
+# DEBUG: Log button state
+func _log_button_state(btn: UIButton) -> void:
+	print("[DEBUG] Button '", btn.text, "':")
+	print("  - mouse_filter: ", btn.mouse_filter, " (STOP=0, PASS=1, IGNORE=2)")
+	print("  - disabled: ", btn.disabled)
+	print("  - visible: ", btn.visible)
+	print("  - focus_mode: ", btn.focus_mode, " (NONE=0, CLICK=1, ALL=2)")
+	print("  - z_index: ", btn.z_index)
+	print("  - global_rect: ", btn.get_global_rect())
+	print("  - size: ", btn.size)
+	print("  - position: ", btn.position)
 
 func _create_menu_button(text: String, style: UIButton.ButtonStyle) -> UIButton:
 	var btn: UIButton = UIButton.new()
@@ -303,8 +326,37 @@ func _create_menu_button(text: String, style: UIButton.ButtonStyle) -> UIButton:
 	btn.custom_minimum_size = Vector2(200, 48)
 	btn.add_theme_font_size_override("font_size", 18)
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP  # Ensure clicks are captured
-	print("Created button: ", text)
+	btn.focus_mode = Control.FOCUS_ALL
+	
+	# DEBUG: Connect signal logging
+	btn.mouse_entered.connect(_on_debug_mouse_entered.bind(btn))
+	btn.mouse_exited.connect(_on_debug_mouse_exited.bind(btn))
+	btn.pressed.connect(_on_debug_pressed.bind(btn))
+	btn.button_down.connect(_on_debug_button_down.bind(btn))
+	btn.button_up.connect(_on_debug_button_up.bind(btn))
+	
+	print("[DEBUG] Created button: ", text)
 	return btn
+
+# DEBUG: Signal handlers
+func _on_debug_mouse_entered(btn: UIButton) -> void:
+	print("[DEBUG] mouse_entered: '", btn.text, "'")
+
+func _on_debug_mouse_exited(btn: UIButton) -> void:
+	print("[DEBUG] mouse_exited: '", btn.text, "'")
+
+func _on_debug_pressed(btn: UIButton) -> void:
+	print("[DEBUG] pressed: '", btn.text, "'")
+
+func _on_debug_button_down(btn: UIButton) -> void:
+	print("[DEBUG] button_down: '", btn.text, "'")
+
+func _on_debug_button_up(btn: UIButton) -> void:
+	print("[DEBUG] button_up: '", btn.text, "'")
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		print("[DEBUG] MainMenu _gui_input: button=", event.button_index, " pressed=", event.pressed, " pos=", event.position)
 
 func _setup_save_info() -> void:
 	if not _has_save_file():

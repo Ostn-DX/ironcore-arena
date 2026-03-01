@@ -56,6 +56,7 @@ func _setup_ui() -> void:
 	var bg: TextureRect = TextureRect.new()
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block clicks
 	
 	# Generate or load background
 	var theme_gen: UIThemeGenerator = UIThemeGenerator.new()
@@ -110,6 +111,7 @@ func _setup_ui() -> void:
 	button_container.name = "ButtonContainer"
 	button_container.size = Vector2(200, 300)
 	button_container.add_theme_constant_override("separation", 10)
+	button_container.mouse_filter = Control.MOUSE_FILTER_PASS  # Allow clicks to pass to buttons
 	add_child(button_container)
 	# Wait a frame for viewport to be ready, then center
 	await get_tree().process_frame
@@ -193,6 +195,9 @@ func _create_menu_button(text: String, callback: Callable, is_primary: bool = fa
 	btn.custom_minimum_size = Vector2(220, 45)
 	btn.size = Vector2(220, 45)
 	
+	# CRITICAL FIX: Ensure button captures mouse input
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	
 	# Style based on importance
 	if is_primary:
 		btn.add_theme_color_override("font_color", Color(1, 1, 1))
@@ -204,6 +209,7 @@ func _create_menu_button(text: String, callback: Callable, is_primary: bool = fa
 	btn.pressed.connect(callback)
 	btn.mouse_entered.connect(_on_button_hover)
 	
+	print("Created button: ", text, " mouse_filter: ", btn.mouse_filter)
 	return btn
 
 

@@ -30,22 +30,43 @@ func _ready() -> void:
 	get_tree().set_auto_accept_quit(false)
 
 func _setup_signals() -> void:
+	print("SceneFlow: Setting up signals...")
+	
 	# Connect main menu signals
 	if main_menu:
+		print("SceneFlow: main_menu found, checking signals...")
+		
 		if main_menu.has_signal("start_campaign_pressed"):
 			main_menu.start_campaign_pressed.connect(_on_start_campaign)
+			print("SceneFlow: Connected start_campaign_pressed")
+		else:
+			push_warning("SceneFlow: main_menu missing start_campaign_pressed signal")
+		
 		if main_menu.has_signal("start_arcade_pressed"):
 			main_menu.start_arcade_pressed.connect(_on_start_arcade)
+			print("SceneFlow: Connected start_arcade_pressed")
+		
 		if main_menu.has_signal("continue_pressed"):
 			main_menu.continue_pressed.connect(_on_continue_campaign)
+			print("SceneFlow: Connected continue_pressed")
+		
 		if main_menu.has_signal("shop_pressed"):
 			main_menu.shop_pressed.connect(_on_open_shop)
+			print("SceneFlow: Connected shop_pressed")
+		
 		if main_menu.has_signal("builder_pressed"):
 			main_menu.builder_pressed.connect(_on_open_builder)
+			print("SceneFlow: Connected builder_pressed")
+		
 		if main_menu.has_signal("settings_pressed"):
 			main_menu.settings_pressed.connect(_on_open_settings)
+			print("SceneFlow: Connected settings_pressed")
+		
 		if main_menu.has_signal("quit_pressed"):
 			main_menu.quit_pressed.connect(_on_quit)
+			print("SceneFlow: Connected quit_pressed")
+	else:
+		push_error("SceneFlow: main_menu is null!")
 
 func _notification(what: int) -> void:
 	# Auto-save when quitting
@@ -60,15 +81,21 @@ func _notification(what: int) -> void:
 # ============================================================================
 
 func _on_start_campaign() -> void:
-	print("SceneFlow: Starting new campaign")
+	print("SceneFlow: _on_start_campaign() CALLED")
 	
 	if GameState:
+		print("SceneFlow: Setting game mode to campaign")
 		GameState.set_game_mode("campaign")
 		if SaveManager and SaveManager.save_exists():
-			print("SceneFlow: Existing save found, starting fresh")
+			print("SceneFlow: Existing save found, deleting")
 			GameState.delete_save()
-			GameState._give_starter_kit()
+		print("SceneFlow: Giving starter kit")
+		GameState._give_starter_kit()
+	else:
+		push_error("SceneFlow: GameState is null!")
+		return
 	
+	print("SceneFlow: Opening builder...")
 	_open_builder()
 
 func _on_start_arcade() -> void:
@@ -138,18 +165,50 @@ func _hide_main_menu() -> void:
 func _open_builder() -> void:
 	_hide_main_menu()
 	
+	print("SceneFlow: Instantiating BuildScreen...")
+	
+	if not build_screen_scene:
+		push_error("SceneFlow: build_screen_scene is null!")
+		_show_main_menu()
+		return
+	
 	var builder: Control = build_screen_scene.instantiate()
+	
+	if not builder:
+		push_error("SceneFlow: Failed to instantiate BuildScreen!")
+		_show_main_menu()
+		return
+	
 	builder.name = "BuildScreen"
+	
+	print("SceneFlow: BuildScreen instantiated, connecting signals...")
 	
 	if builder.has_signal("back_pressed"):
 		builder.back_pressed.connect(_go_back)
+		print("SceneFlow: Connected back_pressed")
+	else:
+		push_warning("SceneFlow: BuildScreen missing back_pressed signal")
+	
 	if builder.has_signal("test_battle_pressed"):
 		builder.test_battle_pressed.connect(_on_test_battle)
+		print("SceneFlow: Connected test_battle_pressed")
+	
 	if builder.has_signal("start_campaign_pressed"):
 		builder.start_campaign_pressed.connect(_on_builder_start_campaign)
+		print("SceneFlow: Connected start_campaign_pressed")
+	
+	print("SceneFlow: Adding BuildScreen to screen_manager...")
+	
+	if not screen_manager:
+		push_error("SceneFlow: screen_manager is null!")
+		builder.queue_free()
+		_show_main_menu()
+		return
 	
 	screen_manager.add_child(builder)
 	_switch_to_screen(builder)
+	
+	print("SceneFlow: BuildScreen is now current screen")
 
 func _open_shop() -> void:
 	_hide_main_menu()
