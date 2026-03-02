@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EnemyBuild",
+  "type": "object",
+  "required": ["id", "bot_loadout", "ai_profile", "display_name"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{2,48}$"
+    },
+    "display_name": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "bot_loadout": {
+      "type": "string"
+    },
+    "ai_profile": {
+      "type": "string"
+    },
+    "color_tint": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    }
+  },
+  "additionalProperties": false
+}

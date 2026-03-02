@@ -1,0 +1,23 @@
+{
+  "ticket_id": "TICKET-0001",
+  "chosen_executor": "local",
+  "reason": "no external triggers; defaulting to local execution",
+  "estimated_cost_tier": "free/local",
+  "required_gates": [
+    "build_context_pack",
+    "require_context_pack",
+    "verify_manifest",
+    "dev_gate"
+  ],
+  "routing_factors": {
+    "scope": "small",
+    "risk": "low",
+    "tags": [],
+    "allowlist_count": 2,
+    "needs_external_llm": false,
+    "needs_codex": false,
+    "manual": false,
+    "explicit_executor": null
+  },
+  "generated_at": "2026-03-01T00:32:15Z"
+}

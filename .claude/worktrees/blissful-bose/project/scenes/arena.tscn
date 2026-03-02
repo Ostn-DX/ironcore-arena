@@ -1,0 +1,48 @@
+[gd_scene load_steps=3 format=3 uid="uid://arena_scene"]
+
+[ext_resource type="Script" path="res://src/entities/arena.gd" id="1_arena"]
+[ext_resource type="Script" path="res://src/camera/rts_camera.gd" id="2_rts_camera"]
+
+[node name="Arena" type="Node2D"]
+script = ExtResource("1_arena")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 800.0
+offset_bottom = 600.0
+color = Color(0.08, 0.08, 0.12, 1)
+
+[node name="FloorDetails" type="Node2D" parent="."]
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="PlayerSpawn1" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(100, 200)
+gizmo_extents = 30.0
+
+[node name="PlayerSpawn2" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(100, 400)
+gizmo_extents = 30.0
+
+[node name="PlayerSpawn3" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(150, 300)
+gizmo_extents = 30.0
+
+[node name="EnemySpawn1" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(700, 200)
+gizmo_extents = 30.0
+
+[node name="EnemySpawn2" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(700, 400)
+gizmo_extents = 30.0
+
+[node name="EnemySpawn3" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(650, 300)
+gizmo_extents = 30.0
+
+[node name="RTSCamera" type="Camera2D" parent="."]
+position = Vector2(400, 300)
+script = ExtResource("2_rts_camera")

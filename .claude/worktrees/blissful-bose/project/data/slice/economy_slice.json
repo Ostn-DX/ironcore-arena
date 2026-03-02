@@ -1,0 +1,9 @@
+{
+  "starting_credits": 200,
+  "repair_cost_per_hp": 0.5,
+  "replay_reward_multiplier": 0.3,
+  "loss_salvage_fraction": 0.15,
+  "no_loss_bonus_multiplier": 1.5,
+  "speed_bonus_threshold_ticks": 3600,
+  "speed_bonus_multiplier": 1.25
+}

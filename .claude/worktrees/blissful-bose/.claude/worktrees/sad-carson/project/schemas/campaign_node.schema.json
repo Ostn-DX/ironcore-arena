@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CampaignNode",
+  "type": "object",
+  "required": ["id", "arena_id", "prerequisites", "rewards"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{2,48}$"
+    },
+    "arena_id": {
+      "type": "string"
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "rewards": {
+      "type": "object",
+      "properties": {
+        "credits": {"type": "integer", "minimum": 0},
+        "unlock_parts": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "unlock_arenas": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "dialogue_before": {
+      "type": "string",
+      "maxLength": 512
+    },
+    "dialogue_after": {
+      "type": "string",
+      "maxLength": 512
+    }
+  },
+  "additionalProperties": false
+}

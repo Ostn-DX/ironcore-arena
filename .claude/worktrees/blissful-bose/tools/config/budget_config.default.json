@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/budget_config.schema.json",
+  "_comment": "Budget allocation across executor types. Fractions must sum to 1.0 (+/- 0.001).",
+  "allocations": {
+    "local": 0.60,
+    "claude": 0.25,
+    "codex": 0.10,
+    "manual": 0.05
+  },
+  "limits": {
+    "_comment": "Maximum concurrent tickets per executor type (0 = unlimited)",
+    "local": 0,
+    "claude": 3,
+    "codex": 2,
+    "manual": 1
+  }
+}

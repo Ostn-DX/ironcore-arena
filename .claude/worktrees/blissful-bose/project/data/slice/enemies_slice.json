@@ -1,0 +1,92 @@
+[
+  {
+    "id": "enemy_trainee_scout",
+    "name": "Trainee Scout",
+    "tier": 1,
+    "chassis": "chassis_light_t1",
+    "plating": "arm_plate_t1",
+    "weapon": "wpn_mg_t1",
+    "ai_profile": "ai_balanced",
+    "description": "Basic training unit with balanced behavior"
+  },
+  {
+    "id": "enemy_scrapper_fighter",
+    "name": "Scrapper Fighter",
+    "tier": 1,
+    "chassis": "chassis_medium_t1",
+    "plating": "arm_plate_t1",
+    "weapon": "wpn_cannon_t1",
+    "ai_profile": "ai_aggressive",
+    "description": "Aggressive melee-range fighter from the Graveyard"
+  },
+  {
+    "id": "enemy_salvager_scout",
+    "name": "Salvager Scout",
+    "tier": 1,
+    "chassis": "chassis_light_t1",
+    "plating": "arm_plate_t1",
+    "weapon": "wpn_mg_t1",
+    "ai_profile": "ai_aggressive",
+    "description": "Flanking specialist that uses cover to ambush"
+  },
+  {
+    "id": "enemy_hunter_tank",
+    "name": "Hunter Tank",
+    "tier": 1,
+    "chassis": "chassis_heavy_t1",
+    "plating": "arm_heavy_t1",
+    "weapon": "wpn_launcher_t1",
+    "ai_profile": "ai_balanced",
+    "description": "Heavy anchor unit that holds position"
+  },
+  {
+    "id": "enemy_raider_fighter",
+    "name": "Raider Fighter",
+    "tier": 1,
+    "chassis": "chassis_medium_t1",
+    "plating": "arm_plate_t1",
+    "weapon": "wpn_shotgun_t1",
+    "ai_profile": "ai_aggressive",
+    "description": "Close-range brawler that coordinates with tanks"
+  },
+  {
+    "id": "enemy_executioner_sniper",
+    "name": "Executioner Sniper",
+    "tier": 2,
+    "chassis": "chassis_medium_t2",
+    "plating": "arm_plate_t2",
+    "weapon": "wpn_beam_t2",
+    "ai_profile": "ai_balanced",
+    "description": "Long-range precision threat that punishes mistakes"
+  },
+  {
+    "id": "enemy_grenadier",
+    "name": "Grenadier",
+    "tier": 2,
+    "chassis": "chassis_medium_t2",
+    "plating": "arm_plate_t2",
+    "weapon": "wpn_launcher_t2",
+    "ai_profile": "ai_balanced",
+    "description": "Mid-range explosive specialist"
+  },
+  {
+    "id": "enemy_assault",
+    "name": "Assault Bot",
+    "tier": 2,
+    "chassis": "chassis_light_t2",
+    "plating": "arm_plate_t2",
+    "weapon": "wpn_mg_t2",
+    "ai_profile": "ai_aggressive",
+    "description": "Fast, aggressive close combat unit"
+  },
+  {
+    "id": "enemy_champion_boss",
+    "name": "THE CHAMPION",
+    "tier": 3,
+    "chassis": "chassis_heavy_t3",
+    "plating": "arm_heavy_t3",
+    "weapon": "wpn_cannon_t3",
+    "ai_profile": "ai_balanced",
+    "description": "Arena Champion - incredibly dangerous"
+  }
+]

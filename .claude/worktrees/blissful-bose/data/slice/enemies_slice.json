@@ -1,0 +1,44 @@
+[
+  {
+    "id": "enemy_scout_t1",
+    "display_name": "Scrapyard Scout",
+    "bot_loadout": "enemy_bot_scout_t1",
+    "ai_profile": "ai_aggressive",
+    "color_tint": "#CC4444"
+  },
+  {
+    "id": "enemy_fighter_t1",
+    "display_name": "Pit Fighter",
+    "bot_loadout": "enemy_bot_fighter_t1",
+    "ai_profile": "ai_balanced",
+    "color_tint": "#CC8844"
+  },
+  {
+    "id": "enemy_tank_t1",
+    "display_name": "Iron Wall",
+    "bot_loadout": "enemy_bot_tank_t1",
+    "ai_profile": "ai_defensive",
+    "color_tint": "#8844CC"
+  },
+  {
+    "id": "enemy_sniper_t2",
+    "display_name": "Long Shot",
+    "bot_loadout": "enemy_bot_sniper_t2",
+    "ai_profile": "ai_sniper",
+    "color_tint": "#4488CC"
+  },
+  {
+    "id": "enemy_brawler_t2",
+    "display_name": "Crusher",
+    "bot_loadout": "enemy_bot_brawler_t2",
+    "ai_profile": "ai_brawler",
+    "color_tint": "#CC4488"
+  },
+  {
+    "id": "enemy_support_t2",
+    "display_name": "Field Medic",
+    "bot_loadout": "enemy_bot_support_t2",
+    "ai_profile": "ai_support",
+    "color_tint": "#44CC88"
+  }
+]

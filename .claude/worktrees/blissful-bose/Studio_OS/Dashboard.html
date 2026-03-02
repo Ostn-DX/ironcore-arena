@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ironcore Arena - Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: rgba(255, 255, 255, 0.72);
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #a1a1a6;
+            --accent-blue: #007aff;
+            --accent-green: #34c759;
+            --accent-orange: #ff9500;
+            --accent-red: #ff3b30;
+            --accent-purple: #af52de;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+            --radius-sm: 12px;
+            --radius-md: 18px;
+            --radius-lg: 24px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #000000;
+                --bg-secondary: #1c1c1e;
+                --bg-tertiary: rgba(28, 28, 30, 0.72);
+                --text-primary: #ffffff;
+                --text-secondary: #98989d;
+                --text-tertiary: #636366;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.003em;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .subtitle {
+            font-size: 21px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Main Goal Card */
+        .goal-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .goal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .goal-title {
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .goal-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .progress-section {
+            margin-bottom: 24px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .progress-percentage {
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 4px;
+            transition: width 1s ease-out;
+            width: 0%;
+        }
+
+        .goal-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-badge {
+            background: var(--accent-blue);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 100px;
+        }
+
+        /* Task Lists */
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--bg-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-item:hover {
+            transform: translateX(4px);
+            background: var(--bg-primary);
+            margin: 0 -12px;
+            padding-left: 12px;
+            padding-right: 12px;
+            border-radius: 8px;
+        }
+
+        .task-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .task-status.active {
+            background: var(--accent-orange);
+            box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.2);
+        }
+
+        .task-status.completed {
+            background: var(--accent-green);
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title-text {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .task-meta {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .task-id {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            font-family: 'SF Mono', monospace;
+            background: var(--bg-primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Next Task Section */
+        .next-task-card {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+            margin-bottom: 24px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .next-task-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .next-task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            opacity: 0.9;
+        }
+
+        .next-task-label {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .next-task-priority {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .next-task-status {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .next-task-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .next-task-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+
+        .next-task-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .next-task-why {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .next-task-why strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .action-btn {
+            background: var(--bg-secondary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .action-btn.primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        /* Help Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: var(--bg-primary);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--text-tertiary);
+            color: white;
+        }
+
+        .modal-content h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 24px 0 12px 0;
+            color: var(--text-primary);
+        }
+
+        .modal-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .modal-content p, .modal-content li {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .modal-content ul {
+            margin-left: 20px;
+        }
+
+        .modal-content code {
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', monospace;
+            font-size: 13px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-tertiary);
+            font-size: 13px;
+            animation: fadeInUp 0.6s ease-out 0.5s both;
+        }
+
+        .footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .task-status.active {
+            animation: pulse 2s infinite;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-tertiary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 16px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .goal-title {
+                font-size: 22px;
+            }
+
+            .goal-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .next-task-title {
+                font-size: 20px;
+            }
+
+            .next-task-meta {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Command Center</h1>
+            <p class="subtitle">Ironcore Arena Development Dashboard</p>
+        </header>
+
+        <!-- Main Goal Card -->
+        <div class="goal-card">
+            <div class="goal-header">
+                <div class="goal-title">
+                    <div class="goal-icon">🎯</div>
+                    Ironcore Arena v1.0
+                </div>
+                <div class="card-badge">Active</div>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>Overall Progress</span>
+                    <span class="progress-percentage" id="progressText">78%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="goal-stats">
+                <div class="stat-item" onclick="openVaultFolder('14_Memory_System/Completed_Tickets')">
+                    <span class="stat-value" id="statCompleted">20</span>
+                    <span class="stat-label">Tasks Done</span>
+                </div>
+                <div class="stat-item" onclick="openVaultFolder('14_Memory_System/Active_Tickets')">
+                    <span class="stat-value" id="statActive">3</span>
+                    <span class="stat-label">In Progress</span>
+                </div>
+                <div class="stat-item" onclick="openVaultFolder('14_Memory_System/Solutions_Learned')">
+                    <span class="stat-value" id="statSolutions">13</span>
+                    <span class="stat-label">Solutions</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statDays">5</span>
+                    <span class="stat-label">Days Active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Task Card -->
+        <a href="#" class="next-task-card" id="nextTaskCard" onclick="openNextTask(); return false;">
+            <div class="next-task-header">
+                <span class="next-task-label">🚀 Next Up</span>
+                <div>
+                    <span class="next-task-priority" id="nextPriority">High Efficiency</span>
+                    <span class="next-task-status" id="nextStatus">Active</span>
+                </div>
+            </div>
+            <div class="next-task-title" id="nextTaskTitle">Dashboard Enhancement & Economics Strategy</div>
+            <div class="next-task-meta">
+                <span>⏱️ <span id="nextTime">~30 min</span></span>
+                <span>💰 <span id="nextCost">$0.00</span></span>
+                <span>📋 <span id="nextComplexity">Simple</span></span>
+                <span>⚡ <span id="nextExecutor">Kimi 2.5</span></span>
+            </div>
+            <div class="next-task-why">
+                <strong>Why This Task?</strong>
+                <span id="nextWhy">Improves daily workflow efficiency by making dashboard the single source of truth. Enables better task prioritization and resource allocation decisions. High impact, low effort.</span>
+            </div>
+        </a>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Active Tasks -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        📋 Active Tasks
+                    </div>
+                    <div class="card-badge" id="activeCount">3</div>
+                </div>
+                <ul class="task-list" id="activeTasks">
+                    <!-- Populated by JavaScript -->
+                </ul>
+            </div>
+
+            <!-- Last Completed -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        ✅ Last Completed
+                    </div>
+                    <div class="card-badge" style="background: var(--accent-green);">Done</div>
+                </div>
+                <ul class="task-list" id="completedTasks">
+                    <!-- Populated by JavaScript -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <button class="action-btn primary" onclick="refreshData()">
+                🔄 Refresh
+            </button>
+            <a class="action-btn" href="obsidian://open?vault=ironcore-work&file=Studio_OS/14_Memory_System/_Index">
+                📁 Memory System
+            </a>
+            <a class="action-btn" href="obsidian://open?vault=ironcore-work&file=Studio_OS/14_Memory_System/Economics_Strategy">
+                💡 Strategy
+            </a>
+            <button class="action-btn" onclick="showHelp()">
+                ❓ Help
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Ironcore Arena Development Dashboard • Updated <span id="lastUpdated"></span></p>
+            <p>
+                <a onclick="showShortcuts()">Keyboard Shortcuts</a> • 
+                <a onclick="toggleTheme()">Toggle Theme</a> • 
+                <a href="obsidian://open?vault=ironcore-work&file=Studio_OS/14_Memory_System/Daily_Logs/2026-03-01">Today's Log</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Dashboard Help</div>
+                <button class="modal-close" onclick="closeHelp()">×</button>
+            </div>
+            <div class="modal-content">
+                <h3>🎯 What's This?</h3>
+                <p>This dashboard is your command center for Ironcore Arena development. It tracks tasks, shows progress, and helps you decide what to work on next.</p>
+
+                <h3>📋 Task Management</h3>
+                <ul>
+                    <li><strong>Active Tasks:</strong> Click any task to open its file</li>
+                    <li><strong>Next Up:</strong> Shows the highest efficiency task based on impact/effort ratio</li>
+                    <li><strong>Completed:</strong> Recently finished work with timestamps</li>
+                </ul>
+
+                <h3>🚀 Next Up Selection</h3>
+                <p>The "Next Up" task is chosen by:</p>
+                <ul>
+                    <li>High impact, low effort tasks first</li>
+                    <li>Unblocking dependencies</li>
+                    <li>Resource availability (Kimi/Agent Swarm/etc.)</li>
+                    <li>Current project priorities</li>
+                </ul>
+
+                <h3>💡 Economics Strategy</h3>
+                <p>All executors are subscription-based (no marginal cost):</p>
+                <ul>
+                    <li><strong>Kimi 2.5:</strong> Blueprints, local work, quick fixes</li>
+                    <li><strong>Agent Swarm:</strong> 10+ files, parallel execution</li>
+                    <li><strong>Deep Research:</strong> Complex research tasks</li>
+                    <li><strong>Codex:</strong> Large refactoring projects</li>
+                </ul>
+
+                <h3>⌨️ Shortcuts</h3>
+                <ul>
+                    <li><code>Ctrl/Cmd + R</code> - Refresh data</li>
+                    <li><code>?</code> - Show this help</li>
+                    <li><code>Esc</code> - Close modals</li>
+                </ul>
+
+                <h3>📝 Updating Data</h3>
+                <p>This dashboard auto-updates when tasks are completed. To manually update, click the Refresh button or press Ctrl+R.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shortcuts Modal -->
+    <div class="modal-overlay" id="shortcutsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Keyboard Shortcuts</div>
+                <button class="modal-close" onclick="closeShortcuts()">×</button>
+            </div>
+            <div class="modal-content">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><code>Ctrl/Cmd + R</code> - Refresh dashboard data</li>
+                    <li><code>?</code> - Show help</li>
+                    <li><code>Esc</code> - Close any modal</li>
+                </ul>
+
+                <h3>Quick Actions</h3>
+                <ul>
+                    <li>Click any <strong>stat box</strong> to open that folder</li>
+                    <li>Click any <strong>task</strong> to open its file</li>
+                    <li>Click <strong>Next Up card</strong> to open that task</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Project Data - UPDATE THIS when tasks change
+        const projectData = {
+            goal: "Ironcore Arena v1.0",
+            progress: 79,  // Updated from 78 after dashboard completion
+            stats: {
+                tasksDone: 20,  // TASK-002 completed
+                inProgress: 3,
+                solutions: 13,  // SOLV-001 + economics solutions
+                daysActive: 5
+            },
+            nextTask: {
+                id: "TASK-003",
+                title: "Dashboard Enhancement & Economics Strategy",
+                priority: "High Efficiency",
+                status: "Active",
+                estimate: "~30 min",
+                cost: "$0.00",
+                complexity: "Simple",
+                executor: "Kimi 2.5",
+                fileLink: "obsidian://open?vault=ironcore-work&file=Studio_OS/14_Memory_System/Active_Tickets/TASK-2026-03-01-003",
+                why: "Improves daily workflow efficiency by making dashboard the single source of truth. Enables better task prioritization and resource allocation decisions. High impact, low effort."
+            },
+            activeTasks: [
+                {
+                    id: "TASK-003",
+                    title: "Dashboard Enhancement & Economics Strategy",
+                    status: "In Progress",
+                    meta: "Efficiency improvements • 15 min remaining",
+                    fileLink: "obsidian://open?vault=ironcore-work&file=Studio_OS/14_Memory_System/Active_Tickets/TASK-2026-03-01-003",
+                    priority: "high"
+                },
+                {
+                    id: "AUDIT-003",
+                    title: "Audit System Setup",
+                    status: "Active",
+                    meta: "Drift detected • 3 tampered packs",
+                    fileLink: "obsidian://open?vault=ironcore-work&file=agents/tickets/AUDIT-0003",
+                    priority: "medium"
+                },
+                {
+                    id: "PLAN-001",
+                    title: "Combat Balance System",
+                    status: "Queued",
+                    meta: "Next major feature • Waiting on strategy",
+                    fileLink: "obsidian://open?vault=ironcore-work&file=Studio_OS/06_Combat_AI/Tactical_AI_System",
+                    priority: "medium"
+                }
+            ],
+            completedTasks: [
+                {
+                    id: "TASK-002",
+                    title: "Build HTML Dashboard",
+                    completed: "Just now",
+                    fileLink: "obsidian://open?vault=ironcore-work&file=Studio_OS/Dashboard"
+                },
+                {
+                    id: "TASK-001",
+                    title: "Integrate AI-Native Studio OS",
+                    completed: "1 hour ago",
+                    fileLink: "obsidian://open?vault=ironcore-work&file=Studio_OS/13_Studio_OS_System/IMPLEMENTATION_COMPLETE"
+                },
+                {
+                    id: "SETUP-001",
+                    title: "Setup Memory System",
+                    completed: "30 min ago",
+                    fileLink: "obsidian://open?vault=ironcore-work&file=Studio_OS/14_Memory_System/_Index"
+                }
+            ]
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderDashboard();
+            updateTimestamp();
+        });
+
+        function renderDashboard() {
+            // Update progress
+            document.getElementById('progressText').textContent = projectData.progress + '%';
+            document.getElementById('progressFill').style.width = projectData.progress + '%';
+
+            // Update stats
+            document.getElementById('statCompleted').textContent = projectData.stats.tasksDone;
+            document.getElementById('statActive').textContent = projectData.stats.inProgress;
+            document.getElementById('statSolutions').textContent = projectData.stats.solutions;
+            document.getElementById('statDays').textContent = projectData.stats.daysActive;
+
+            // Update next task
+            const next = projectData.nextTask;
+            document.getElementById('nextTaskTitle').textContent = next.title;
+            document.getElementById('nextPriority').textContent = next.priority;
+            document.getElementById('nextStatus').textContent = next.status;
+            document.getElementById('nextTime').textContent = next.estimate;
+            document.getElementById('nextCost').textContent = next.cost;
+            document.getElementById('nextComplexity').textContent = next.complexity;
+            document.getElementById('nextExecutor').textContent = next.executor;
+            document.getElementById('nextWhy').textContent = next.why;
+            document.getElementById('nextTaskCard').href = next.fileLink;
+
+            // Update active tasks
+            document.getElementById('activeCount').textContent = projectData.activeTasks.length;
+            const activeList = document.getElementById('activeTasks');
+            activeList.innerHTML = projectData.activeTasks.map(task => `
+                <a href="${task.fileLink}" class="task-item">
+                    <div class="task-status ${task.status === 'In Progress' ? 'active' : ''}"></div>
+                    <div class="task-content">
+                        <div class="task-title-text">${task.title}</div>
+                        <div class="task-meta">${task.status} • ${task.meta}</div>
+                    </div>
+                    <span class="task-id">${task.id}</span>
+                </a>
+            `).join('');
+
+            // Update completed tasks
+            const completedList = document.getElementById('completedTasks');
+            completedList.innerHTML = projectData.completedTasks.map(task => `
+                <a href="${task.fileLink}" class="task-item">
+                    <div class="task-status completed"></div>
+                    <div class="task-content">
+                        <div class="task-title-text">${task.title}</div>
+                        <div class="task-meta">Completed • ${task.completed}</div>
+                    </div>
+                    <span class="task-id">${task.id}</span>
+                </a>
+            `).join('');
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            document.getElementById('lastUpdated').textContent = timeString;
+        }
+
+        function refreshData() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '🔄 Refreshing...';
+            
+            setTimeout(() => {
+                renderDashboard();
+                updateTimestamp();
+                btn.innerHTML = '✅ Updated!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 1000);
+            }, 800);
+        }
+
+        function openNextTask() {
+            window.location.href = projectData.nextTask.fileLink;
+        }
+
+        function openVaultFolder(folder) {
+            window.location.href = `obsidian://open?vault=ironcore-work&file=${folder}`;
+        }
+
+        function showHelp() {
+            document.getElementById('helpModal').classList.add('active');
+        }
+
+        function closeHelp() {
+            document.getElementById('helpModal').classList.remove('active');
+        }
+
+        function showShortcuts() {
+            document.getElementById('shortcutsModal').classList.add('active');
+        }
+
+        function closeShortcuts() {
+            document.getElementById('shortcutsModal').classList.remove('active');
+        }
+
+        function toggleTheme() {
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            alert('Theme follows system preference.\n\nCurrent: ' + (isDark ? 'Dark' : 'Light') + ' mode\n\nChange your OS theme to switch.');
+        }
+
+        // Close modals on backdrop click
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'r' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                refreshData();
+            }
+            if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                showHelp();
+            }
+            if (e.key === 'Escape') {
+                closeHelp();
+                closeShortcuts();
+            }
+        });
+
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            updateTimestamp();
+        }, 300000);
+    </script>
+</body>
+</html>

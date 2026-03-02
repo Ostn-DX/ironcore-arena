@@ -1,0 +1,13 @@
+[
+  {
+    "id": "bot_starter_scout",
+    "name": "Starter Scout",
+    "chassis": "chassis_light_t1",
+    "weapons": ["wpn_mg_t1"],
+    "armor": [],
+    "mobility": ["mob_wheels_t1"],
+    "sensors": ["sen_basic_t1"],
+    "utilities": [],
+    "ai_profile": "ai_balanced"
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "audit_date": "2026-02-28",
+  "generated_at": "2026-02-28T01:22:22Z",
+  "simulated": false,
+  "overall_status": "CLEAN",
+  "vault_validation": "PASS",
+  "dev_gate": "PASS",
+  "runs_scanned": 4,
+  "gate_failures": 0,
+  "gate_failure_rate": 0.0,
+  "missing_manifests": 0,
+  "tampered_packs": 0,
+  "repeated_files": {
+    "agents/context/conventions.md": 3,
+    "agents/context/invariants.md": 2,
+    "agents/context/project_summary.md": 2
+  },
+  "drift_violations": [],
+  "auto_ticket_generated": null
+}

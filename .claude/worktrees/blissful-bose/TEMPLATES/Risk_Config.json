@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ai-studio.io/schemas/risk-config/v1",
+  "title": "Risk Engine Configuration",
+  "description": "Configuration schema for the Risk Scoring Engine",
+  "type": "object",
+  "required": ["version", "weights", "thresholds", "normalization"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Configuration version"
+    },
+    "weights": {
+      "type": "object",
+      "required": ["files_touched", "simulation_core", "determinism_delta", "diff_line_count", "retry_count", "historical_failure"],
+      "properties": {
+        "files_touched": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Weight for files touched factor"
+        },
+        "simulation_core": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Weight for simulation core factor"
+        },
+        "determinism_delta": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Weight for determinism delta factor"
+        },
+        "diff_line_count": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Weight for diff line count factor"
+        },
+        "retry_count": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Weight for retry count factor"
+        },
+        "historical_failure": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Weight for historical failure factor"
+        }
+      },
+      "additionalProperties": false
+    },
+    "thresholds": {
+      "type": "object",
+      "required": ["low", "medium", "high", "critical"],
+      "properties": {
+        "low": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Upper bound for LOW risk (0 to this value)"
+        },
+        "medium": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Upper bound for MEDIUM risk"
+        },
+        "high": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Upper bound for HIGH risk"
+        },
+        "critical": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Upper bound for CRITICAL risk"
+        }
+      },
+      "additionalProperties": false
+    },
+    "normalization": {
+      "type": "object",
+      "properties": {
+        "files_touched": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "enum": ["log", "linear", "sqrt"]
+            },
+            "max_value": {
+              "type": "number",
+              "minimum": 1
+            }
+          }
+        },
+        "diff_line_count": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "enum": ["log", "linear", "sqrt"]
+            },
+            "max_value": {
+              "type": "number",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "simulation_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Regex patterns for simulation core detection"
+    },
+    "window_size": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "description": "Window size for historical failure calculation"
+    }
+  },
+  "additionalProperties": false
+}
