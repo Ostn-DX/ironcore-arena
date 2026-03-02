@@ -1,0 +1,179 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ai-studio.io/schemas/budget-config/v1",
+  "title": "Budget Configuration",
+  "description": "Configuration schema for the Cost Guardrail System",
+  "type": "object",
+  "required": ["version", "monthly_budget", "allocations", "thresholds", "alerts"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Configuration version"
+    },
+    "monthly_budget": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total monthly budget in USD"
+    },
+    "currency": {
+      "type": "string",
+      "enum": ["USD", "EUR", "GBP"],
+      "default": "USD"
+    },
+    "allocations": {
+      "type": "object",
+      "required": ["ai_inference", "compute", "storage", "networking", "monitoring", "contingency"],
+      "properties": {
+        "ai_inference": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Allocation for AI inference (0-1)"
+        },
+        "compute": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Allocation for compute resources"
+        },
+        "storage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Allocation for storage"
+        },
+        "networking": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Allocation for networking"
+        },
+        "monitoring": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Allocation for monitoring"
+        },
+        "contingency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Allocation for contingency buffer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "thresholds": {
+      "type": "object",
+      "required": ["info", "yellow", "orange", "red", "black"],
+      "properties": {
+        "info": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Info alert threshold (0-1)"
+        },
+        "yellow": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Yellow alert threshold"
+        },
+        "orange": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Orange alert threshold"
+        },
+        "red": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Red alert threshold"
+        },
+        "black": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Black alert threshold (emergency)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "alerts": {
+      "type": "object",
+      "properties": {
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["slack", "email", "pagerduty", "sms", "webhook"]
+          }
+        },
+        "recipients": {
+          "type": "object",
+          "properties": {
+            "yellow": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "orange": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "red": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "black": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "tracking": {
+      "type": "object",
+      "properties": {
+        "granularity": {
+          "type": "string",
+          "enum": ["realtime", "minute", "hour"],
+          "default": "minute"
+        },
+        "retention_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 365
+        }
+      }
+    },
+    "cap_multipliers": {
+      "type": "object",
+      "properties": {
+        "hourly": {
+          "type": "number",
+          "minimum": 1,
+          "default": 1.0
+        },
+        "daily": {
+          "type": "number",
+          "minimum": 1,
+          "default": 1.05
+        },
+        "weekly": {
+          "type": "number",
+          "minimum": 1,
+          "default": 1.10
+        },
+        "monthly": {
+          "type": "number",
+          "minimum": 1,
+          "default": 1.0
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

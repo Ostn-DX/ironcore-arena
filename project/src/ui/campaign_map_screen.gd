@@ -113,8 +113,8 @@ func _setup_ui() -> void:
 	play_button.disabled = true
 	# Bible B1.3: Safe signal connection
 	if play_button and is_instance_valid(play_button):
-	    if not play_button.pressed.is_connected(_on_play_pressed):
-	        play_button.pressed.connect(_on_play_pressed)
+		if not play_button.pressed.is_connected(_on_play_pressed):
+			play_button.pressed.connect(_on_play_pressed)
 	add_child(play_button)
 	
 	# Back button
@@ -124,8 +124,8 @@ func _setup_ui() -> void:
 	back_btn.size = Vector2(100, 40)
 	# Bible B1.3: Safe signal connection
 	if back_btn and is_instance_valid(back_btn):
-	    if not back_btn.pressed.is_connected(_on_back_pressed):
-	        back_btn.pressed.connect(_on_back_pressed)
+		if not back_btn.pressed.is_connected(_on_back_pressed):
+			back_btn.pressed.connect(_on_back_pressed)
 	add_child(back_btn)
 
 
@@ -177,8 +177,8 @@ func _create_arena_button(arena: Dictionary) -> void:
 	
 	# Bible B1.3: Safe signal connection
 	if btn and is_instance_valid(btn):
-	    if not btn.pressed.is_connected(_on_arena_selected.bind(arena):
-	        btn.pressed.connect(_on_arena_selected.bind(arena)
+		if not btn.pressed.is_connected(_on_arena_selected.bind(arena)):
+			btn.pressed.connect(_on_arena_selected.bind(arena))
 	arena_container.add_child(btn)
 
 

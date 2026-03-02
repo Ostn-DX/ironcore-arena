@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "02_Autonomy_Framework/Escalation_Policy.md",
+                "file": "14_Memory_System/Active_Tickets/T-2026-03-01-001.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Escalation_Policy"
+              "title": "T-2026-03-01-001"
             }
           }
         ]
@@ -186,17 +186,38 @@
   },
   "active": "c3856824c71037aa",
   "lastOpenFiles": [
+    "Dashboard.html",
+    "14_Memory_System/Active_Tickets/T-2026-03-01-001.md",
+    "PHASE_2_COMPLETION_REPORT.md",
+    "14_Memory_System/Active_Tickets/TASK-2026-03-01-003.md",
+    "VAULT_COMPLETION_REPORT.md",
+    "14_Memory_System/Completed_Tickets/TASK-2026-03-01-003.md",
+    "14_Memory_System/Completed_Tickets/TASK-2026-03-01-002.md",
+    "14_Memory_System/Economics_Strategy.md",
+    "10_Regression_Harness/Simulation_Test_Suite.md",
+    "04_Determinism/Deterministic_60Hz_Simulation.md",
+    "14_Memory_System/Solutions_Learned/SOLV-002_html_dashboard_obsidian.md",
+    "14_Memory_System/Active_Tickets/TASK-2026-03-01-002.md",
+    "14_Memory_System/_Index.md",
+    "14_Memory_System/Workflow_Guide.md",
+    "14_Memory_System/Quick_Reference.md",
+    "14_Memory_System/Solution_Template.md",
+    "14_Memory_System/Master_Ticket_Template.md",
+    "02_Autonomy_Framework/Escalation_Policy.md",
+    "14_Memory_System/Daily_Logs/2026-03-01.md",
+    "14_Memory_System/Solutions_Learned/SOLV-001_yaml_frontmatter_colon_fix.md",
+    "14_Memory_System/Daily_Logs",
+    "14_Memory_System/Solutions_Learned",
+    "14_Memory_System/Completed_Tickets",
+    "14_Memory_System/Active_Tickets",
+    "14_Memory_System",
+    "13_Studio_OS_System/Vault_Integration_Complete.md",
+    "13_Studio_OS_System/Upgrade_ROI_Model.md",
+    "13_Studio_OS_System/Throughput_Simulation.md",
+    "13_Studio_OS_System/Autonomy_Promotion_Table.md",
     "13_Agent",
     "New folder",
     "02_Autonomy_Framework/Autonomy_Scoring_Rubric.md",
-    "02_Autonomy_Framework/Autonomy_Ladder_L0_to_L5.md",
-    "02_AI_Swarm_Architecture/Ticket_Based_Workflow.md",
-    "02_AI_Swarm_Architecture/Agent_Swarm_Architecture.md",
-    "01_Engine_Systems/Component_Architecture_Pattern.md",
-    "00_Design_Intent/Arena_Difficulty_Design.md",
-    "Studio_Master_Plan/Autonomous_Execution_Loop.md",
-    "Studio_Master_Plan/Escalation_Triggers_and_Safe_Mode.md",
-    "Studio_Master_Plan/Model_Routing_Decision_Tree.md",
-    "Studio_Master_Plan/OpenClaw_Ingestion_Rules.md"
+    "02_Autonomy_Framework/Autonomy_Ladder_L0_to_L5.md"
   ]
 }

@@ -2,6 +2,7 @@ extends RefCounted
 class_name Bot
 ## Bot entity - simulation data object.
 ## Pure data, no Node2D references. Simulation operates on these.
+## INTEGRATED: AI Combat System v1.0 support
 
 const TICKS_PER_SECOND: float = 60.0
 const DT: float = 1.0 / TICKS_PER_SECOND
@@ -55,6 +56,28 @@ var status_effects: Array[Dictionary] = []  # {type, magnitude, remaining_ticks,
 var is_alive: bool = true
 var chassis_size: float = 20.0
 
+# ============================================================================
+# AI COMBAT SYSTEM - Added by AGENT-001
+# ============================================================================
+
+## Reference to AI controller (if assigned)
+var _ai_controller: Node = null
+
+## Get AI controller reference
+func get_ai_controller() -> Node:
+	return _ai_controller
+
+## Set AI controller reference
+func set_ai_controller(ai: Node) -> void:
+	_ai_controller = ai
+
+## Check if bot is alive (method for AI compatibility)
+func is_alive_func() -> bool:
+	return is_alive and state == State.ACTIVE
+
+## Get forward direction vector
+func get_forward() -> Vector2:
+	return Vector2.RIGHT.rotated(deg_to_rad(rotation))
 
 func _init(p_sim_id: int, p_team: int, p_position: Vector2) -> void:
 	sim_id = p_sim_id
@@ -192,3 +215,21 @@ func compute_dps() -> float:
 		var fire_rate: float = stats.get("fire_rate", 1.0)
 		total_dps += damage * fire_rate
 	return total_dps
+
+## Process one simulation tick
+func process_tick(dt: float) -> void:
+	# Movement and physics handled by SimulationManager
+	pass
+
+## Setup bot from simplified loadout (for AI spawning)
+func setup(loadout: Dictionary, p_team: int, p_position: Vector2) -> void:
+	team = p_team
+	position = p_position
+	
+	# Set default stats if not specified
+	max_hp = loadout.get("hp", 100)
+	hp = max_hp
+	base_speed = loadout.get("speed", 100.0)
+	current_speed = base_speed
+	is_alive = true
+	state = State.ACTIVE

@@ -38,8 +38,8 @@ func _setup_http() -> void:
 	add_child(_http)
 	# Bible B1.3: Safe signal connection
 	if _http and is_instance_valid(_http):
-	    if not _http.request_completed.is_connected(_on_request_completed):
-	        _http.request_completed.connect(_on_request_completed)
+		if not _http.request_completed.is_connected(_on_request_completed):
+			_http.request_completed.connect(_on_request_completed)
 
 func _check_ollama_connection() -> void:
 	## Verify Ollama is running
@@ -47,8 +47,8 @@ func _check_ollama_connection() -> void:
 	add_child(check_http)
 	# Bible B1.3: Safe signal connection
 	if check_http and is_instance_valid(check_http):
-	    if not check_http.request_completed.is_connected(_on_connection_check):
-	        check_http.request_completed.connect(_on_connection_check)
+		if not check_http.request_completed.is_connected(_on_connection_check):
+			check_http.request_completed.connect(_on_connection_check)
 	check_http.request(OLLAMA_URL + "/tags")
 
 func _on_connection_check(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -89,9 +89,9 @@ func generate(prompt: String, options: Dictionary = {}) -> String:
 	var json_body = JSON.stringify(body)
 	var headers = ["Content-Type: application/json"]
 	
-	var error: String = _http.request(OLLAMA_URL + "/generate", headers, HTTPClient.METHOD_POST, json_body)
-	if error != OK:
-		push_error("LLMClient: HTTP request failed: %d" % error)
+	var req_error: Error = _http.request(OLLAMA_URL + "/generate", headers, HTTPClient.METHOD_POST, json_body)
+	if req_error != OK:
+		push_error("LLMClient: HTTP request failed: %d" % req_error)
 		request_failed.emit(request_id, "HTTP request failed")
 		return ""
 	
@@ -192,8 +192,8 @@ func load_model(model_name: String) -> bool:
 	var body = JSON.stringify({"model": model_name})
 	var headers = ["Content-Type: application/json"]
 	
-	var error: String = http.request(OLLAMA_URL + "/pull", headers, HTTPClient.METHOD_POST, body)
-	if error != OK:
+	var req_error: Error = http.request(OLLAMA_URL + "/pull", headers, HTTPClient.METHOD_POST, body)
+	if req_error != OK:
 		return false
 	
 	# Wait for completion
@@ -232,8 +232,8 @@ func _refresh_loaded_models() -> void:
 	add_child(http)
 	# Bible B1.3: Safe signal connection
 	if http and is_instance_valid(http):
-	    if not http.request_completed.is_connected(_on_models_refreshed):
-	        http.request_completed.connect(_on_models_refreshed)
+		if not http.request_completed.is_connected(_on_models_refreshed):
+			http.request_completed.connect(_on_models_refreshed)
 	http.request(OLLAMA_URL + "/tags")
 
 func _on_models_refreshed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:

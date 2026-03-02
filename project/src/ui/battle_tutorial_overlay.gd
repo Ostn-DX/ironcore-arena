@@ -68,7 +68,7 @@ func _setup_ui() -> void:
 	# Tip panel (centered by default)
 	tip_panel = Panel.new()
 	tip_panel.size = Vector2(500, 150)
-	tip_panel.position = Vector2(390, 285)  # Center of 1280x720
+	tip_panel.position = Vector2(390, 285)	# Center of 1280x720
 	add_child(tip_panel)
 	
 	# Title
@@ -95,8 +95,8 @@ func _setup_ui() -> void:
 	ok_button.size = Vector2(100, 30)
 	# Bible B1.3: Safe signal connection
 	if ok_button and is_instance_valid(ok_button):
-	    if not ok_button.pressed.is_connected(_on_ok_pressed):
-	        ok_button.pressed.connect(_on_ok_pressed)
+		if not ok_button.pressed.is_connected(_on_ok_pressed):
+			ok_button.pressed.connect(_on_ok_pressed)
 	add_child(ok_button)
 
 

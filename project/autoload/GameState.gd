@@ -448,7 +448,7 @@ func _load_game_legacy() -> bool:
 func delete_save() -> void:
 	## Delete save using SaveManager if available
 	if SaveManager:
-		SaveManager.delete_save(current_save_slot)
+		SaveManager.delete_save()
 	
 	# Also delete legacy save
 	if FileAccess.file_exists(SAVE_PATH):

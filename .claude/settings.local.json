@@ -20,7 +20,15 @@
       "Bash(python tools/run_ticket.py --ticket agents/tickets/TICKET-0003.md)",
       "Bash(python tools/run_ticket.py --ticket agents/tickets/TICKET-0004.md)",
       "Bash(python tools/studio_audit.py)",
-      "Bash(python tools/studio_audit.py --simulate-drift)"
+      "Bash(python tools/studio_audit.py --simulate-drift)",
+      "Bash(chmod +x /c/Users/ahols/workspace/.openclaw/workspace/ironcore-work/tools/studio_run.sh)",
+      "Bash(python -m pytest tools/tests/test_schema_validation.py -v)",
+      "Bash(python tools/tests/test_schema_validation.py -v)",
+      "Bash(python tools/validate_configs.py)",
+      "Bash(python tools/build_context_pack.py agents/tickets/TICKET-0001.md)",
+      "Bash(python tools/verify_manifest.py TICKET-0001)",
+      "Bash(python -c \"import json; m=json.load\\(open\\(''tools/context_packs/TICKET-0001/manifest.json''\\)\\); print\\(json.dumps\\(m, indent=2\\)[:500]\\)\")",
+      "Bash(python tools/require_context_pack.py TICKET-0001)"
     ]
   }
 }

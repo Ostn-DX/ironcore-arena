@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/risk_config.schema.json",
+  "_comment": "Risk thresholds for ticket routing. Values are percentages (0-100). Must be monotonic: low <= medium <= high <= critical <= 100.",
+  "thresholds": {
+    "low": 25,
+    "medium": 50,
+    "high": 75,
+    "critical": 100
+  },
+  "auto_escalate": {
+    "_comment": "Automatically escalate tickets above this risk level to external executor",
+    "enabled": true,
+    "level": "high"
+  }
+}

@@ -583,7 +583,7 @@ func get_spawn_markers(team: int) -> Array[Marker2D]:
 
 func get_random_spawn_position(team: int) -> Vector2:
 	## Get a random spawn position for a team
-	var markers: int = player_spawn_markers if team == 0 else enemy_spawn_markers
+	var markers: Array[Marker2D] = player_spawn_markers if team == 0 else enemy_spawn_markers
 	if markers.size() > 0:
 		return markers[randi() % markers.size()].position
 	

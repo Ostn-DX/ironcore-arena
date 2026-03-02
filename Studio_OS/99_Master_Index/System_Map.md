@@ -114,6 +114,15 @@ Ironcore Arena is a deterministic robot combat simulation built on Godot 4. This
 └── [[Deployment]]
 ```
 
+## Studio OS System
+
+The AI-Native Game Studio OS provides intelligent agent orchestration:
+
+- **Documentation**: [[13_Studio_OS_System/_Index|Studio OS Index]]
+- **Quick Start**: [[13_Studio_OS_System/QUICKSTART|Quick Start]]
+- **Architecture**: [[13_Studio_OS_System/MASTER_BLUEPRINT|Master Blueprint]]
+- **All 20 Domains**: [[13_Studio_OS_System/Domain_Specs/domain01_claude_teams_spec|D01]] through [[13_Studio_OS_System/Domain_Specs/domain20_artifact_integrity_spec|D20]]
+
 ## Quick Navigation
 
 ### By Role
@@ -122,6 +131,7 @@ Ironcore Arena is a deterministic robot combat simulation built on Godot 4. This
 - **AI Developer**: [[06_Combat_AI]]
 - **QA**: [[09_Quality_Gates]], [[10_Regression_Harness]]
 - **Producer**: [[11_Release_Certification]]
+- **System Operator**: [[13_Studio_OS_System/_Index|Studio OS]]
 
 ### By Layer
 - **Design**: [[00_Design_Intent]], [[08_Economy_Design]]

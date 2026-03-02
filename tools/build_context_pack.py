@@ -211,12 +211,12 @@ def validate_notes(notes: list, vault_root: Path) -> list:
 
 
 def sha256_file(path: Path) -> str:
-    """Compute SHA-256 hash of a file."""
+    """Compute SHA-256 hash of a file. Returns 'sha256:<64hex>'."""
     h = hashlib.sha256()
     with open(path, 'rb') as f:
         for chunk in iter(lambda: f.read(8192), b''):
             h.update(chunk)
-    return h.hexdigest()
+    return f"sha256:{h.hexdigest()}"
 
 
 def build_context_pack(ticket_path: str) -> str:
@@ -336,6 +336,7 @@ def build_context_pack(ticket_path: str) -> str:
         'allowed_file_count': copied_count,
         'vault_note_count': notes_copied,
         'max_allowed': MAX_ALLOWED_FILES,
+        'hash_algorithm': 'sha256',
         'files': manifest_entries,
     }
     manifest_path = pack_dir / 'manifest.json'

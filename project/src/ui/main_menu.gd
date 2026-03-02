@@ -68,7 +68,7 @@ func _setup_ui() -> void:
 	title_container.set_anchors_preset(Control.PRESET_TOP_WIDE)
 	# Center horizontally based on viewport
 	var viewport_width: float = get_viewport_rect().size.x
-	title_container.position = Vector2(viewport_width / 2 - 640, 80)  # Offset from top center
+	title_container.position = Vector2(viewport_width / 2 - 640, 80)	# Offset from top center
 	title_container.size = Vector2(1280, 200)
 	add_child(title_container)
 	
@@ -203,10 +203,10 @@ func _create_menu_button(text: String, callback: Callable, is_primary: bool = fa
 	# Connect signals
 	# Bible B1.3: Safe signal connection
 	if btn and is_instance_valid(btn):
-	    if not btn.pressed.is_connected(callback):
-	        btn.pressed.connect(callback)
-	    if not btn.mouse_entered.is_connected(_on_button_hover):
-	        btn.mouse_entered.connect(_on_button_hover)
+		if not btn.pressed.is_connected(callback):
+			btn.pressed.connect(callback)
+		if not btn.mouse_entered.is_connected(_on_button_hover):
+			btn.mouse_entered.connect(_on_button_hover)
 	
 	return btn
 
@@ -281,7 +281,7 @@ func _on_new_campaign() -> void:
 		print("MainMenu: Warning - overwriting existing save")
 		# Use SaveManager if available, else GameState
 		if SaveManager:
-			SaveManager.delete_save(0)
+			SaveManager.delete_save()
 		else:
 			get_node("/root/GameState").delete_save()
 		

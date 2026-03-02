@@ -16,7 +16,7 @@ var _infinite_money: bool = false
 
 func _ready() -> void:
 	_setup_ui()
-	visible = false  # Hidden by default
+	visible = false	# Hidden by default
 
 func _setup_ui() -> void:
 	# Semi-transparent background
@@ -32,7 +32,7 @@ func _setup_ui() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.position = Vector2(540, 30)
 	title.size = Vector2(200, 40)
-	title.modulate = Color(1, 0.5, 0)  # Orange for debug
+	title.modulate = Color(1, 0.5, 0)	# Orange for debug
 	add_child(title)
 	
 	# Container for buttons
@@ -71,8 +71,8 @@ func _setup_ui() -> void:
 	close_btn.custom_minimum_size = Vector2(200, 40)
 	# Bible B1.3: Safe signal connection
 	if close_btn and is_instance_valid(close_btn):
-	    if not close_btn.pressed.is_connected(hide_menu):
-	        close_btn.pressed.connect(hide_menu)
+		if not close_btn.pressed.is_connected(hide_menu):
+			close_btn.pressed.connect(hide_menu)
 	container.add_child(close_btn)
 	
 	# Instructions
@@ -101,8 +101,8 @@ func _add_arena_button(parent: VBoxContainer, label: String, arena_id: String) -
 	btn.custom_minimum_size = Vector2(300, 35)
 	# Bible B1.3: Safe signal connection
 	if btn and is_instance_valid(btn):
-	    if not btn.pressed.is_connected(_on_arena_selected.bind(arena_id):
-	        btn.pressed.connect(_on_arena_selected.bind(arena_id)
+		if not btn.pressed.is_connected(_on_arena_selected.bind(arena_id)):
+			btn.pressed.connect(_on_arena_selected.bind(arena_id))
 	parent.add_child(btn)
 
 func _add_action_button(parent: VBoxContainer, label: String, callback: Callable) -> void:
@@ -111,8 +111,8 @@ func _add_action_button(parent: VBoxContainer, label: String, callback: Callable
 	btn.custom_minimum_size = Vector2(300, 30)
 	# Bible B1.3: Safe signal connection
 	if btn and is_instance_valid(btn):
-	    if not btn.pressed.is_connected(callback):
-	        btn.pressed.connect(callback)
+		if not btn.pressed.is_connected(callback):
+			btn.pressed.connect(callback)
 	parent.add_child(btn)
 
 func _add_toggle_button(parent: VBoxContainer, label: String, callback: Callable) -> void:
@@ -122,8 +122,8 @@ func _add_toggle_button(parent: VBoxContainer, label: String, callback: Callable
 	btn.toggle_mode = true
 	# Bible B1.3: Safe signal connection
 	if btn and is_instance_valid(btn):
-	    if not btn.toggled.is_connected(callback.bind(btn):
-	        btn.toggled.connect(callback.bind(btn)
+		if not btn.toggled.is_connected(callback.bind(btn)):
+			btn.toggled.connect(callback.bind(btn))
 	parent.add_child(btn)
 
 func _input(event: InputEvent) -> void:
@@ -209,7 +209,7 @@ func _kill_enemies() -> void:
 	if _simulation_manager:
 		for bot_id in _simulation_manager.bots:
 			var bot = _simulation_manager.bots[bot_id]
-			if bot.team == 1:  # Enemy team
+			if bot.team == 1:	# Enemy team
 				bot.take_damage(9999)
 
 func is_visible() -> bool:

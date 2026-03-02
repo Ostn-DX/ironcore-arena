@@ -217,11 +217,11 @@ func _open_builder() -> void:
 		builder.start_campaign_pressed.connect(_on_builder_start_campaign)
 	
 	# Also check for button connections in scene
-	var back_btn: Button = builder.get_node_or_null("MarginContainer/VBox/BottomBar/BackBtn")
+	var back_btn: Button = builder.get_node_or_null("MarginContainer/MainGrid/BottomBar/BackBtn")
 	if back_btn:
 		back_btn.pressed.connect(_go_back)
 	
-	var test_btn: Button = builder.get_node_or_null("MarginContainer/VBox/BottomBar/TestBtn")
+	var test_btn: Button = builder.get_node_or_null("MarginContainer/MainGrid/BottomBar/TestBtn")
 	if test_btn:
 		test_btn.pressed.connect(_on_test_battle)
 	

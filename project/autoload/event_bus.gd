@@ -82,18 +82,23 @@ signal content_generated(content_type: String, content_id: String)
 func emit_delayed(signal_name: String, delay_ms: int, args: Array = []) -> void:
 	## Emit a signal after a delay (non-blocking)
 	await get_tree().create_timer(delay_ms / 1000.0).timeout
-	emit_signal(signal_name, *args)
+	callv("emit_signal", [signal_name] + args)
 
 func connect_once(signal_name: String, callable: Callable) -> void:
 	## Connect to a signal, auto-disconnecting after first emission
+	var wrapper_ref: Callable = Callable()
+	
 	var wrapper = func(arg1 = null, arg2 = null, arg3 = null, arg4 = null):
 		callable.call(arg1, arg2, arg3, arg4)
-		disconnect(signal_name, wrapper)
+		if signal_name and wrapper_ref.is_valid():
+			disconnect(signal_name, wrapper_ref)
+	
+	wrapper_ref = wrapper
 	connect(signal_name, wrapper)
 
 func safe_emit(signal_name: String, args: Array = []) -> void:
 	## Emit signal with error handling
 	if has_signal(signal_name):
-		emit_signal(signal_name, *args)
+		callv("emit_signal", [signal_name] + args)
 	else:
 		push_warning("EventBus: Signal '%s' does not exist" % signal_name)

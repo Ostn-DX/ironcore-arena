@@ -2,12 +2,12 @@ extends Node
 ## GameManager - Central game state coordinator
 ## Part of Studio Architecture: Core Systems
 
-signal game_state_changed(new_state: GameState)
+signal game_state_changed(new_state: ManagerState)
 signal level_loaded(level_name: String)
 signal game_paused(is_paused: bool)
 signal game_quit_requested
 
-enum GameState {
+enum ManagerState {
 	MAIN_MENU,
 	HANGAR,
 	SHOP,
@@ -22,8 +22,8 @@ enum GameState {
 }
 
 # Current State
-var current_state: GameState = GameState.MAIN_MENU
-var previous_state: GameState = GameState.MAIN_MENU
+var current_state: ManagerState = ManagerState.MAIN_MENU
+var previous_state: ManagerState = ManagerState.MAIN_MENU
 var current_level: String = ""
 var play_time_seconds: float = 0.0
 
@@ -43,10 +43,10 @@ func _ready() -> void:
 			EventBus.resume_requested.connect(_on_resume_requested)
 
 func _process(delta: float) -> void:
-	if current_state == GameState.BATTLE_ACTIVE and not is_paused:
+	if current_state == ManagerState.BATTLE_ACTIVE and not is_paused:
 		play_time_seconds += delta
 
-func change_state(new_state: GameState) -> void:
+func change_state(new_state: ManagerState) -> void:
 	if current_state == new_state:
 		return
 	
@@ -60,37 +60,37 @@ func change_state(new_state: GameState) -> void:
 	emit_signal("game_state_changed", new_state)
 	print("Game state: %s -> %s" % [_state_to_string(old_state), _state_to_string(new_state)])
 
-func _handle_state_enter(state: GameState) -> void:
+func _handle_state_enter(state: ManagerState) -> void:
 	match state:
-		GameState.BATTLE_ACTIVE:
+		ManagerState.BATTLE_ACTIVE:
 			is_paused = false
 			get_tree().paused = false
-		GameState.BATTLE_PAUSED:
+		ManagerState.BATTLE_PAUSED:
 			is_paused = true
 			get_tree().paused = true
-		GameState.QUITTING:
+		ManagerState.QUITTING:
 			_save_before_quit()
 			emit_signal("game_quit_requested")
 
-func _handle_state_exit(state: GameState) -> void:
+func _handle_state_exit(state: ManagerState) -> void:
 	match state:
-		GameState.BATTLE_ACTIVE:
+		ManagerState.BATTLE_ACTIVE:
 			# Save battle stats, etc.
 			pass
 
 func _on_pause_requested() -> void:
-	if current_state == GameState.BATTLE_ACTIVE:
-		change_state(GameState.BATTLE_PAUSED)
+	if current_state == ManagerState.BATTLE_ACTIVE:
+		change_state(ManagerState.BATTLE_PAUSED)
 		emit_signal("game_paused", true)
 
 func _on_resume_requested() -> void:
-	if current_state == GameState.BATTLE_PAUSED:
-		change_state(GameState.BATTLE_ACTIVE)
+	if current_state == ManagerState.BATTLE_PAUSED:
+		change_state(ManagerState.BATTLE_ACTIVE)
 		emit_signal("game_paused", false)
 
 func load_scene(scene_path: String, params: Dictionary = {}) -> void:
 	## Async scene loading with loading screen
-	change_state(GameState.BATTLE_LOADING)
+	change_state(ManagerState.BATTLE_LOADING)
 	
 	# Show loading screen
 	EventBus.transition_started.emit("loading")
@@ -110,10 +110,10 @@ func load_scene(scene_path: String, params: Dictionary = {}) -> void:
 		EventBus.transition_completed.emit("loading")
 	else:
 		push_error("GameManager: Failed to load scene: %s" % scene_path)
-		change_state(GameState.MAIN_MENU)
+		change_state(ManagerState.MAIN_MENU)
 
 func quit_game() -> void:
-	change_state(GameState.QUITTING)
+	change_state(ManagerState.QUITTING)
 
 func _save_before_quit() -> void:
 	if SaveManager:
@@ -121,22 +121,22 @@ func _save_before_quit() -> void:
 
 func get_play_time_formatted() -> String:
 	var hours: int = int(play_time_seconds / 3600)
-	var minutes: int = int((play_time_seconds % 3600) / 60)
-	var seconds: int = int(play_time_seconds % 60)
+	var minutes: int = int((play_time_seconds / 60)) % 60
+	var seconds: int = int(play_time_seconds) % 60
 	return "%02d:%02d:%02d" % [hours, minutes, seconds]
 
-func _state_to_string(state: GameState) -> String:
-	return GameState.keys()[state]
+func _state_to_string(state: ManagerState) -> String:
+	return ManagerState.keys()[state]
 
 # ============================================================================
 # CONVENIENCE METHODS
 # ============================================================================
 
 func is_in_battle() -> bool:
-	return current_state in [GameState.BATTLE_ACTIVE, GameState.BATTLE_PAUSED]
+	return current_state in [ManagerState.BATTLE_ACTIVE, ManagerState.BATTLE_PAUSED]
 
 func can_pause() -> bool:
-	return current_state == GameState.BATTLE_ACTIVE
+	return current_state == ManagerState.BATTLE_ACTIVE
 
 func get_state_name() -> String:
 	return _state_to_string(current_state)

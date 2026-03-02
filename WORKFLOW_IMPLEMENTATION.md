@@ -1,187 +1,152 @@
 # Agent Workflow Implementation Summary
 
-## What Was Created
+## Directory Structure
 
-### Directory Structure
 ```
 ironcore-work/
 ├── agents/
-│   ├── TICKET_TEMPLATE.md          # Template for new tickets
+│   ├── TICKET_TEMPLATE.md
 │   ├── context/
-│   │   ├── invariants.md           # Architectural constraints
-│   │   ├── project_summary.md      # Project overview
-│   │   └── conventions.md          # Code style guide
-│   ├── prompts/                    # (empty, for future prompt templates)
-│   └── tickets/                    # Ticket definitions
-│       ├── TICKET-001.md           # Headless match runner
-│       ├── TICKET-002.md           # UI smoke test
-│       ├── TICKET-003.md           # Gate scripts
-│       ├── TICKET-004.md           # Context pack builder
-│       └── TICKET-005.md           # Output normalizer
+│   │   ├── invariants.md
+│   │   ├── project_summary.md
+│   │   └── conventions.md
+│   ├── tickets/                    # Ticket definitions (YAML frontmatter)
+│   │   ├── TICKET-0001.md
+│   │   └── ...
+│   ├── runs/                       # Per-ticket run outputs
+│   │   └── <TICKET-ID>/
+│   │       ├── ROUTE.json
+│   │       ├── REPORT.md
+│   │       ├── logs/
+│   │       └── handoff/            # External executor path only
+│   └── audits/                     # Audit reports by date
+│       └── <YYYY-MM-DD>/
+│           ├── AUDIT_REPORT.md
+│           └── METRICS.json
 ├── tools/
-│   ├── build_context_pack.py       # Creates context packs from tickets
-│   ├── normalize_agent_output.py   # Validates agent deliverables
-│   ├── dev_gate.ps1                # Windows gate script
-│   ├── dev_gate.sh                 # Mac/Linux gate script
-│   ├── run_headless_matches.gd     # Godot: Automated battle testing
-│   └── run_ui_smoke.gd             # Godot: UI navigation testing
-├── reports/                        # (created at runtime)
-├── agent_runs/                     # (for agent outputs)
-└── .gitignore                      # Updated to exclude runtime dirs
-
+│   ├── studio_run.ps1              # One-command pipeline (Windows)
+│   ├── studio_run.sh               # One-command pipeline (Mac/Linux)
+│   ├── validate_vault.py           # Vault frontmatter validation
+│   ├── validate_configs.py         # Risk/budget config validation
+│   ├── route_ticket.py             # Routing decision -> ROUTE.json
+│   ├── build_context_pack.py       # Context pack builder
+│   ├── require_context_pack.py     # Pack existence gate
+│   ├── verify_manifest.py          # Schema + SHA-256 integrity check
+│   ├── run_ticket.py               # Ticket execution orchestrator
+│   ├── build_handoff_packet.py     # External executor handoff
+│   ├── studio_audit.py             # Drift detection + auto-tickets
+│   ├── dev_gate.ps1                # Dev gate (Windows)
+│   ├── dev_gate.sh                 # Dev gate (Mac/Linux)
+│   ├── schemas/
+│   │   └── manifest.schema.json    # JSON Schema for manifest.json
+│   ├── config/
+│   │   ├── risk_config.default.json
+│   │   └── budget_config.default.json
+│   ├── context_packs/              # Built context packs (runtime)
+│   │   └── <TICKET-ID>/
+│   │       ├── manifest.json
+│   │       ├── allowed_files/
+│   │       └── vault_notes/
+│   └── studio_audit_config.json    # Audit thresholds
+└── Studio_OS/                      # Obsidian vault (READ-ONLY for pipeline)
 ```
 
-## How to Use
+## One-Command Pipeline
 
-### 1. Create a New Ticket
-
-Copy `agents/TICKET_TEMPLATE.md` to `agents/tickets/TICKET-XXX.md` and fill in:
-- **Title**: Clear, actionable description
-- **Goal**: What "done" looks like
-- **Allowed Files**: Explicit list of files agent can edit
-- **New Files**: Files the agent will create
-- **Acceptance Criteria**: Testable conditions
-
-### 2. Build Context Pack
+### Usage
 
 ```bash
-python tools/build_context_pack.py agents/tickets/TICKET-001.md
+# Windows (PowerShell)
+.\tools\studio_run.ps1 -Ticket agents\tickets\TICKET-0001.md
+
+# Mac/Linux/Git Bash
+./tools/studio_run.sh agents/tickets/TICKET-0001.md
 ```
 
-This creates:
-```
-tools/context_packs/TICKET-001/
-├── project_summary.md
-├── invariants.md
-├── conventions.md
-├── ticket.md
-├── pack_metadata.txt
-└── allowed_files/          # Copied from allowlist
-```
+### Pipeline Steps
 
-### 3. Agent Implements
+| Step | Tool | Purpose | Exit codes |
+|------|------|---------|------------|
+| 1 | `validate_vault.py` | YAML frontmatter on all Studio_OS/ files | 0=ok, 1=no vault, 2=errors |
+| 2 | `validate_configs.py` | Risk thresholds monotonic, budget sums to 1.0 | 0=ok, 1=file error, 2=invalid |
+| 3 | `route_ticket.py` | Decide executor, write ROUTE.json | 0=ok, 1=parse error |
+| 4 | `build_context_pack.py` | Build allowlist + vault notes pack | 0-4 |
+| 5 | `require_context_pack.py` | Assert pack exists with valid manifest | 0-3 |
+| 6 | `verify_manifest.py` | Schema validation + SHA-256 hash check | 0-3 |
+| 7 | `run_ticket.py` | Execute ticket (full orchestrator) | 0=ok/waiting, 1=parse, 2+=step fail |
+| 8 | `dev_gate` | Vault validation (Godot stages skipped) | 0=ok, 1=stage fail, 2=vault fail |
+| 9 | `studio_audit.py` | Drift detection, auto-ticket generation | 0=clean, 1=config, 2=drift, 3=infra |
 
-Feed the context pack to your agent. Agent produces output in:
-```
-agent_runs/TICKET-001/
-├── NEW_FILES/              # Complete new files
-├── MODIFICATIONS/          # Diffs or before/after
-├── TESTS/                  # Test files
-├── INTEGRATION_GUIDE.md    # Step-by-step integration
-└── CHANGELOG.md            # What changed
-```
+Any failure stops the pipeline with the failing step's exit code.
 
-### 4. Normalize Output
+### Execution Paths
 
-```bash
-python tools/normalize_agent_output.py TICKET-001
-```
+**Local path** (executor=local): All steps run sequentially. `run_ticket.py` invokes route -> pack -> verify -> dev_gate internally.
 
-Validates:
-- Required files exist
-- No TODO/FIXME stubs
-- No edits outside allowlist
-- Generates validation report in `reports/`
+**External path** (executor=claude|codex|manual): Steps 1-6 run, then `run_ticket.py` builds a handoff packet at `agents/runs/<ID>/handoff/` and exits with status `WAITING_FOR_EXTERNAL_EXECUTOR`.
 
-### 5. Apply and Test
+## Manifest Format
 
-1. Copy NEW_FILES to project
-2. Apply MODIFICATIONS per INTEGRATION_GUIDE.md
-3. Run gate:
+Context pack manifests (`tools/context_packs/<ID>/manifest.json`) are validated against `tools/schemas/manifest.schema.json`.
 
-```bash
-# Windows
-.\tools\dev_gate.ps1
-
-# Mac/Linux
-./tools/dev_gate.sh
+```json
+{
+  "ticket_id": "TICKET-0001",
+  "allowed_file_count": 2,
+  "vault_note_count": 1,
+  "max_allowed": 10,
+  "hash_algorithm": "sha256",
+  "files": {
+    "ticket.md": "sha256:abc123...",
+    "allowed_files/project/foo.gd": "sha256:def456..."
+  }
+}
 ```
 
-### 6. Iterate If Gate Fails
+All hashes use the format `sha256:<64 hex chars>`. The `hash_algorithm` field is always `"sha256"`.
 
-Gate will tell you exactly what failed:
-- Match crashes → Fix simulation code
-- UI transition fails → Fix scene/node references
-- Both pass → Ticket complete
+## Routing Rules (Priority Order)
 
-## Gate Stages
+1. `executor:` field in frontmatter (explicit override)
+2. `manual: true` -> manual
+3. `needs_codex: true` -> codex
+4. `needs_external_llm: true` -> claude
+5. `scope: large|architectural` -> claude
+6. `risk: high` -> claude
+7. Tags in EXTERNAL_TAGS set -> claude
+8. `len(allowlist) > 5` -> claude
+9. Default -> local
 
-### Stage 1: Headless Match Tests
-- Runs 10 AI vs AI battles
-- Checks for crashes, timeouts
-- Verifies battle completion
-- Reports win rates and durations
+## Config Validation
 
-### Stage 2: UI Smoke Tests  
-- Navigates: Main → Builder → Campaign → Battle → Results → Campaign
-- Verifies all scenes load
-- Checks button clicks work
-- Detects missing nodes/signals
+**Risk config** (`tools/config/risk_config.default.json`):
+- Thresholds must be monotonic: `low <= medium <= high <= critical <= 100`
+- All four levels required
 
-## Key Constraints (Enforced)
+**Budget config** (`tools/config/budget_config.default.json`):
+- Allocations must sum to `1.0 +/- 0.001`
+- Values must be in `[0.0, 1.0]`
 
-1. **One ticket at a time** — Complete and gate-pass before next
-2. **File allowlist** — Agent can only touch allowed files
-3. **No stubs** — Complete implementations only
-4. **Gate required** — Every ticket ends with gate run
-5. **Determinism preserved** — 60Hz sim, seeded RNG
+## Key Constraints
 
-## Ticket Priority Order
+1. **Studio_OS/ is READ-ONLY** - Never write to the vault via pipeline
+2. **File allowlist** - Max 10 files per ticket (enforced in build_context_pack.py)
+3. **Notes are vault-relative** - Paths under `Studio_OS/`, not repo root
+4. **Hash consistency** - All digests use `sha256:` prefix format
+5. **Timestamps are metadata** - `generated_at` fields record operational timing but do not affect deterministic replay
+6. **Gate required** - Every ticket must pass dev_gate before completion
+7. **Determinism preserved** - 60Hz sim, seeded RNG, no nondeterministic timestamps in game state
 
-Already created and ready:
-1. **TICKET-001**: Headless match runner ✓
-2. **TICKET-002**: UI smoke test ✓
-3. **TICKET-003**: Gate scripts ✓
-4. **TICKET-004**: Context pack builder ✓
-5. **TICKET-005**: Output normalizer ✓
+## Audit System
 
-Next tickets to create (when needed):
-- TICKET-006: AI pathfinding system
-- TICKET-007: Simulation unit tests
-- TICKET-008: Asset pipeline
-- TICKET-009: Balance validation tool
+`python tools/studio_audit.py` runs independently (no ticket argument needed).
 
-## Workflow in Practice
+**Drift indicators checked:**
+- `gate_failure_rate` - % of last N runs with FAILED status
+- `repeated_file_modifications` - same file in 5+ distinct runs
+- `vault_validation_failures` - any vault validation failure
+- `missing_manifest_count` - runs without context pack manifest
+- `tampered_pack_count` - packs failing SHA-256 verify_manifest check
 
-```
-You: "Add damage over time weapon effect"
-
-1. Create TICKET-006.md with:
-   - Allowed: autoload/SimulationManager.gd, src/entities/bot.gd
-   - New: src/components/dot_effect.gd
-   - AC: Can apply DOT, ticks each second, expires correctly
-
-2. Build context pack:
-   python tools/build_context_pack.py agents/tickets/TICKET-006.md
-
-3. Agent implements with context pack
-
-4. Normalize output:
-   python tools/normalize_agent_output.py TICKET-006
-
-5. Apply changes:
-   - Copy agent_runs/TICKET-006/NEW_FILES/ → project/
-   - Apply MODIFICATIONS/ per INTEGRATION_GUIDE.md
-
-6. Run gate:
-   ./tools/dev_gate.sh
-
-7. Gate passes → Commit, next ticket
-   Gate fails → Fix, re-run gate
-```
-
-## Benefits
-
-- **Small diffs** — Easy to review, low conflict risk
-- **Playable builds** — Gate ensures game always runs
-- **Deterministic** — Same inputs = same outputs
-- **Cost efficient** — Minimal context, targeted work
-- **No thrash** — Invariants prevent cascading refactors
-
-## Notes
-
-- Godot 4.x required in PATH
-- Reports go to `user://reports/` (Godot user directory)
-- Windows: `%APPDATA%/Godot/app_userdata/ironcore-arena/reports/`
-- Linux: `~/.local/share/godot/app_userdata/ironcore-arena/reports/`
-- Mac: `~/Library/Application Support/Godot/app_userdata/ironcore-arena/reports/`
+Config: `tools/studio_audit_config.json` - all thresholds configurable.
+Auto-tickets use `AUDIT-XXXX` prefix and can be run through the pipeline.

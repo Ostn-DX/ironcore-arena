@@ -1,7 +1,8 @@
 extends Node
-class_name AgentSystem
 ## AgentSystem - Swarm Agent management for autonomous development
 ## Part of Studio Architecture: Swarm Agent Definitions (Section 5)
+
+const LLMClient = preload("res://scripts/ai/llm_client.gd")
 
 signal task_completed(agent_name: String, task_id: String, result: Dictionary)
 signal task_failed(agent_name: String, task_id: String, error: String)
@@ -81,8 +82,8 @@ func get_all_status() -> Dictionary:
 func _process_queue() -> void:
 	## Process queued tasks
 	while task_queue.size() > 0:
-		var task: int = task_queue[0]
-		var agent = agents.get(task.agent)
+		var task: Dictionary = task_queue[0]
+		var agent = agents.get(task.get("agent", ""))
 		
 		if agent and agent.is_available():
 			task_queue.pop_front()
@@ -113,54 +114,53 @@ func _on_agent_status_changed(agent_name: String, status: String) -> void:
 # BASE AGENT CLASS
 # ============================================================================
 
-class_name Agent extends Node
-
-signal task_completed(agent_name: String, task_id: String, result: Dictionary)
-signal task_failed(agent_name: String, task_id: String, error: String)
-signal status_changed(agent_name: String, status: String)
-
-var agent_name: String = "BaseAgent"
-var description: String = "Base agent class"
-var status: String = "idle"
-var current_task: Dictionary = {}
-var capabilities: Array[String] = []
-
-func is_available() -> bool:
-	return status == "idle"
-
-func get_full_status() -> Dictionary:
-	return {
-		"name": agent_name,
-		"description": description,
-		"status": status,
-		"capabilities": capabilities,
-		"current_task": current_task.get("type", "none") if not current_task.is_empty() else "none"
-	}
-
-func execute_task(task: Dictionary) -> void:
-	current_task = task
-	status = "working"
-	status_changed.emit(agent_name, status)
+class Agent extends Node:
+	signal task_completed(agent_name: String, task_id: String, result: Dictionary)
+	signal task_failed(agent_name: String, task_id: String, error: String)
+	signal status_changed(agent_name: String, status: String)
 	
-	# Override in subclasses
-	_process_task(task)
-
-func _process_task(task: Dictionary) -> void:
-	## Override this in agent subclasses
-	push_warning("Agent '%s' does not implement _process_task" % agent_name)
-	_finish_task({"status": "no_implementation"})
-
-func _finish_task(result: Dictionary) -> void:
-	task_completed.emit(agent_name, current_task.get("id", ""), result)
-	current_task = {}
-	status = "idle"
-	status_changed.emit(agent_name, status)
-
-func _fail_task(error: String) -> void:
-	task_failed.emit(agent_name, current_task.get("id", ""), error)
-	current_task = {}
-	status = "idle"
-	status_changed.emit(agent_name, status)
+	var agent_name: String = "BaseAgent"
+	var description: String = "Base agent class"
+	var status: String = "idle"
+	var current_task: Dictionary = {}
+	var capabilities: Array[String] = []
+	
+	func is_available() -> bool:
+		return status == "idle"
+	
+	func get_full_status() -> Dictionary:
+		return {
+			"name": agent_name,
+			"description": description,
+			"status": status,
+			"capabilities": capabilities,
+			"current_task": current_task.get("type", "none") if not current_task.is_empty() else "none"
+		}
+	
+	func execute_task(task: Dictionary) -> void:
+		current_task = task
+		status = "working"
+		status_changed.emit(agent_name, status)
+		
+		# Override in subclasses
+		_process_task(task)
+	
+	func _process_task(task: Dictionary) -> void:
+		## Override this in agent subclasses
+		push_warning("Agent '%s' does not implement _process_task" % agent_name)
+		_finish_task({"status": "no_implementation"})
+	
+	func _finish_task(result: Dictionary) -> void:
+		task_completed.emit(agent_name, current_task.get("id", ""), result)
+		current_task = {}
+		status = "idle"
+		status_changed.emit(agent_name, status)
+	
+	func _fail_task(error: String) -> void:
+		task_failed.emit(agent_name, current_task.get("id", ""), error)
+		current_task = {}
+		status = "idle"
+		status_changed.emit(agent_name, status)
 
 # ============================================================================
 # SPECIFIC AGENT IMPLEMENTATIONS
@@ -249,7 +249,7 @@ class QualityAgent extends Agent:
 		print("QualityAgent: Running performance benchmark")
 		if PerformanceMonitor:
 			var summary = PerformanceMonitor.get_performance_summary()
-			finish_task({"performance": summary})
+			_finish_task({"performance": summary})
 		else:
 			_finish_task({"error": "PerformanceMonitor not available"})
 
@@ -271,8 +271,9 @@ class ContentAgent extends Agent:
 				_finish_task({"status": "unknown_task"})
 	
 	func _generate_dialogue(params: Dictionary) -> void:
-		if LLMClient:
-			var response = await LLMClient.generate_dialogue(
+		var llm = LLMClient.new()
+		if llm:
+			var response = await llm.generate_dialogue(
 				params.get("character", "NPC"),
 				params.get("context", ""),
 				params.get("tone", "neutral")
@@ -282,8 +283,9 @@ class ContentAgent extends Agent:
 			_finish_task({"error": "LLMClient not available"})
 	
 	func _generate_item_description(params: Dictionary) -> void:
-		if LLMClient:
-			var response = await LLMClient.generate_item_description(
+		var llm = LLMClient.new()
+		if llm:
+			var response = await llm.generate_item_description(
 				params.get("item_type", "weapon"),
 				params.get("rarity", "common")
 			)

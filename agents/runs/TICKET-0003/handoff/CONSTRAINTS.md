@@ -25,4 +25,4 @@ After completion, the following gates will run:
 - `dev_gate` — vault frontmatter validation
 
 ---
-_Generated: 2026-02-28T01:03:06Z_
+_Generated: 2026-02-28T01:22:20Z_

@@ -8,7 +8,7 @@ const MAX_BOTS: int = 4
 
 var squad: Array[Dictionary] = []
 var selected_bot_index: int = -1
-var team_weight_cap: float = 500.0  # Set by arena
+var team_weight_cap: float = 500.0	# Set by arena
 
 @onready var bot_list: ItemList = $MarginContainer/MainVBox/TopRow/BotListPanel/BotList
 @onready var add_bot_btn: Button = $MarginContainer/MainVBox/TopRow/BotListPanel/AddBotBtn

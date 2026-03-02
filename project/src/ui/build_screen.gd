@@ -17,19 +17,31 @@ var current_bot: Dictionary = {
 	"weapon": "wpn_mg_t1"
 }
 
-@onready var shop_buttons: HBoxContainer = $MarginContainer/VBox/TopRow/ShopPanel/ShopButtons
-@onready var shop_list: ItemList = $MarginContainer/VBox/TopRow/ShopPanel/ShopList
-@onready var inventory_list: ItemList = $MarginContainer/VBox/TopRow/InventoryPanel/InventoryList
-@onready var my_bots_list: ItemList = $MarginContainer/VBox/TopRow/MyBotsPanel/MyBotsList
-@onready var preview_label: Label = $MarginContainer/VBox/PreviewPanel/PreviewLabel
-@onready var action_button: Button = $MarginContainer/VBox/PreviewPanel/ActionButton
-@onready var bot_name_edit: LineEdit = $MarginContainer/VBox/TopRow/MyBotsPanel/BotNameEdit
-@onready var weight_label: Label = $MarginContainer/VBox/BottomBar/WeightLabel
-@onready var credits_label: Label = $MarginContainer/VBox/BottomBar/CreditsLabel
-@onready var test_btn: Button = $MarginContainer/VBox/BottomBar/TestBtn
-@onready var back_btn: Button = $MarginContainer/VBox/BottomBar/BackBtn
+@onready var shop_buttons: HBoxContainer = $MarginContainer/MainGrid/ShopPanel/ShopButtons
+@onready var shop_list: ItemList = $MarginContainer/MainGrid/ShopPanel/ShopList
+@onready var inventory_filter: OptionButton = $MarginContainer/MainGrid/InventoryPanel/InventoryFilter
+@onready var inventory_list: ItemList = $MarginContainer/MainGrid/InventoryPanel/InventoryList
+@onready var my_bots_list: ItemList = $MarginContainer/MainGrid/MyBotsPanel/MyBotsList
+@onready var bot_name_edit: LineEdit = $MarginContainer/MainGrid/MyBotsPanel/BotNameEdit
+@onready var item_name_label: Label = $MarginContainer/MainGrid/DescriptionPanel/ItemNameLabel
+@onready var item_stats_label: Label = $MarginContainer/MainGrid/DescriptionPanel/ItemStatsLabel
+@onready var item_description_label: Label = $MarginContainer/MainGrid/DescriptionPanel/ItemDescriptionLabel
+@onready var manufacturer_label: Label = $MarginContainer/MainGrid/DescriptionPanel/ManufacturerLabel
+@onready var preview_label: Label = $MarginContainer/MainGrid/DescriptionPanel/PreviewLabel
+@onready var action_button: Button = $MarginContainer/MainGrid/DescriptionPanel/ActionButton
+@onready var mount_button: Button = $MarginContainer/MainGrid/ActionsPanel/MountButton
+@onready var unmount_button: Button = $MarginContainer/MainGrid/ActionsPanel/UnmountButton
+@onready var enable_button: Button = $MarginContainer/MainGrid/ActionsPanel/EnableButton
+@onready var disable_button: Button = $MarginContainer/MainGrid/ActionsPanel/DisableButton
+@onready var team_color_picker: ColorPickerButton = $MarginContainer/MainGrid/ActionsPanel/TeamColorPicker
+@onready var weight_label: Label = $MarginContainer/MainGrid/ActionsPanel/StatsContainer/WeightLabel
+@onready var dps_label: Label = $MarginContainer/MainGrid/ActionsPanel/StatsContainer/DPSLabel
+@onready var credits_label: Label = $MarginContainer/MainGrid/BottomBar/CreditsLabel
+@onready var test_btn: Button = $MarginContainer/MainGrid/BottomBar/TestBtn
+@onready var back_btn: Button = $MarginContainer/MainGrid/BottomBar/BackBtn
 
 func _ready() -> void:
+	_setup_mouse_filters()
 	_setup_shop_buttons()
 	_load_inventory()
 	_load_my_bots()
@@ -37,16 +49,73 @@ func _ready() -> void:
 	_update_preview()
 	
 	# Connect button signals
-	# Bible B1.3: Safe signal connection
-	if back_btn and is_instance_valid(back_btn):
-	    if not back_btn.pressed.is_connected(_on_back_pressed):
-	        back_btn.pressed.connect(_on_back_pressed)
-	# Bible B1.3: Safe signal connection
-	if test_btn and is_instance_valid(test_btn):
-	    if not test_btn.pressed.is_connected(_on_test_pressed):
-	        test_btn.pressed.connect(_on_test_pressed)
+	back_btn.pressed.connect(_on_back_pressed)
+	test_btn.pressed.connect(_on_test_pressed)
+	
+	# Connect new action buttons
+	if mount_button and not mount_button.pressed.is_connected(_on_mount_pressed):
+		mount_button.pressed.connect(_on_mount_pressed)
+	if unmount_button and not unmount_button.pressed.is_connected(_on_unmount_pressed):
+		unmount_button.pressed.connect(_on_unmount_pressed)
+	if enable_button and not enable_button.pressed.is_connected(_on_enable_pressed):
+		enable_button.pressed.connect(_on_enable_pressed)
+	if disable_button and not disable_button.pressed.is_connected(_on_disable_pressed):
+		disable_button.pressed.connect(_on_disable_pressed)
+	if team_color_picker and not team_color_picker.color_changed.is_connected(_on_color_changed):
+		team_color_picker.color_changed.connect(_on_color_changed)
+	if inventory_filter and not inventory_filter.item_selected.is_connected(_on_inventory_filter_changed):
+		inventory_filter.item_selected.connect(_on_inventory_filter_changed)
 	
 	print("BuildScreen: Ready")
+
+func _setup_mouse_filters() -> void:
+	## Defensive: Ensure proper mouse_filter settings to prevent input blocking
+	# Labels should not block input
+	if weight_label:
+		weight_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if credits_label:
+		credits_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if item_name_label:
+		item_name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if item_stats_label:
+		item_stats_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if item_description_label:
+		item_description_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if manufacturer_label:
+		manufacturer_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if preview_label:
+		preview_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if dps_label:
+		dps_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	# Buttons should capture input
+	if back_btn:
+		back_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+		back_btn.focus_mode = Control.FOCUS_ALL
+	if test_btn:
+		test_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+		test_btn.focus_mode = Control.FOCUS_ALL
+	if action_button:
+		action_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		action_button.focus_mode = Control.FOCUS_ALL
+	if mount_button:
+		mount_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		mount_button.focus_mode = Control.FOCUS_ALL
+	if unmount_button:
+		unmount_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		unmount_button.focus_mode = Control.FOCUS_ALL
+	if enable_button:
+		enable_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		enable_button.focus_mode = Control.FOCUS_ALL
+	if disable_button:
+		disable_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		disable_button.focus_mode = Control.FOCUS_ALL
+	
+	# LineEdit should only focus on click
+	if bot_name_edit:
+		bot_name_edit.focus_mode = Control.FOCUS_CLICK
+	
+	print("BuildScreen: Mouse filters configured")
 
 func on_show() -> void:
 	# Called when screen becomes visible
@@ -76,10 +145,7 @@ func _setup_shop_buttons() -> void:
 	for category in ["Chassis", "Armor", "Weapon/Heal"]:
 		var btn: Button = Button.new()
 		btn.text = category
-		# Bible B1.3: Safe signal connection
-		if btn and is_instance_valid(btn):
-		    if not btn.pressed.is_connected(_on_shop_category.bind(category.to_lower():
-		        btn.pressed.connect(_on_shop_category.bind(category.to_lower()
+		btn.pressed.connect(_on_shop_category.bind(category.to_lower().replace("/", "_")))
 		shop_buttons.add_child(btn)
 
 func _on_shop_category(category: String) -> void:
@@ -223,7 +289,7 @@ func _on_action_pressed() -> void:
 			"armor":
 				current_bot["armor"] = part_id
 			"weapon", "utility":
-				current_bot["weapon"] = part_id  # Weapon or heal gun
+				current_bot["weapon"] = part_id	# Weapon or heal gun
 		
 		_update_bot_display()
 
@@ -245,15 +311,15 @@ func _update_bot_display() -> void:
 					max_weight = part.get("stats", {}).get("weight_capacity", 0.0)
 				
 				equipped_text += slot.capitalize() + ": " + part.get("name", "Unknown") + "\n"
-				equipped_text += "  Weight: %.1f kg\n" % part.get("weight", 0.0)
+				equipped_text += "	Weight: %.1f kg\n" % part.get("weight", 0.0)
 				if slot == "armor":
 					var hp: int = part.get("stats", {}).get("hp", 0)
-					equipped_text += "  HP: %d\n" % hp
+					equipped_text += "	HP: %d\n" % hp
 				elif slot == "weapon":
 					var stats: Dictionary = part.get("stats", {})
 					var dmg: float = stats.get("damage_per_shot", 0)
 					var range_max: float = stats.get("range_max", 0)
-					equipped_text += "  Damage: %.1f, Range: %.0f\n" % [dmg, range_max]
+					equipped_text += "	Damage: %.1f, Range: %.0f\n" % [dmg, range_max]
 				equipped_text += "\n"
 		else:
 			equipped_text += slot.capitalize() + ": [Empty]\n\n"
@@ -277,3 +343,29 @@ func _load_saved_bots() -> void:
 	## Load saved bot configurations
 	if GameState.loadouts.size() > 0:
 		current_bot = GameState.loadouts[0].duplicate()
+
+
+# New 5-box grid button handlers
+func _on_mount_pressed() -> void:
+	print("BuildScreen: Mount pressed")
+	# TODO: Implement mount functionality
+
+func _on_unmount_pressed() -> void:
+	print("BuildScreen: Unmount pressed")
+	# TODO: Implement unmount functionality
+
+func _on_enable_pressed() -> void:
+	print("BuildScreen: Enable pressed")
+	# TODO: Implement enable functionality
+
+func _on_disable_pressed() -> void:
+	print("BuildScreen: Disable pressed")
+	# TODO: Implement disable functionality
+
+func _on_color_changed(color: Color) -> void:
+	print("BuildScreen: Color changed to ", color)
+	# TODO: Implement team color change
+
+func _on_inventory_filter_changed(index: int) -> void:
+	print("BuildScreen: Inventory filter changed to ", index)
+	_load_inventory()

@@ -57,32 +57,32 @@ func _setup_ui() -> void:
 	master_slider = _create_volume_slider("Master Volume", container)
 	# Bible B1.3: Safe signal connection
 	if master_slider and is_instance_valid(master_slider):
-	    if not master_slider.value_changed.is_connected(_on_master_changed):
-	        master_slider.value_changed.connect(_on_master_changed)
+		if not master_slider.value_changed.is_connected(_on_master_changed):
+			master_slider.value_changed.connect(_on_master_changed)
 	master_value = _create_value_label(container, master_slider)
 	
 	# SFX volume
 	sfx_slider = _create_volume_slider("Sound Effects", container)
 	# Bible B1.3: Safe signal connection
 	if sfx_slider and is_instance_valid(sfx_slider):
-	    if not sfx_slider.value_changed.is_connected(_on_sfx_changed):
-	        sfx_slider.value_changed.connect(_on_sfx_changed)
+		if not sfx_slider.value_changed.is_connected(_on_sfx_changed):
+			sfx_slider.value_changed.connect(_on_sfx_changed)
 	sfx_value = _create_value_label(container, sfx_slider)
 	
 	# Music volume
 	music_slider = _create_volume_slider("Music", container)
 	# Bible B1.3: Safe signal connection
 	if music_slider and is_instance_valid(music_slider):
-	    if not music_slider.value_changed.is_connected(_on_music_changed):
-	        music_slider.value_changed.connect(_on_music_changed)
+		if not music_slider.value_changed.is_connected(_on_music_changed):
+			music_slider.value_changed.connect(_on_music_changed)
 	music_value = _create_value_label(container, music_slider)
 	
 	# UI volume
 	ui_slider = _create_volume_slider("UI Sounds", container)
 	# Bible B1.3: Safe signal connection
 	if ui_slider and is_instance_valid(ui_slider):
-	    if not ui_slider.value_changed.is_connected(_on_ui_changed):
-	        ui_slider.value_changed.connect(_on_ui_changed)
+		if not ui_slider.value_changed.is_connected(_on_ui_changed):
+			ui_slider.value_changed.connect(_on_ui_changed)
 	ui_value = _create_value_label(container, ui_slider)
 	
 	# Separator
@@ -95,8 +95,8 @@ func _setup_ui() -> void:
 	mute_checkbox.text = "Mute All Audio"
 	# Bible B1.3: Safe signal connection
 	if mute_checkbox and is_instance_valid(mute_checkbox):
-	    if not mute_checkbox.toggled.is_connected(_on_mute_toggled):
-	        mute_checkbox.toggled.connect(_on_mute_toggled)
+		if not mute_checkbox.toggled.is_connected(_on_mute_toggled):
+			mute_checkbox.toggled.connect(_on_mute_toggled)
 	container.add_child(mute_checkbox)
 	
 	# Test sounds button
@@ -104,8 +104,8 @@ func _setup_ui() -> void:
 	test_btn.text = "Test Sounds"
 	# Bible B1.3: Safe signal connection
 	if test_btn and is_instance_valid(test_btn):
-	    if not test_btn.pressed.is_connected(_on_test_sounds):
-	        test_btn.pressed.connect(_on_test_sounds)
+		if not test_btn.pressed.is_connected(_on_test_sounds):
+			test_btn.pressed.connect(_on_test_sounds)
 	container.add_child(test_btn)
 	
 	# Back button
@@ -115,8 +115,8 @@ func _setup_ui() -> void:
 	back_btn.size = Vector2(100, 40)
 	# Bible B1.3: Safe signal connection
 	if back_btn and is_instance_valid(back_btn):
-	    if not back_btn.pressed.is_connected(_on_back):
-	        back_btn.pressed.connect(_on_back)
+		if not back_btn.pressed.is_connected(_on_back):
+			back_btn.pressed.connect(_on_back)
 	add_child(back_btn)
 
 

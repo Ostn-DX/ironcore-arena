@@ -48,8 +48,8 @@ func _setup_ui() -> void:
 	pause_button.size = Vector2(50, 40)
 	# Bible B1.3: Safe signal connection
 	if pause_button and is_instance_valid(pause_button):
-	    if not pause_button.pressed.is_connected(_on_pause_pressed):
-	        pause_button.pressed.connect(_on_pause_pressed)
+		if not pause_button.pressed.is_connected(_on_pause_pressed):
+			pause_button.pressed.connect(_on_pause_pressed)
 	top_bar.add_child(pause_button)
 	
 	# Spacer
@@ -88,8 +88,8 @@ func _setup_ui() -> void:
 	surrender_btn.tooltip_text = "Surrender"
 	# Bible B1.3: Safe signal connection
 	if surrender_btn and is_instance_valid(surrender_btn):
-	    if not surrender_btn.pressed.is_connected(_on_surrender_pressed):
-	        surrender_btn.pressed.connect(_on_surrender_pressed)
+		if not surrender_btn.pressed.is_connected(_on_surrender_pressed):
+			surrender_btn.pressed.connect(_on_surrender_pressed)
 	top_bar.add_child(surrender_btn)
 	
 	# Team status panel (bottom)
@@ -263,8 +263,8 @@ func show_victory_flash() -> void:
 	tween.tween_property(flash, "modulate:a", 0.0, 0.5)
 	# Bible B1.3: Safe signal connection
 	if tween and is_instance_valid(tween):
-	    if not tween.finished.is_connected(flash.queue_free):
-	        tween.finished.connect(flash.queue_free)
+		if not tween.finished.is_connected(flash.queue_free):
+			tween.finished.connect(flash.queue_free)
 
 
 func show_defeat_flash() -> void:
@@ -279,5 +279,5 @@ func show_defeat_flash() -> void:
 	tween.tween_property(flash, "modulate:a", 0.0, 0.5)
 	# Bible B1.3: Safe signal connection
 	if tween and is_instance_valid(tween):
-	    if not tween.finished.is_connected(flash.queue_free):
-	        tween.finished.connect(flash.queue_free)
+		if not tween.finished.is_connected(flash.queue_free):
+			tween.finished.connect(flash.queue_free)

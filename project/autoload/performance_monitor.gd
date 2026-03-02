@@ -1,5 +1,4 @@
 extends Node
-class_name PerformanceMonitor
 ## PerformanceMonitor - RTX 4080 optimization and monitoring
 ## Part of Studio Architecture: Technical Systems
 
@@ -26,14 +25,14 @@ var _last_log_time: float = 0.0
 var _warning_count: Dictionary = {}
 
 # Metrics
-current_fps: float = 0.0
-average_fps: float = 0.0
-p99_frame_time_ms: float = 0.0
-p95_frame_time_ms: float = 0.0
-process_time_ms: float = 0.0
-physics_time_ms: float = 0.0
-static_memory_mb: float = 0.0
-max_memory_mb: float = 0.0
+var current_fps: float = 0.0
+var average_fps: float = 0.0
+var p99_frame_time_ms: float = 0.0
+var p95_frame_time_ms: float = 0.0
+var process_time_ms: float = 0.0
+var physics_time_ms: float = 0.0
+var static_memory_mb: float = 0.0
+var max_memory_mb: float = 0.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
