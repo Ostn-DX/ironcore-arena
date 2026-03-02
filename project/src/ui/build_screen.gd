@@ -54,10 +54,13 @@ func _ready() -> void:
 
 func _setup_container_filters() -> void:
 	## Set all containers to PASS, labels to IGNORE
-	
+
+	# ROOT NODE — must be PASS, not default STOP!
+	self.mouse_filter = Control.MOUSE_FILTER_PASS
+
 	# Background
 	$Background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	
+
 	# All containers PASS
 	$MarginContainer.mouse_filter = Control.MOUSE_FILTER_PASS
 	$MarginContainer/VBox.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -67,7 +70,10 @@ func _setup_container_filters() -> void:
 	$MarginContainer/VBox/TopRow/InventoryPanel.mouse_filter = Control.MOUSE_FILTER_PASS
 	$MarginContainer/VBox/TopRow/MyBotsPanel.mouse_filter = Control.MOUSE_FILTER_PASS
 	$MarginContainer/VBox/PreviewPanel.mouse_filter = Control.MOUSE_FILTER_PASS
-	
+
+	# BottomBar — holds Test Battle + Back buttons, MUST be PASS
+	$MarginContainer/VBox/BottomBar.mouse_filter = Control.MOUSE_FILTER_PASS
+
 	# Labels IGNORE
 	$MarginContainer/VBox/TopRow/ShopPanel/Title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	$MarginContainer/VBox/TopRow/InventoryPanel/Title.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -101,6 +107,7 @@ func _create_action_buttons() -> void:
 	# Spacer
 	var spacer: Control = Control.new()
 	spacer.custom_minimum_size = Vector2(20, 0)
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bottom_bar.add_child(spacer)
 	
 	# Create Back button
