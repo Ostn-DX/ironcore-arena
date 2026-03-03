@@ -13,6 +13,13 @@ const U32_MAX: int = 4294967296
 var _state: int = 0
 
 
+func _init(initial_seed: int = 0) -> void:
+	if initial_seed != 0:
+		seed(initial_seed)
+	else:
+		_state = 1
+
+
 ## Seeds the RNG with the given value.
 ##
 ## A seed of 0 is automatically converted to 1 since xorshift
@@ -139,3 +146,18 @@ func get_state() -> int:
 ## [param state] The state to restore
 func set_state(state: int) -> void:
     _state = state & 0xFFFFFFFF
+
+
+# --- Convenience aliases (matches task spec) ---
+
+## Alias for next_u32().
+func next_int() -> int:
+    return next_u32()
+
+## Alias for next_float01().
+func next_float() -> float:
+    return next_float01()
+
+## Alias for next_float_range().
+func next_range(min_val: float, max_val: float) -> float:
+    return next_float_range(min_val, max_val)

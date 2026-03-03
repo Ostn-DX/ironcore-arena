@@ -12,6 +12,8 @@ const Pathfinder = preload("res://scripts/ai/pathfinder.gd")
 const AIDebugDraw = preload("res://scripts/ai/ai_debug_draw.gd")
 const BotAIAdvanced = preload("res://scripts/ai/bot_ai_advanced.gd")
 const Bot = preload("res://src/entities/bot.gd")
+const WeaponSystemClass = preload("res://src/systems/weapon_system.gd")
+const DeterministicRngClass = preload("res://src/systems/deterministic_rng.gd")
 
 const TICKS_PER_SECOND: float = 60.0
 const DT: float = 1.0 / TICKS_PER_SECOND
@@ -62,6 +64,17 @@ var _part_data: Dictionary = {}
 # Performance: Pre-allocated arrays for sorting
 var _sorted_bot_ids: Array = []
 var _sorted_proj_list: Array = []
+
+# Weapon system (instantiated per battle, not a singleton)
+var _weapon_system: WeaponSystemClass = null
+
+# Projectile array for weapon system (flat dictionaries, not objects)
+var _projectile_list: Array = []
+
+# Checkpoint tracking
+const CHECKSUM_INTERVAL_TICKS: int = 60
+var _checkpoints: Array = []  # Array of {tick, checksum}
+var _battle_seed: int = 0
 
 # ============================================================================
 # AI COMBAT SYSTEM INTEGRATION - Added by AGENT-001
@@ -200,8 +213,14 @@ func start_battle(arena_data: Dictionary, player_loadouts: Array, enemy_loadouts
 	
 	# Seed RNG
 	var seed_val: int = arena_data.get("seed", hash(arena_data.get("id", "") + str(Time.get_unix_time_from_system())))
-	rng = preload("res://src/systems/deterministic_rng.gd").new(seed_val)
-	
+	_battle_seed = seed_val
+	rng = DeterministicRngClass.new(seed_val)
+
+	# Create weapon system
+	_weapon_system = WeaponSystemClass.new()
+	_projectile_list.clear()
+	_checkpoints.clear()
+
 	# Spawn bots
 	_spawn_team(player_loadouts, 0, player_spawn_points)
 	_spawn_team(enemy_loadouts, 1, enemy_spawn_points)
@@ -212,22 +231,44 @@ func stop_battle() -> void:
 	projectiles.clear()
 	_pending_commands.clear()
 	_bots_array.clear()
+	_projectile_list.clear()
+	if _weapon_system != null:
+		_weapon_system.reset()
+		_weapon_system = null
 
 func _run_tick() -> void:
 	if current_tick >= MAX_TICKS:
 		battle_ended.emit("timeout", current_tick)
 		stop_battle()
 		return
-	
+
 	# Process pending commands
 	_process_commands()
-	
+
+	# Build sorted bot array for deterministic iteration
+	_sorted_bot_ids = bots.keys()
+	_sorted_bot_ids.sort()
+	var sorted_bots: Array = []
+	for bid in _sorted_bot_ids:
+		sorted_bots.append(bots[bid])
+
 	# Update bots
-	for bot_id in bots:
-		var bot: Bot = bots[bot_id]
-		if bot.is_alive():
+	for bot in sorted_bots:
+		if bot.is_alive:
 			bot.process_tick(DT)
-			tick_processed.emit(current_tick)
+
+	# Run weapon system
+	if _weapon_system != null and rng != null:
+		var weapon_events: Array = _weapon_system.process_tick(
+			sorted_bots, _projectile_list, rng, current_tick, DT, arena_bounds)
+		_process_weapon_events(weapon_events)
+
+	# Checkpoint
+	if current_tick > 0 and current_tick % CHECKSUM_INTERVAL_TICKS == 0:
+		var checksum: int = _compute_checkpoint(current_tick)
+		_checkpoints.append({"tick": current_tick, "checksum": checksum})
+
+	tick_processed.emit(current_tick)
 
 func _process_commands() -> void:
 	for cmd in _pending_commands:
@@ -327,6 +368,74 @@ func query_visible_bots(viewer: Node, max_range: float, view_angle: float) -> Ar
 			result.append(bot)
 	
 	return result
+
+func set_seed(s: int) -> void:
+	## Set the RNG seed for the next simulation.
+	_battle_seed = s
+	if rng != null:
+		rng.seed(s)
+
+func get_checkpoint(tick: int) -> Dictionary:
+	## Get the checkpoint data for a specific tick.
+	for cp in _checkpoints:
+		if cp.get("tick", -1) == tick:
+			return cp
+	return {}
+
+func get_all_checkpoints() -> Array:
+	return _checkpoints.duplicate()
+
+func _compute_checkpoint(tick: int) -> int:
+	## Compute a deterministic state checksum for replay verification.
+	var checksum: int = tick
+	var sorted_ids: Array = bots.keys()
+	sorted_ids.sort()
+	for id in sorted_ids:
+		var bot = bots[id]
+		checksum = _hash_combine(checksum, bot.sim_id)
+		checksum = _hash_combine(checksum, _hash_vector2(bot.position))
+		checksum = _hash_combine(checksum, _hash_float(float(bot.hp)))
+		checksum = _hash_combine(checksum, bot.weapons.size())
+	# Hash RNG state
+	if rng != null:
+		checksum = _hash_combine(checksum, rng.get_state())
+	return checksum
+
+func _hash_combine(a: int, b: int) -> int:
+	# Simple hash combination
+	return ((a << 5) + a) ^ b
+
+func _hash_vector2(v: Vector2) -> int:
+	return _hash_combine(_hash_float(v.x), _hash_float(v.y))
+
+func _hash_float(f: float) -> int:
+	# Convert float to integer bits for deterministic hashing
+	return int(f * 1000.0) & 0x7FFFFFFF
+
+func _process_weapon_events(events: Array) -> void:
+	## Forward weapon system events to signals for stats and rendering.
+	for event in events:
+		var event_type: String = event.get("type", "")
+		match event_type:
+			"hit":
+				var target_id: int = event.get("target_id", -1)
+				var damage: float = event.get("damage", 0.0)
+				if bots.has(target_id):
+					var target_bot = bots[target_id]
+					entity_damaged.emit(target_id, target_bot.hp, target_bot.max_hp)
+			"kill":
+				var target_id: int = event.get("target_id", -1)
+				if bots.has(target_id):
+					var target_bot = bots[target_id]
+					entity_destroyed.emit(target_id, target_bot.team)
+			"projectile_spawned":
+				var proj_id: int = event.get("proj_id", -1)
+				var pos: Vector2 = event.get("position", Vector2.ZERO)
+				var dir: Vector2 = event.get("direction", Vector2.RIGHT)
+				projectile_spawned.emit(proj_id, pos, dir)
+			"projectile_expired":
+				var proj_id: int = event.get("proj_id", -1)
+				projectile_destroyed.emit(proj_id)
 
 func toggle_debug() -> void:
 	if _debug_draw != null:

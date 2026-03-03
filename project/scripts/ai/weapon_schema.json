@@ -1,0 +1,945 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WeaponData",
+  "description": "Complete schema for IronCore Arena weapon definitions. Supports 12+ weapon variants across ballistic, energy, explosive, and utility archetypes.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "category",
+    "tier",
+    "weight",
+    "cost",
+    "damage_per_shot",
+    "fire_rate",
+    "range_min",
+    "range_optimal",
+    "range_max",
+    "accuracy",
+    "projectile_type",
+    "damage_type",
+    "projectile_speed",
+    "heat_per_shot",
+    "heat_dissipation_per_tick",
+    "overheat_threshold"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^wpn_[a-z0-9_]{2,44}$",
+      "description": "Unique weapon identifier. Must start with 'wpn_'."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Display name shown in shop and build screens."
+    },
+    "category": {
+      "type": "string",
+      "const": "weapon",
+      "description": "Must always be 'weapon' for weapon data."
+    },
+    "tier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Tier level (1-5). Higher tiers are stronger but more expensive."
+    },
+    "weight": {
+      "type": "number",
+      "minimum": 0.5,
+      "maximum": 80.0,
+      "description": "Weight in kg. Must fit within chassis weight_capacity."
+    },
+    "cost": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "Credit cost to purchase. 0 = starter weapon."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 256,
+      "description": "Flavor text for shop display."
+    },
+    "damage_per_shot": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 500,
+      "description": "Base damage before range falloff, resistances, and crit."
+    },
+    "fire_rate": {
+      "type": "number",
+      "minimum": 0.1,
+      "maximum": 10.0,
+      "description": "Shots per second. Converted to tick-based cooldown internally: cooldown_ticks = round(60 / fire_rate)."
+    },
+    "range_min": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Minimum effective range. Below this distance, damage is 0 (arm safety distance)."
+    },
+    "range_optimal": {
+      "type": "number",
+      "minimum": 10,
+      "maximum": 800,
+      "description": "Optimal range where full damage and accuracy apply."
+    },
+    "range_max": {
+      "type": "number",
+      "minimum": 20,
+      "maximum": 1200,
+      "description": "Maximum range. Projectiles despawn at this distance. Damage falls off between optimal and max."
+    },
+    "accuracy": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Base hit probability at optimal range [0.0 - 1.0]. Modified by sensor accuracy_bonus and range falloff."
+    },
+    "projectile_type": {
+      "type": "string",
+      "enum": ["ballistic", "beam", "melee", "aoe"],
+      "description": "Determines projectile behavior: ballistic=travels over time, beam=instant raycast, melee=instant close-range, aoe=travels then explodes."
+    },
+    "damage_type": {
+      "type": "string",
+      "enum": ["ballistic", "energy", "explosive"],
+      "description": "Determines which armor resistance applies: resist_ballistic, resist_energy, or resist_explosive."
+    },
+    "projectile_speed": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 2000,
+      "description": "Projectile travel speed in units/sec. 0 for beam and melee types."
+    },
+    "projectile_radius": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 30.0,
+      "default": 4.0,
+      "description": "Collision radius of the projectile entity."
+    },
+    "splash_radius": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 200,
+      "default": 0,
+      "description": "Area-of-effect damage radius. 0 = single target only."
+    },
+    "splash_falloff": {
+      "type": "number",
+      "minimum": 0.5,
+      "maximum": 3.0,
+      "default": 1.0,
+      "description": "Splash damage falloff exponent. 1.0=linear, 2.0=quadratic (damage drops faster at edge)."
+    },
+    "heat_per_shot": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 50,
+      "description": "Heat generated per shot. Accumulates on the weapon slot."
+    },
+    "heat_dissipation_per_tick": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5.0,
+      "description": "Heat removed per simulation tick (1/60 sec). Determines sustainable fire rate."
+    },
+    "overheat_threshold": {
+      "type": "number",
+      "minimum": 10,
+      "maximum": 200,
+      "description": "Heat level that triggers overheat lockout. Weapon cannot fire until heat drops to 0."
+    },
+    "overheat_lockout_ticks": {
+      "type": "integer",
+      "minimum": 30,
+      "maximum": 600,
+      "default": 120,
+      "description": "Forced cooldown duration in ticks when overheated (120 ticks = 2 seconds)."
+    },
+    "crit_chance": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 0.5,
+      "default": 0.0,
+      "description": "Probability of a critical hit [0.0 - 0.5]. Rolled per shot via DeterministicRng."
+    },
+    "crit_multiplier": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "default": 1.5,
+      "description": "Damage multiplier on critical hit."
+    },
+    "ammo_capacity": {
+      "type": "integer",
+      "minimum": -1,
+      "maximum": 999,
+      "default": -1,
+      "description": "Maximum ammo. -1 = unlimited ammo."
+    },
+    "reload_ticks": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 600,
+      "default": 0,
+      "description": "Ticks required to reload when ammo is depleted. 0 = no reload needed."
+    },
+    "burst_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 1,
+      "description": "Number of shots per burst. fire_rate applies between bursts."
+    },
+    "burst_delay_ticks": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 30,
+      "default": 0,
+      "description": "Ticks between shots within a burst. 0 = all shots fire simultaneously."
+    },
+    "spread_angle": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 45.0,
+      "default": 0,
+      "description": "Random spread in degrees applied to each shot direction. 0 = perfectly accurate."
+    },
+    "effects": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["type", "magnitude", "duration_ticks"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["slow", "stun", "burn", "emp", "armor_break"],
+            "description": "Effect type. slow=movement speed reduction, stun=full movement+fire lock, burn=damage over time, emp=disable sensors+utility, armor_break=reduce resistances."
+          },
+          "magnitude": {
+            "type": "number",
+            "minimum": 0.01,
+            "maximum": 1.0,
+            "description": "Effect strength. For slow: 0.3 = 30% speed reduction. For burn: damage per tick. For armor_break: resistance reduction."
+          },
+          "duration_ticks": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 600,
+            "description": "Effect duration in simulation ticks. 60 ticks = 1 second."
+          },
+          "tick_interval": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 60,
+            "default": 0,
+            "description": "For periodic effects (burn): ticks between damage applications. 0 = applies once."
+          },
+          "stacking": {
+            "type": "string",
+            "enum": ["replace", "refresh", "stack"],
+            "default": "refresh",
+            "description": "Stacking rule when same effect re-applied. replace=overwrite, refresh=reset duration, stack=additive (max 3 stacks)."
+          },
+          "max_stacks": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3,
+            "description": "Maximum stacks when stacking='stack'. Each stack adds magnitude additively."
+          },
+          "apply_chance": {
+            "type": "number",
+            "minimum": 0.01,
+            "maximum": 1.0,
+            "default": 1.0,
+            "description": "Probability that effect is applied on hit. Rolled via DeterministicRng."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Status effects applied on hit. Maximum 3 effects per weapon."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "sustained_fire",
+          "burst_fire",
+          "sniper",
+          "close_range",
+          "area_damage",
+          "support",
+          "anti_armor",
+          "anti_energy",
+          "crowd_control",
+          "high_heat",
+          "low_heat",
+          "starter"
+        ]
+      },
+      "uniqueItems": true,
+      "maxItems": 4,
+      "description": "Gameplay tags for AI weapon selection and UI filtering."
+    },
+    "ai_hints": {
+      "type": "object",
+      "properties": {
+        "preferred_range": {
+          "type": "string",
+          "enum": ["close", "medium", "far"],
+          "description": "AI preferred engagement range for bots equipped with this weapon."
+        },
+        "role_affinity": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["tank", "sniper", "scout", "support"]
+          },
+          "description": "AI roles that synergize well with this weapon."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Hints for AI weapon selection and tactical behavior."
+    }
+  },
+  "additionalProperties": false,
+
+  "definitions": {
+    "weapon_variants": {
+      "description": "Reference definitions for the 12 required weapon variants.",
+      "type": "array",
+      "items": [
+        {
+          "description": "T1 Ballistic: Light Machine Gun -- Fast-firing, low damage, sustained pressure",
+          "properties": {
+            "id": {"const": "wpn_mg_t1"},
+            "tier": {"const": 1},
+            "projectile_type": {"const": "ballistic"},
+            "damage_type": {"const": "ballistic"}
+          }
+        },
+        {
+          "description": "T1 Energy: Beam Cutter -- Short range beam, always hits in range, high heat",
+          "properties": {
+            "id": {"const": "wpn_laser_t1"},
+            "tier": {"const": 1},
+            "projectile_type": {"const": "beam"},
+            "damage_type": {"const": "energy"}
+          }
+        },
+        {
+          "description": "T1 Ballistic: Light Cannon -- Slow, hard-hitting single shots",
+          "properties": {
+            "id": {"const": "wpn_cannon_t1"},
+            "tier": {"const": 1},
+            "projectile_type": {"const": "ballistic"},
+            "damage_type": {"const": "ballistic"}
+          }
+        },
+        {
+          "description": "T1 Melee: Shock Blade -- Close range melee strike with stun chance",
+          "properties": {
+            "id": {"const": "wpn_blade_t1"},
+            "tier": {"const": 1},
+            "projectile_type": {"const": "melee"},
+            "damage_type": {"const": "energy"}
+          }
+        },
+        {
+          "description": "T2 Ballistic: Gatling Cannon -- Very high fire rate, spread, sustained suppression",
+          "properties": {
+            "id": {"const": "wpn_gatling_t2"},
+            "tier": {"const": 2},
+            "projectile_type": {"const": "ballistic"},
+            "damage_type": {"const": "ballistic"}
+          }
+        },
+        {
+          "description": "T2 Energy: Plasma Repeater -- Medium range energy weapon with burn effect",
+          "properties": {
+            "id": {"const": "wpn_plasma_t2"},
+            "tier": {"const": 2},
+            "projectile_type": {"const": "ballistic"},
+            "damage_type": {"const": "energy"}
+          }
+        },
+        {
+          "description": "T2 Explosive: Micro Rocket Pod -- Slow rockets with splash damage and slow",
+          "properties": {
+            "id": {"const": "wpn_rocket_t2"},
+            "tier": {"const": 2},
+            "projectile_type": {"const": "aoe"},
+            "damage_type": {"const": "explosive"}
+          }
+        },
+        {
+          "description": "T2 Support: Repair Beam -- Heals allies instead of damaging enemies",
+          "properties": {
+            "id": {"const": "wpn_repair_t2"},
+            "tier": {"const": 2},
+            "projectile_type": {"const": "beam"},
+            "damage_type": {"const": "energy"}
+          }
+        },
+        {
+          "description": "T3 Ballistic: Railgun -- Extreme range, extreme damage, long cooldown, piercing",
+          "properties": {
+            "id": {"const": "wpn_railgun_t3"},
+            "tier": {"const": 3},
+            "projectile_type": {"const": "ballistic"},
+            "damage_type": {"const": "ballistic"}
+          }
+        },
+        {
+          "description": "T3 Energy: Arc Disruptor -- Chain lightning that jumps to nearby targets, EMP effect",
+          "properties": {
+            "id": {"const": "wpn_arc_t3"},
+            "tier": {"const": 3},
+            "projectile_type": {"const": "beam"},
+            "damage_type": {"const": "energy"}
+          }
+        },
+        {
+          "description": "T3 Explosive: Siege Mortar -- Massive AOE, very slow fire rate, area denial",
+          "properties": {
+            "id": {"const": "wpn_mortar_t3"},
+            "tier": {"const": 3},
+            "projectile_type": {"const": "aoe"},
+            "damage_type": {"const": "explosive"}
+          }
+        },
+        {
+          "description": "T3 Utility: EMP Pulse Cannon -- Disables target weapons and sensors, low damage",
+          "properties": {
+            "id": {"const": "wpn_emp_t3"},
+            "tier": {"const": 3},
+            "projectile_type": {"const": "aoe"},
+            "damage_type": {"const": "energy"}
+          }
+        }
+      ]
+    }
+  },
+
+  "examples": [
+    {
+      "id": "wpn_mg_t1",
+      "name": "Light Machine Gun",
+      "category": "weapon",
+      "tier": 1,
+      "weight": 5.0,
+      "cost": 50,
+      "description": "Fast-firing ballistic weapon. Low damage per shot but excellent sustained DPS.",
+      "damage_per_shot": 8,
+      "fire_rate": 3.0,
+      "range_min": 15,
+      "range_optimal": 90,
+      "range_max": 150,
+      "accuracy": 0.7,
+      "projectile_type": "ballistic",
+      "damage_type": "ballistic",
+      "projectile_speed": 400.0,
+      "projectile_radius": 4.0,
+      "splash_radius": 0,
+      "splash_falloff": 1.0,
+      "heat_per_shot": 2.0,
+      "heat_dissipation_per_tick": 0.3,
+      "overheat_threshold": 40.0,
+      "overheat_lockout_ticks": 120,
+      "crit_chance": 0.05,
+      "crit_multiplier": 1.5,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 5.0,
+      "effects": [],
+      "tags": ["sustained_fire", "starter"],
+      "ai_hints": {
+        "preferred_range": "medium",
+        "role_affinity": ["tank", "scout"]
+      }
+    },
+    {
+      "id": "wpn_rocket_t2",
+      "name": "Micro Rocket Pod",
+      "category": "weapon",
+      "tier": 2,
+      "weight": 10.0,
+      "cost": 200,
+      "description": "Explosive rockets with splash damage. Slow but devastating.",
+      "damage_per_shot": 35,
+      "fire_rate": 0.5,
+      "range_min": 30,
+      "range_optimal": 120,
+      "range_max": 195,
+      "accuracy": 0.65,
+      "projectile_type": "aoe",
+      "damage_type": "explosive",
+      "projectile_speed": 250.0,
+      "projectile_radius": 6.0,
+      "splash_radius": 60.0,
+      "splash_falloff": 1.5,
+      "heat_per_shot": 8.0,
+      "heat_dissipation_per_tick": 0.15,
+      "overheat_threshold": 40.0,
+      "overheat_lockout_ticks": 150,
+      "crit_chance": 0.0,
+      "crit_multiplier": 1.0,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 3.0,
+      "effects": [
+        {
+          "type": "slow",
+          "magnitude": 0.2,
+          "duration_ticks": 120,
+          "tick_interval": 0,
+          "stacking": "refresh",
+          "max_stacks": 1,
+          "apply_chance": 0.8
+        }
+      ],
+      "tags": ["area_damage", "crowd_control"],
+      "ai_hints": {
+        "preferred_range": "medium",
+        "role_affinity": ["tank", "support"]
+      }
+    },
+    {
+      "id": "wpn_railgun_t3",
+      "name": "Railgun",
+      "category": "weapon",
+      "tier": 3,
+      "weight": 18.0,
+      "cost": 800,
+      "description": "Extreme-range magnetic accelerator. Devastating single shots with armor-piercing rounds.",
+      "damage_per_shot": 75,
+      "fire_rate": 0.3,
+      "range_min": 40,
+      "range_optimal": 250,
+      "range_max": 500,
+      "accuracy": 0.85,
+      "projectile_type": "ballistic",
+      "damage_type": "ballistic",
+      "projectile_speed": 1200.0,
+      "projectile_radius": 3.0,
+      "splash_radius": 0,
+      "splash_falloff": 1.0,
+      "heat_per_shot": 15.0,
+      "heat_dissipation_per_tick": 0.2,
+      "overheat_threshold": 50.0,
+      "overheat_lockout_ticks": 180,
+      "crit_chance": 0.15,
+      "crit_multiplier": 2.0,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 0.5,
+      "effects": [
+        {
+          "type": "armor_break",
+          "magnitude": 0.15,
+          "duration_ticks": 300,
+          "tick_interval": 0,
+          "stacking": "refresh",
+          "max_stacks": 1,
+          "apply_chance": 1.0
+        }
+      ],
+      "tags": ["sniper", "anti_armor"],
+      "ai_hints": {
+        "preferred_range": "far",
+        "role_affinity": ["sniper"]
+      }
+    },
+    {
+      "id": "wpn_blade_t1",
+      "name": "Shock Blade",
+      "category": "weapon",
+      "tier": 1,
+      "weight": 4.0,
+      "cost": 40,
+      "description": "Electrified melee weapon. Close range only but can stun targets.",
+      "damage_per_shot": 18,
+      "fire_rate": 2.0,
+      "range_min": 0,
+      "range_optimal": 25,
+      "range_max": 40,
+      "accuracy": 0.9,
+      "projectile_type": "melee",
+      "damage_type": "energy",
+      "projectile_speed": 0,
+      "projectile_radius": 12.0,
+      "splash_radius": 0,
+      "splash_falloff": 1.0,
+      "heat_per_shot": 3.0,
+      "heat_dissipation_per_tick": 0.4,
+      "overheat_threshold": 35.0,
+      "overheat_lockout_ticks": 90,
+      "crit_chance": 0.1,
+      "crit_multiplier": 1.8,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 0,
+      "effects": [
+        {
+          "type": "stun",
+          "magnitude": 1.0,
+          "duration_ticks": 30,
+          "tick_interval": 0,
+          "stacking": "replace",
+          "max_stacks": 1,
+          "apply_chance": 0.25
+        }
+      ],
+      "tags": ["close_range", "crowd_control", "starter"],
+      "ai_hints": {
+        "preferred_range": "close",
+        "role_affinity": ["tank", "scout"]
+      }
+    },
+    {
+      "id": "wpn_gatling_t2",
+      "name": "Gatling Cannon",
+      "category": "weapon",
+      "tier": 2,
+      "weight": 12.0,
+      "cost": 250,
+      "description": "High-RPM rotary cannon. Incredible sustained DPS but generates extreme heat.",
+      "damage_per_shot": 6,
+      "fire_rate": 6.0,
+      "range_min": 10,
+      "range_optimal": 80,
+      "range_max": 140,
+      "accuracy": 0.55,
+      "projectile_type": "ballistic",
+      "damage_type": "ballistic",
+      "projectile_speed": 500.0,
+      "projectile_radius": 3.0,
+      "splash_radius": 0,
+      "splash_falloff": 1.0,
+      "heat_per_shot": 1.5,
+      "heat_dissipation_per_tick": 0.2,
+      "overheat_threshold": 60.0,
+      "overheat_lockout_ticks": 180,
+      "crit_chance": 0.03,
+      "crit_multiplier": 1.3,
+      "burst_count": 3,
+      "burst_delay_ticks": 2,
+      "spread_angle": 10.0,
+      "effects": [],
+      "tags": ["sustained_fire", "high_heat"],
+      "ai_hints": {
+        "preferred_range": "close",
+        "role_affinity": ["tank"]
+      }
+    },
+    {
+      "id": "wpn_plasma_t2",
+      "name": "Plasma Repeater",
+      "category": "weapon",
+      "tier": 2,
+      "weight": 9.0,
+      "cost": 220,
+      "description": "Mid-range energy weapon firing superheated plasma bolts. Burn on hit.",
+      "damage_per_shot": 18,
+      "fire_rate": 2.0,
+      "range_min": 10,
+      "range_optimal": 100,
+      "range_max": 160,
+      "accuracy": 0.75,
+      "projectile_type": "ballistic",
+      "damage_type": "energy",
+      "projectile_speed": 350.0,
+      "projectile_radius": 5.0,
+      "splash_radius": 0,
+      "splash_falloff": 1.0,
+      "heat_per_shot": 5.0,
+      "heat_dissipation_per_tick": 0.25,
+      "overheat_threshold": 45.0,
+      "overheat_lockout_ticks": 120,
+      "crit_chance": 0.08,
+      "crit_multiplier": 1.6,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 3.0,
+      "effects": [
+        {
+          "type": "burn",
+          "magnitude": 2.0,
+          "duration_ticks": 180,
+          "tick_interval": 15,
+          "stacking": "refresh",
+          "max_stacks": 1,
+          "apply_chance": 0.6
+        }
+      ],
+      "tags": ["burst_fire", "anti_energy"],
+      "ai_hints": {
+        "preferred_range": "medium",
+        "role_affinity": ["scout", "support"]
+      }
+    },
+    {
+      "id": "wpn_repair_t2",
+      "name": "Repair Beam",
+      "category": "weapon",
+      "tier": 2,
+      "weight": 7.0,
+      "cost": 180,
+      "description": "Focused nanite beam that repairs allied bots. Cannot damage enemies.",
+      "damage_per_shot": -15,
+      "fire_rate": 2.0,
+      "range_min": 0,
+      "range_optimal": 80,
+      "range_max": 120,
+      "accuracy": 1.0,
+      "projectile_type": "beam",
+      "damage_type": "energy",
+      "projectile_speed": 0,
+      "projectile_radius": 2.0,
+      "splash_radius": 0,
+      "splash_falloff": 1.0,
+      "heat_per_shot": 3.0,
+      "heat_dissipation_per_tick": 0.35,
+      "overheat_threshold": 40.0,
+      "overheat_lockout_ticks": 90,
+      "crit_chance": 0.0,
+      "crit_multiplier": 1.0,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 0,
+      "effects": [],
+      "tags": ["support"],
+      "ai_hints": {
+        "preferred_range": "medium",
+        "role_affinity": ["support"]
+      }
+    },
+    {
+      "id": "wpn_laser_t1",
+      "name": "Beam Cutter",
+      "category": "weapon",
+      "tier": 1,
+      "weight": 6.0,
+      "cost": 70,
+      "description": "Energy beam. Always hits in range but short range and high heat.",
+      "damage_per_shot": 12,
+      "fire_rate": 2.0,
+      "range_min": 0,
+      "range_optimal": 60,
+      "range_max": 90,
+      "accuracy": 1.0,
+      "projectile_type": "beam",
+      "damage_type": "energy",
+      "projectile_speed": 0,
+      "projectile_radius": 2.0,
+      "splash_radius": 0,
+      "splash_falloff": 1.0,
+      "heat_per_shot": 4.0,
+      "heat_dissipation_per_tick": 0.25,
+      "overheat_threshold": 35.0,
+      "overheat_lockout_ticks": 120,
+      "crit_chance": 0.0,
+      "crit_multiplier": 1.0,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 0,
+      "effects": [],
+      "tags": ["close_range", "starter", "low_heat"],
+      "ai_hints": {
+        "preferred_range": "close",
+        "role_affinity": ["tank", "scout"]
+      }
+    },
+    {
+      "id": "wpn_cannon_t1",
+      "name": "Light Cannon",
+      "category": "weapon",
+      "tier": 1,
+      "weight": 8.0,
+      "cost": 80,
+      "description": "Slow but hard-hitting ballistic cannon.",
+      "damage_per_shot": 25,
+      "fire_rate": 0.8,
+      "range_min": 22,
+      "range_optimal": 105,
+      "range_max": 165,
+      "accuracy": 0.8,
+      "projectile_type": "ballistic",
+      "damage_type": "ballistic",
+      "projectile_speed": 300.0,
+      "projectile_radius": 5.0,
+      "splash_radius": 0,
+      "splash_falloff": 1.0,
+      "heat_per_shot": 5.0,
+      "heat_dissipation_per_tick": 0.2,
+      "overheat_threshold": 30.0,
+      "overheat_lockout_ticks": 120,
+      "crit_chance": 0.1,
+      "crit_multiplier": 1.8,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 2.0,
+      "effects": [],
+      "tags": ["sniper", "starter"],
+      "ai_hints": {
+        "preferred_range": "medium",
+        "role_affinity": ["sniper", "tank"]
+      }
+    },
+    {
+      "id": "wpn_arc_t3",
+      "name": "Arc Disruptor",
+      "category": "weapon",
+      "tier": 3,
+      "weight": 14.0,
+      "cost": 700,
+      "description": "Chain lightning beam that jumps between nearby enemies. Disables electronics.",
+      "damage_per_shot": 30,
+      "fire_rate": 0.8,
+      "range_min": 0,
+      "range_optimal": 120,
+      "range_max": 180,
+      "accuracy": 0.9,
+      "projectile_type": "beam",
+      "damage_type": "energy",
+      "projectile_speed": 0,
+      "projectile_radius": 2.0,
+      "splash_radius": 80.0,
+      "splash_falloff": 2.0,
+      "heat_per_shot": 10.0,
+      "heat_dissipation_per_tick": 0.18,
+      "overheat_threshold": 45.0,
+      "overheat_lockout_ticks": 180,
+      "crit_chance": 0.05,
+      "crit_multiplier": 1.5,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 0,
+      "effects": [
+        {
+          "type": "emp",
+          "magnitude": 1.0,
+          "duration_ticks": 90,
+          "tick_interval": 0,
+          "stacking": "refresh",
+          "max_stacks": 1,
+          "apply_chance": 0.5
+        }
+      ],
+      "tags": ["area_damage", "crowd_control", "anti_energy"],
+      "ai_hints": {
+        "preferred_range": "medium",
+        "role_affinity": ["support"]
+      }
+    },
+    {
+      "id": "wpn_mortar_t3",
+      "name": "Siege Mortar",
+      "category": "weapon",
+      "tier": 3,
+      "weight": 22.0,
+      "cost": 900,
+      "description": "Massive explosive shells with huge splash radius. Very slow, very heavy, very destructive.",
+      "damage_per_shot": 60,
+      "fire_rate": 0.25,
+      "range_min": 50,
+      "range_optimal": 200,
+      "range_max": 400,
+      "accuracy": 0.6,
+      "projectile_type": "aoe",
+      "damage_type": "explosive",
+      "projectile_speed": 180.0,
+      "projectile_radius": 8.0,
+      "splash_radius": 100.0,
+      "splash_falloff": 1.0,
+      "heat_per_shot": 12.0,
+      "heat_dissipation_per_tick": 0.1,
+      "overheat_threshold": 40.0,
+      "overheat_lockout_ticks": 240,
+      "crit_chance": 0.0,
+      "crit_multiplier": 1.0,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 8.0,
+      "effects": [
+        {
+          "type": "slow",
+          "magnitude": 0.35,
+          "duration_ticks": 180,
+          "tick_interval": 0,
+          "stacking": "refresh",
+          "max_stacks": 1,
+          "apply_chance": 1.0
+        }
+      ],
+      "tags": ["area_damage", "crowd_control", "high_heat"],
+      "ai_hints": {
+        "preferred_range": "far",
+        "role_affinity": ["tank"]
+      }
+    },
+    {
+      "id": "wpn_emp_t3",
+      "name": "EMP Pulse Cannon",
+      "category": "weapon",
+      "tier": 3,
+      "weight": 11.0,
+      "cost": 650,
+      "description": "Electromagnetic pulse that disables all systems in radius. Low direct damage but total shutdown.",
+      "damage_per_shot": 10,
+      "fire_rate": 0.4,
+      "range_min": 0,
+      "range_optimal": 100,
+      "range_max": 150,
+      "accuracy": 0.8,
+      "projectile_type": "aoe",
+      "damage_type": "energy",
+      "projectile_speed": 200.0,
+      "projectile_radius": 6.0,
+      "splash_radius": 120.0,
+      "splash_falloff": 1.0,
+      "heat_per_shot": 14.0,
+      "heat_dissipation_per_tick": 0.12,
+      "overheat_threshold": 50.0,
+      "overheat_lockout_ticks": 210,
+      "crit_chance": 0.0,
+      "crit_multiplier": 1.0,
+      "burst_count": 1,
+      "burst_delay_ticks": 0,
+      "spread_angle": 0,
+      "effects": [
+        {
+          "type": "emp",
+          "magnitude": 1.0,
+          "duration_ticks": 150,
+          "tick_interval": 0,
+          "stacking": "replace",
+          "max_stacks": 1,
+          "apply_chance": 0.9
+        },
+        {
+          "type": "stun",
+          "magnitude": 1.0,
+          "duration_ticks": 60,
+          "tick_interval": 0,
+          "stacking": "replace",
+          "max_stacks": 1,
+          "apply_chance": 0.4
+        }
+      ],
+      "tags": ["crowd_control", "anti_energy", "high_heat"],
+      "ai_hints": {
+        "preferred_range": "medium",
+        "role_affinity": ["support"]
+      }
+    }
+  ]
+}

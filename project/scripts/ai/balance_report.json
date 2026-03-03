@@ -1,0 +1,1144 @@
+{
+  "meta": {
+    "generated_at": "2026-03-03T22:59:21.223480+00:00",
+    "runs_per_pair": 10000,
+    "base_seed": 12345,
+    "total_duels": 550000,
+    "combat_weapons": 11,
+    "total_pairs": 55
+  },
+  "pairs": [
+    {
+      "weapon_a": "wpn_mg_t1",
+      "weapon_b": "wpn_laser_t1",
+      "weapon_a_wins": 9929,
+      "weapon_b_wins": 71,
+      "draws": 0,
+      "win_rate_a": 0.9929,
+      "win_rate_b": 0.0071,
+      "avg_ttk_winner": 6.332,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.944,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_mg_t1",
+      "weapon_b": "wpn_cannon_t1",
+      "weapon_a_wins": 1834,
+      "weapon_b_wins": 8166,
+      "draws": 0,
+      "win_rate_a": 0.1834,
+      "win_rate_b": 0.8166,
+      "avg_ttk_winner": 5.752,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 1.801,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_mg_t1",
+      "weapon_b": "wpn_blade_t1",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 7.194,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 1.475,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_mg_t1",
+      "weapon_b": "wpn_gatling_t2",
+      "weapon_a_wins": 1,
+      "weapon_b_wins": 9999,
+      "draws": 0,
+      "win_rate_a": 0.0001,
+      "win_rate_b": 0.9999,
+      "avg_ttk_winner": 2.924,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.22,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_mg_t1",
+      "weapon_b": "wpn_plasma_t2",
+      "weapon_a_wins": 44,
+      "weapon_b_wins": 9956,
+      "draws": 0,
+      "win_rate_a": 0.0044,
+      "win_rate_b": 0.9956,
+      "avg_ttk_winner": 3.485,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.663,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_mg_t1",
+      "weapon_b": "wpn_rocket_t2",
+      "weapon_a_wins": 5041,
+      "weapon_b_wins": 4959,
+      "draws": 0,
+      "win_rate_a": 0.5041,
+      "win_rate_b": 0.4959,
+      "avg_ttk_winner": 8.597,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 2.834,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_mg_t1",
+      "weapon_b": "wpn_railgun_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 3.936,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 6.172,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_mg_t1",
+      "weapon_b": "wpn_arc_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 3.758,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.011,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_mg_t1",
+      "weapon_b": "wpn_mortar_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 9.338,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 35.876,
+      "outlier_count": 4
+    },
+    {
+      "weapon_a": "wpn_mg_t1",
+      "weapon_b": "wpn_emp_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 8.287,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 2.234,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_laser_t1",
+      "weapon_b": "wpn_cannon_t1",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 6.192,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 3.17,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_laser_t1",
+      "weapon_b": "wpn_blade_t1",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 4.517,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.0,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_laser_t1",
+      "weapon_b": "wpn_gatling_t2",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 2.561,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.172,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_laser_t1",
+      "weapon_b": "wpn_plasma_t2",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 3.59,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.709,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_laser_t1",
+      "weapon_b": "wpn_rocket_t2",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 10.482,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 13.407,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_laser_t1",
+      "weapon_b": "wpn_railgun_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 4.319,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 7.329,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_laser_t1",
+      "weapon_b": "wpn_arc_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 3.754,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.016,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_laser_t1",
+      "weapon_b": "wpn_mortar_t3",
+      "weapon_a_wins": 4,
+      "weapon_b_wins": 9996,
+      "draws": 0,
+      "win_rate_a": 0.0004,
+      "win_rate_b": 0.9996,
+      "avg_ttk_winner": 9.379,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 35.647,
+      "outlier_count": 4
+    },
+    {
+      "weapon_a": "wpn_laser_t1",
+      "weapon_b": "wpn_emp_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 14.467,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.356,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_cannon_t1",
+      "weapon_b": "wpn_blade_t1",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 6.403,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 3.408,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_cannon_t1",
+      "weapon_b": "wpn_gatling_t2",
+      "weapon_a_wins": 666,
+      "weapon_b_wins": 9334,
+      "draws": 0,
+      "win_rate_a": 0.0666,
+      "win_rate_b": 0.9334,
+      "avg_ttk_winner": 3.622,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.294,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_cannon_t1",
+      "weapon_b": "wpn_plasma_t2",
+      "weapon_a_wins": 1022,
+      "weapon_b_wins": 8978,
+      "draws": 0,
+      "win_rate_a": 0.1022,
+      "win_rate_b": 0.8978,
+      "avg_ttk_winner": 3.701,
+      "avg_ttk_loser": 3.84,
+      "ttk_variance": 0.575,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_cannon_t1",
+      "weapon_b": "wpn_rocket_t2",
+      "weapon_a_wins": 6829,
+      "weapon_b_wins": 3171,
+      "draws": 0,
+      "win_rate_a": 0.6829,
+      "win_rate_b": 0.3171,
+      "avg_ttk_winner": 7.489,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 3.202,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_cannon_t1",
+      "weapon_b": "wpn_railgun_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 3.951,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 6.41,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_cannon_t1",
+      "weapon_b": "wpn_arc_t3",
+      "weapon_a_wins": 126,
+      "weapon_b_wins": 9874,
+      "draws": 0,
+      "win_rate_a": 0.0126,
+      "win_rate_b": 0.9874,
+      "avg_ttk_winner": 3.758,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.011,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_cannon_t1",
+      "weapon_b": "wpn_mortar_t3",
+      "weapon_a_wins": 6,
+      "weapon_b_wins": 9994,
+      "draws": 0,
+      "win_rate_a": 0.0006,
+      "win_rate_b": 0.9994,
+      "avg_ttk_winner": 9.326,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 35.752,
+      "outlier_count": 2
+    },
+    {
+      "weapon_a": "wpn_cannon_t1",
+      "weapon_b": "wpn_emp_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 6.192,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 3.158,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_blade_t1",
+      "weapon_b": "wpn_gatling_t2",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 3.423,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.844,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_blade_t1",
+      "weapon_b": "wpn_plasma_t2",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 4.746,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 1.898,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_blade_t1",
+      "weapon_b": "wpn_rocket_t2",
+      "weapon_a_wins": 25,
+      "weapon_b_wins": 9975,
+      "draws": 0,
+      "win_rate_a": 0.0025,
+      "win_rate_b": 0.9975,
+      "avg_ttk_winner": 11.391,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 16.324,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_blade_t1",
+      "weapon_b": "wpn_railgun_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 4.223,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 6.708,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_blade_t1",
+      "weapon_b": "wpn_arc_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 4.295,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.348,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_blade_t1",
+      "weapon_b": "wpn_mortar_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 28.316,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.729,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_blade_t1",
+      "weapon_b": "wpn_emp_t3",
+      "weapon_a_wins": 9349,
+      "weapon_b_wins": 651,
+      "draws": 0,
+      "win_rate_a": 0.9349,
+      "win_rate_b": 0.0651,
+      "avg_ttk_winner": 30.042,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 1.443,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_gatling_t2",
+      "weapon_b": "wpn_plasma_t2",
+      "weapon_a_wins": 5137,
+      "weapon_b_wins": 4863,
+      "draws": 0,
+      "win_rate_a": 0.5137,
+      "win_rate_b": 0.4863,
+      "avg_ttk_winner": 3.037,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.206,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_gatling_t2",
+      "weapon_b": "wpn_rocket_t2",
+      "weapon_a_wins": 9942,
+      "weapon_b_wins": 58,
+      "draws": 0,
+      "win_rate_a": 0.9942,
+      "win_rate_b": 0.0058,
+      "avg_ttk_winner": 4.612,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.437,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_gatling_t2",
+      "weapon_b": "wpn_railgun_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 3.934,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 6.159,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_gatling_t2",
+      "weapon_b": "wpn_arc_t3",
+      "weapon_a_wins": 845,
+      "weapon_b_wins": 9155,
+      "draws": 0,
+      "win_rate_a": 0.0845,
+      "win_rate_b": 0.9155,
+      "avg_ttk_winner": 3.736,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.02,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_gatling_t2",
+      "weapon_b": "wpn_mortar_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 9.307,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 35.797,
+      "outlier_count": 4
+    },
+    {
+      "weapon_a": "wpn_gatling_t2",
+      "weapon_b": "wpn_emp_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 3.977,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.782,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_plasma_t2",
+      "weapon_b": "wpn_rocket_t2",
+      "weapon_a_wins": 9845,
+      "weapon_b_wins": 155,
+      "draws": 0,
+      "win_rate_a": 0.9845,
+      "win_rate_b": 0.0155,
+      "avg_ttk_winner": 4.608,
+      "avg_ttk_loser": 6.017,
+      "ttk_variance": 1.067,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_plasma_t2",
+      "weapon_b": "wpn_railgun_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 3.944,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 6.236,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_plasma_t2",
+      "weapon_b": "wpn_arc_t3",
+      "weapon_a_wins": 2180,
+      "weapon_b_wins": 7820,
+      "draws": 0,
+      "win_rate_a": 0.218,
+      "win_rate_b": 0.782,
+      "avg_ttk_winner": 3.664,
+      "avg_ttk_loser": 3.767,
+      "ttk_variance": 0.057,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_plasma_t2",
+      "weapon_b": "wpn_mortar_t3",
+      "weapon_a_wins": 305,
+      "weapon_b_wins": 9695,
+      "draws": 0,
+      "win_rate_a": 0.0305,
+      "win_rate_b": 0.9695,
+      "avg_ttk_winner": 9.162,
+      "avg_ttk_loser": 21.35,
+      "ttk_variance": 29.501,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_plasma_t2",
+      "weapon_b": "wpn_emp_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 3.908,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.895,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_rocket_t2",
+      "weapon_b": "wpn_railgun_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 3.918,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 6.223,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_rocket_t2",
+      "weapon_b": "wpn_arc_t3",
+      "weapon_a_wins": 0,
+      "weapon_b_wins": 10000,
+      "draws": 0,
+      "win_rate_a": 0.0,
+      "win_rate_b": 1.0,
+      "avg_ttk_winner": 3.758,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.011,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_rocket_t2",
+      "weapon_b": "wpn_mortar_t3",
+      "weapon_a_wins": 437,
+      "weapon_b_wins": 9563,
+      "draws": 0,
+      "win_rate_a": 0.0437,
+      "win_rate_b": 0.9563,
+      "avg_ttk_winner": 9.139,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 29.407,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_rocket_t2",
+      "weapon_b": "wpn_emp_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 10.648,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 14.121,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_railgun_t3",
+      "weapon_b": "wpn_arc_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 4.314,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 7.262,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_railgun_t3",
+      "weapon_b": "wpn_mortar_t3",
+      "weapon_a_wins": 9832,
+      "weapon_b_wins": 168,
+      "draws": 0,
+      "win_rate_a": 0.9832,
+      "win_rate_b": 0.0168,
+      "avg_ttk_winner": 4.271,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 6.665,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_railgun_t3",
+      "weapon_b": "wpn_emp_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 4.338,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 7.361,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_arc_t3",
+      "weapon_b": "wpn_mortar_t3",
+      "weapon_a_wins": 1830,
+      "weapon_b_wins": 8170,
+      "draws": 0,
+      "win_rate_a": 0.183,
+      "win_rate_b": 0.817,
+      "avg_ttk_winner": 8.21,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 13.46,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_arc_t3",
+      "weapon_b": "wpn_emp_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 3.754,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 0.016,
+      "outlier_count": 0
+    },
+    {
+      "weapon_a": "wpn_mortar_t3",
+      "weapon_b": "wpn_emp_t3",
+      "weapon_a_wins": 10000,
+      "weapon_b_wins": 0,
+      "draws": 0,
+      "win_rate_a": 1.0,
+      "win_rate_b": 0.0,
+      "avg_ttk_winner": 9.441,
+      "avg_ttk_loser": 0.0,
+      "ttk_variance": 35.915,
+      "outlier_count": 2
+    }
+  ],
+  "imbalance_flags": [
+    {
+      "pair": "wpn_mg_t1 vs wpn_laser_t1",
+      "flag": "IMBALANCED",
+      "value": 0.9929,
+      "threshold": 0.7,
+      "detail": "wpn_mg_t1 dominates"
+    },
+    {
+      "pair": "wpn_mg_t1 vs wpn_cannon_t1",
+      "flag": "IMBALANCED",
+      "value": 0.8166,
+      "threshold": 0.7,
+      "detail": "wpn_cannon_t1 dominates"
+    },
+    {
+      "pair": "wpn_mg_t1 vs wpn_blade_t1",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_mg_t1 dominates"
+    },
+    {
+      "pair": "wpn_mg_t1 vs wpn_gatling_t2",
+      "flag": "IMBALANCED",
+      "value": 0.9999,
+      "threshold": 0.7,
+      "detail": "wpn_gatling_t2 dominates"
+    },
+    {
+      "pair": "wpn_mg_t1 vs wpn_gatling_t2",
+      "flag": "TOO_FAST",
+      "value": 2.924,
+      "threshold": 3.0
+    },
+    {
+      "pair": "wpn_mg_t1 vs wpn_plasma_t2",
+      "flag": "IMBALANCED",
+      "value": 0.9956,
+      "threshold": 0.7,
+      "detail": "wpn_plasma_t2 dominates"
+    },
+    {
+      "pair": "wpn_mg_t1 vs wpn_railgun_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_railgun_t3 dominates"
+    },
+    {
+      "pair": "wpn_mg_t1 vs wpn_arc_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_arc_t3 dominates"
+    },
+    {
+      "pair": "wpn_mg_t1 vs wpn_mortar_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_mortar_t3 dominates"
+    },
+    {
+      "pair": "wpn_mg_t1 vs wpn_emp_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_mg_t1 dominates"
+    },
+    {
+      "pair": "wpn_laser_t1 vs wpn_cannon_t1",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_cannon_t1 dominates"
+    },
+    {
+      "pair": "wpn_laser_t1 vs wpn_blade_t1",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_laser_t1 dominates"
+    },
+    {
+      "pair": "wpn_laser_t1 vs wpn_gatling_t2",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_gatling_t2 dominates"
+    },
+    {
+      "pair": "wpn_laser_t1 vs wpn_gatling_t2",
+      "flag": "TOO_FAST",
+      "value": 2.561,
+      "threshold": 3.0
+    },
+    {
+      "pair": "wpn_laser_t1 vs wpn_plasma_t2",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_plasma_t2 dominates"
+    },
+    {
+      "pair": "wpn_laser_t1 vs wpn_rocket_t2",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_rocket_t2 dominates"
+    },
+    {
+      "pair": "wpn_laser_t1 vs wpn_railgun_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_railgun_t3 dominates"
+    },
+    {
+      "pair": "wpn_laser_t1 vs wpn_arc_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_arc_t3 dominates"
+    },
+    {
+      "pair": "wpn_laser_t1 vs wpn_mortar_t3",
+      "flag": "IMBALANCED",
+      "value": 0.9996,
+      "threshold": 0.7,
+      "detail": "wpn_mortar_t3 dominates"
+    },
+    {
+      "pair": "wpn_laser_t1 vs wpn_emp_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_laser_t1 dominates"
+    },
+    {
+      "pair": "wpn_cannon_t1 vs wpn_blade_t1",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_cannon_t1 dominates"
+    },
+    {
+      "pair": "wpn_cannon_t1 vs wpn_gatling_t2",
+      "flag": "IMBALANCED",
+      "value": 0.9334,
+      "threshold": 0.7,
+      "detail": "wpn_gatling_t2 dominates"
+    },
+    {
+      "pair": "wpn_cannon_t1 vs wpn_plasma_t2",
+      "flag": "IMBALANCED",
+      "value": 0.8978,
+      "threshold": 0.7,
+      "detail": "wpn_plasma_t2 dominates"
+    },
+    {
+      "pair": "wpn_cannon_t1 vs wpn_railgun_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_railgun_t3 dominates"
+    },
+    {
+      "pair": "wpn_cannon_t1 vs wpn_arc_t3",
+      "flag": "IMBALANCED",
+      "value": 0.9874,
+      "threshold": 0.7,
+      "detail": "wpn_arc_t3 dominates"
+    },
+    {
+      "pair": "wpn_cannon_t1 vs wpn_mortar_t3",
+      "flag": "IMBALANCED",
+      "value": 0.9994,
+      "threshold": 0.7,
+      "detail": "wpn_mortar_t3 dominates"
+    },
+    {
+      "pair": "wpn_cannon_t1 vs wpn_emp_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_cannon_t1 dominates"
+    },
+    {
+      "pair": "wpn_blade_t1 vs wpn_gatling_t2",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_gatling_t2 dominates"
+    },
+    {
+      "pair": "wpn_blade_t1 vs wpn_plasma_t2",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_plasma_t2 dominates"
+    },
+    {
+      "pair": "wpn_blade_t1 vs wpn_rocket_t2",
+      "flag": "IMBALANCED",
+      "value": 0.9975,
+      "threshold": 0.7,
+      "detail": "wpn_rocket_t2 dominates"
+    },
+    {
+      "pair": "wpn_blade_t1 vs wpn_railgun_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_railgun_t3 dominates"
+    },
+    {
+      "pair": "wpn_blade_t1 vs wpn_arc_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_arc_t3 dominates"
+    },
+    {
+      "pair": "wpn_blade_t1 vs wpn_mortar_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_blade_t1 dominates"
+    },
+    {
+      "pair": "wpn_blade_t1 vs wpn_emp_t3",
+      "flag": "IMBALANCED",
+      "value": 0.9349,
+      "threshold": 0.7,
+      "detail": "wpn_blade_t1 dominates"
+    },
+    {
+      "pair": "wpn_blade_t1 vs wpn_emp_t3",
+      "flag": "TOO_SLOW",
+      "value": 30.042,
+      "threshold": 30.0
+    },
+    {
+      "pair": "wpn_gatling_t2 vs wpn_rocket_t2",
+      "flag": "IMBALANCED",
+      "value": 0.9942,
+      "threshold": 0.7,
+      "detail": "wpn_gatling_t2 dominates"
+    },
+    {
+      "pair": "wpn_gatling_t2 vs wpn_railgun_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_railgun_t3 dominates"
+    },
+    {
+      "pair": "wpn_gatling_t2 vs wpn_arc_t3",
+      "flag": "IMBALANCED",
+      "value": 0.9155,
+      "threshold": 0.7,
+      "detail": "wpn_arc_t3 dominates"
+    },
+    {
+      "pair": "wpn_gatling_t2 vs wpn_mortar_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_mortar_t3 dominates"
+    },
+    {
+      "pair": "wpn_gatling_t2 vs wpn_emp_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_gatling_t2 dominates"
+    },
+    {
+      "pair": "wpn_plasma_t2 vs wpn_rocket_t2",
+      "flag": "IMBALANCED",
+      "value": 0.9845,
+      "threshold": 0.7,
+      "detail": "wpn_plasma_t2 dominates"
+    },
+    {
+      "pair": "wpn_plasma_t2 vs wpn_railgun_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_railgun_t3 dominates"
+    },
+    {
+      "pair": "wpn_plasma_t2 vs wpn_arc_t3",
+      "flag": "IMBALANCED",
+      "value": 0.782,
+      "threshold": 0.7,
+      "detail": "wpn_arc_t3 dominates"
+    },
+    {
+      "pair": "wpn_plasma_t2 vs wpn_mortar_t3",
+      "flag": "IMBALANCED",
+      "value": 0.9695,
+      "threshold": 0.7,
+      "detail": "wpn_mortar_t3 dominates"
+    },
+    {
+      "pair": "wpn_plasma_t2 vs wpn_emp_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_plasma_t2 dominates"
+    },
+    {
+      "pair": "wpn_rocket_t2 vs wpn_railgun_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_railgun_t3 dominates"
+    },
+    {
+      "pair": "wpn_rocket_t2 vs wpn_arc_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_arc_t3 dominates"
+    },
+    {
+      "pair": "wpn_rocket_t2 vs wpn_mortar_t3",
+      "flag": "IMBALANCED",
+      "value": 0.9563,
+      "threshold": 0.7,
+      "detail": "wpn_mortar_t3 dominates"
+    },
+    {
+      "pair": "wpn_rocket_t2 vs wpn_emp_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_rocket_t2 dominates"
+    },
+    {
+      "pair": "wpn_railgun_t3 vs wpn_arc_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_railgun_t3 dominates"
+    },
+    {
+      "pair": "wpn_railgun_t3 vs wpn_mortar_t3",
+      "flag": "IMBALANCED",
+      "value": 0.9832,
+      "threshold": 0.7,
+      "detail": "wpn_railgun_t3 dominates"
+    },
+    {
+      "pair": "wpn_railgun_t3 vs wpn_emp_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_railgun_t3 dominates"
+    },
+    {
+      "pair": "wpn_arc_t3 vs wpn_mortar_t3",
+      "flag": "IMBALANCED",
+      "value": 0.817,
+      "threshold": 0.7,
+      "detail": "wpn_mortar_t3 dominates"
+    },
+    {
+      "pair": "wpn_arc_t3 vs wpn_emp_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_arc_t3 dominates"
+    },
+    {
+      "pair": "wpn_mortar_t3 vs wpn_emp_t3",
+      "flag": "IMBALANCED",
+      "value": 1.0,
+      "threshold": 0.7,
+      "detail": "wpn_mortar_t3 dominates"
+    }
+  ],
+  "summary": {
+    "most_wins": "wpn_railgun_t3",
+    "most_wins_count": 99832,
+    "most_losses": "wpn_emp_t3",
+    "most_losses_count": 99349,
+    "flagged_pairs": 55,
+    "weapon_win_totals": {
+      "wpn_railgun_t3": 99832,
+      "wpn_arc_t3": 78679,
+      "wpn_mortar_t3": 77586,
+      "wpn_plasma_t2": 66127,
+      "wpn_gatling_t2": 65257,
+      "wpn_cannon_t1": 46815,
+      "wpn_rocket_t2": 38755,
+      "wpn_mg_t1": 36849,
+      "wpn_laser_t1": 20075,
+      "wpn_blade_t1": 19374,
+      "wpn_emp_t3": 651
+    },
+    "weapon_loss_totals": {
+      "wpn_emp_t3": 99349,
+      "wpn_blade_t1": 80626,
+      "wpn_laser_t1": 79925,
+      "wpn_mg_t1": 63151,
+      "wpn_rocket_t2": 61245,
+      "wpn_cannon_t1": 53185,
+      "wpn_gatling_t2": 34743,
+      "wpn_plasma_t2": 33873,
+      "wpn_mortar_t3": 22414,
+      "wpn_arc_t3": 21321,
+      "wpn_railgun_t3": 168
+    }
+  }
+}

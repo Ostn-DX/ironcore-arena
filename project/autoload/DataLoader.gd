@@ -60,6 +60,15 @@ func get_arenas_by_tier(tier: int) -> Array:
 	return _core.get_arenas_by_tier(tier)
 
 
+# --- Weapon Data (typed WeaponData resources) ---
+
+func load_weapons() -> Array:
+	return _core.load_weapons()
+
+func get_weapon_data(id: String):
+	return _core.get_weapon_data(id)
+
+
 # --- Component helpers ---
 
 func get_components_unlocked_at_tier(tier: int) -> Dictionary:
