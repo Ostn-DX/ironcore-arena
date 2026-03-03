@@ -141,14 +141,23 @@ func _open_builder() -> void:
 	var builder: Control = build_screen_scene.instantiate()
 	builder.name = "BuildScreen"
 	
-	if builder.has_signal("back_pressed"):
-		builder.back_pressed.connect(_go_back)
-	if builder.has_signal("test_battle_pressed"):
-		builder.test_battle_pressed.connect(_on_test_battle)
-	if builder.has_signal("start_campaign_pressed"):
-		builder.start_campaign_pressed.connect(_on_builder_start_campaign)
-	
+	# Add to tree first so _ready() runs and @onready vars are assigned
 	screen_manager.add_child(builder)
+	
+	# Wait one frame for builder _ready() to complete
+	await get_tree().process_frame
+	
+	# NOW connect signals (builder is fully initialized)
+	if builder.has_signal("back_pressed"):
+		if not builder.back_pressed.is_connected(_go_back):
+			builder.back_pressed.connect(_go_back)
+	if builder.has_signal("test_battle_pressed"):
+		if not builder.test_battle_pressed.is_connected(_on_test_battle):
+			builder.test_battle_pressed.connect(_on_test_battle)
+	if builder.has_signal("start_campaign_pressed"):
+		if not builder.start_campaign_pressed.is_connected(_on_builder_start_campaign):
+			builder.start_campaign_pressed.connect(_on_builder_start_campaign)
+	
 	_switch_to_screen(builder)
 
 func _open_shop() -> void:
