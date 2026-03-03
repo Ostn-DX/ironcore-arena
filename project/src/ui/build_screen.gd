@@ -41,6 +41,7 @@ var current_bot: Dictionary = {
 @onready var back_btn: Button = $MarginContainer/MainGrid/BottomBar/BackBtn
 
 func _ready() -> void:
+	print("BuildScreen: _ready() called")
 	_setup_mouse_filters()
 	_setup_shop_buttons()
 	_load_inventory()
@@ -49,8 +50,20 @@ func _ready() -> void:
 	_update_preview()
 	
 	# Connect button signals
-	back_btn.pressed.connect(_on_back_pressed)
-	test_btn.pressed.connect(_on_test_pressed)
+	if back_btn:
+		back_btn.pressed.connect(_on_back_pressed)
+		print("BuildScreen: Back button connected")
+	else:
+		push_warning("BuildScreen: back_btn is null!")
+	
+	if test_btn:
+		test_btn.pressed.connect(_on_test_pressed)
+		print("BuildScreen: Test button connected")
+	else:
+		push_warning("BuildScreen: test_btn is null!")
+	
+	# Debug: Print button states
+	call_deferred("_debug_button_states")
 	
 	# Connect new action buttons
 	if mount_button and not mount_button.pressed.is_connected(_on_mount_pressed):
@@ -70,6 +83,22 @@ func _ready() -> void:
 
 func _setup_mouse_filters() -> void:
 	## Defensive: Ensure proper mouse_filter settings to prevent input blocking
+	
+	# Root should pass input to children
+	mouse_filter = Control.MOUSE_FILTER_PASS
+	
+	# Parent containers should pass input
+	var margin = $MarginContainer
+	var grid = $MarginContainer/MainGrid
+	var bottom = $MarginContainer/MainGrid/BottomBar
+	
+	if margin:
+		margin.mouse_filter = Control.MOUSE_FILTER_PASS
+	if grid:
+		grid.mouse_filter = Control.MOUSE_FILTER_PASS
+	if bottom:
+		bottom.mouse_filter = Control.MOUSE_FILTER_PASS
+	
 	# Labels should not block input
 	if weight_label:
 		weight_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -137,6 +166,35 @@ func _on_test_pressed() -> void:
 	# Save current bot before battle
 	_save_current_bot()
 	test_battle_pressed.emit()
+
+func _debug_button_states() -> void:
+	print("=== BuildScreen Button States ===")
+	if back_btn:
+		print("BackBtn: visible=", back_btn.visible, ", mouse_filter=", back_btn.mouse_filter, ", global_rect=", back_btn.get_global_rect())
+	else:
+		print("BackBtn: NULL")
+	
+	if test_btn:
+		print("TestBtn: visible=", test_btn.visible, ", mouse_filter=", test_btn.mouse_filter, ", global_rect=", test_btn.get_global_rect())
+	else:
+		print("TestBtn: NULL")
+	
+	var margin = $MarginContainer
+	var grid = $MarginContainer/MainGrid
+	var bottom = $MarginContainer/MainGrid/BottomBar
+	
+	print("MarginContainer mouse_filter: ", margin.mouse_filter)
+	print("MainGrid mouse_filter: ", grid.mouse_filter)
+	print("BottomBar mouse_filter: ", bottom.mouse_filter)
+	print("=================================")
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		print("BuildScreen: Mouse click at ", event.position)
+		if back_btn:
+			print("  BackBtn rect: ", back_btn.get_global_rect(), ", contains: ", back_btn.get_global_rect().has_point(event.position))
+		if test_btn:
+			print("  TestBtn rect: ", test_btn.get_global_rect(), ", contains: ", test_btn.get_global_rect().has_point(event.position))
 
 func _setup_shop_buttons() -> void:
 	for child in shop_buttons.get_children():
@@ -282,7 +340,7 @@ func _on_action_pressed() -> void:
 		# Equip to current bot
 		var category: String = selected_part.get("category", "")
 		var part_id: String = selected_part.get("id", "")
-		
+
 		match category:
 			"chassis":
 				current_bot["chassis"] = part_id
@@ -290,7 +348,9 @@ func _on_action_pressed() -> void:
 				current_bot["armor"] = part_id
 			"weapon", "utility":
 				current_bot["weapon"] = part_id	# Weapon or heal gun
-		
+				# Update GameState loadout with selected weapon ID
+				_sync_weapon_to_gamestate(part_id)
+
 		_update_bot_display()
 
 func _update_bot_display() -> void:
@@ -317,9 +377,14 @@ func _update_bot_display() -> void:
 					equipped_text += "	HP: %d\n" % hp
 				elif slot == "weapon":
 					var stats: Dictionary = part.get("stats", {})
-					var dmg: float = stats.get("damage_per_shot", 0)
-					var range_max: float = stats.get("range_max", 0)
-					equipped_text += "	Damage: %.1f, Range: %.0f\n" % [dmg, range_max]
+					var dmg: float = stats.get("damage_per_shot", part.get("damage_per_shot", 0))
+					var fr: float = stats.get("fire_rate", part.get("fire_rate", 1.0))
+					var r_max: float = stats.get("range_max", part.get("range_max", 0))
+					var r_opt: float = stats.get("range_optimal", part.get("range_optimal", 0))
+					var dmg_type: String = str(stats.get("damage_type", part.get("damage_type", "")))
+					var dps_val: float = absf(dmg) * fr
+					equipped_text += "	DPS: %.1f | Damage: %.1f | Rate: %.1f/s\n" % [dps_val, dmg, fr]
+					equipped_text += "	Range: %.0f-%.0f | Type: %s\n" % [r_opt, r_max, dmg_type.capitalize()]
 				equipped_text += "\n"
 		else:
 			equipped_text += slot.capitalize() + ": [Empty]\n\n"
@@ -332,6 +397,19 @@ func _update_bot_display() -> void:
 		status += " [OVER!]"
 	weight_label.text = status
 	credits_label.text = "Credits: %d" % GameState.credits
+
+	# Calculate total DPS from equipped weapon
+	var total_dps: float = 0.0
+	var weapon_id: String = current_bot.get("weapon", "")
+	if not weapon_id.is_empty() and DataLoader:
+		var wpn: Dictionary = DataLoader.get_weapon(weapon_id)
+		if not wpn.is_empty():
+			var s: Dictionary = wpn.get("stats", wpn)
+			var d: float = float(s.get("damage_per_shot", 0))
+			var r: float = float(s.get("fire_rate", 1.0))
+			total_dps = absf(d) * r
+	if dps_label:
+		dps_label.text = "DPS: %.1f" % total_dps
 
 
 func _save_current_bot() -> void:
@@ -369,3 +447,18 @@ func _on_color_changed(color: Color) -> void:
 func _on_inventory_filter_changed(index: int) -> void:
 	print("BuildScreen: Inventory filter changed to ", index)
 	_load_inventory()
+
+
+func _sync_weapon_to_gamestate(weapon_id: String) -> void:
+	## Update the active loadout in GameState with the selected weapon ID.
+	if not GameState:
+		return
+	var loadout_id: String = current_bot.get("id", "")
+	if loadout_id.is_empty():
+		return
+	var loadout: Dictionary = GameState.get_loadout(loadout_id)
+	if loadout.is_empty():
+		return
+	# Update weapons array in loadout
+	loadout["weapons"] = [weapon_id]
+	GameState.add_loadout(loadout)
