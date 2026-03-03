@@ -1,7 +1,6 @@
 extends Node
 ## GameState singleton - holds player profile: owned parts, credits,
 ## loadouts, completed arenas, campaign progress. Emits signals on change.
-## INTEGRATED: Now uses SaveManager for persistence
 
 signal credits_changed(new_amount: int)
 signal parts_changed()
@@ -57,59 +56,49 @@ var game_mode: String = "campaign"
 const SAVE_PATH: String = "user://ironcore_save.json"
 const CURRENT_VERSION: String = "0.1.0"
 
-# Current save slot
-var current_save_slot: int = 0
 
 func _ready() -> void:
-	# Try new SaveManager first, fallback to legacy
-	if SaveManager:
-		load_game()
-	else:
-		_load_game_legacy()
-	
+	load_game()
+
 	# Give starter parts if new game
 	if owned_parts.is_empty():
 		_give_starter_kit()
-	
-	# Connect to EventBus
-	if EventBus:
-		EventBus.credits_changed.connect(_on_credits_changed)
-
-func _on_credits_changed(new_amount: int, _delta: int) -> void:
-	# Sync EventBus credits to GameState
-	credits = new_amount
 
 
 func _give_starter_kit() -> void:
 	## Give new player starting equipment
+	## UPDATED: Use actual component IDs from components.json
 	credits = 500
-	
-	# Starter parts
+
+	# Starter parts - matching components.json IDs
 	owned_parts = {
-		"chassis_light_t1": 2,
-		"wpn_mg_t1": 4,
-		"arm_plate_t1": 2,
-		"mob_wheels_t1": 2,
-		"sen_basic_t1": 2,
-		"utl_repair_t1": 1
+		"akaumin_dl2_100": 2,  # Light chassis (starter)
+		"torq_mk1": 1,         # Medium chassis
+		"santrin_auro": 4,     # Basic armor
+		"steel_guard": 2,      # Heavy armor
+		"puncher_mg": 4,       # Basic machine gun
+		"stinger_laser": 2,    # Laser weapon
 	}
-	
-	# Default loadout
+
+	# Default loadouts - 2 starter bots
 	loadouts = [
 		{
-			"id": "loadout_1",
-			"name": "Starter Scout",
-			"chassis": "chassis_light_t1",
-			"weapons": ["wpn_mg_t1"],
-			"armor": [],
-			"mobility": ["mob_wheels_t1"],
-			"sensors": ["sen_basic_t1"],
-			"utilities": [],
-			"ai_profile": "ai_balanced"
+			"name": "Striker Alpha",
+			"chassis": "akaumin_dl2_100",
+			"armor": "santrin_auro",
+			"weapon": "puncher_mg",
+			"enabled": true
+		},
+		{
+			"name": "Defender Beta",
+			"chassis": "torq_mk1",
+			"armor": "steel_guard",
+			"weapon": "stinger_laser",
+			"enabled": false
 		}
 	]
 	
-	active_loadout_ids = ["loadout_1"]
+	active_loadout_ids = ["0", "1"]
 	
 	parts_changed.emit()
 	loadouts_changed.emit()
@@ -135,11 +124,22 @@ func add_part(part_id: String, quantity: int = 1) -> void:
 
 
 func remove_part(part_id: String, quantity: int = 1) -> bool:
+	## Bible: Validate inputs
+	if part_id.is_empty():
+		push_warning("remove_part called with empty part_id")
+		return false
+	
+	if quantity <= 0:
+		push_warning("remove_part called with invalid quantity: %d" % quantity)
+		return false
+	
 	if not owned_parts.has(part_id) or owned_parts[part_id] < quantity:
 		return false
+	
 	owned_parts[part_id] -= quantity
 	if owned_parts[part_id] <= 0:
 		owned_parts.erase(part_id)
+	
 	parts_changed.emit()
 	return true
 
@@ -153,17 +153,41 @@ func get_part_quantity(part_id: String) -> int:
 
 
 func add_loadout(loadout: Dictionary) -> void:
-	# Validate loadout has required fields
-	if not loadout.has("id") or not loadout.has("name"):
-		push_error("Invalid loadout: missing id or name")
+	## Bible: Validate loadout has required fields
+	if not loadout is Dictionary:
+		push_error("Invalid loadout: not a Dictionary")
 		return
 	
-	# Remove existing loadout with same ID
+	if not loadout.has("name"):
+		push_error("Invalid loadout: missing name")
+		return
+	
+	## Ensure name is not empty
+	var loadout_name: String = loadout.get("name", "")
+	if loadout_name.strip_edges().is_empty():
+		push_error("Invalid loadout: name cannot be empty")
+		return
+	
+	## Generate ID if not provided
+	if not loadout.has("id"):
+		loadout["id"] = "loadout_%d_%d" % [Time.get_unix_time_from_system(), randi()]
+
+	## Remove existing loadout with same ID
 	for i in range(loadouts.size()):
 		if loadouts[i].get("id") == loadout["id"]:
 			loadouts.remove_at(i)
 			break
-	
+
+	## Bible: Sanitize loadout data
+	if not loadout.has("chassis"):
+		loadout["chassis"] = ""
+	if not loadout.has("armor"):
+		loadout["armor"] = ""
+	if not loadout.has("weapon"):
+		loadout["weapon"] = ""
+	if not loadout.has("enabled"):
+		loadout["enabled"] = true
+
 	loadouts.append(loadout)
 	loadouts_changed.emit()
 
@@ -217,24 +241,24 @@ func get_arenas_by_tier(tier: int) -> Array[String]:
 	## Get arena IDs available at a specific tier
 	var arenas: Array[String] = []
 	var all_arenas: Array = DataLoader.get_all_arenas() if DataLoader else []
-	
+
 	for arena in all_arenas:
 		if arena is Dictionary and arena.get("tier", 0) == tier:
 			arenas.append(arena.get("id", ""))
-	
+
 	return arenas
 
 
 func advance_tier() -> void:
 	## Advance to next tier and unlock new content
 	var new_tier: int = current_tier + 1
-	
+
 	# Unlock arenas for this tier
 	var tier_arenas: Array[String] = get_arenas_by_tier(new_tier)
 	for arena_id in tier_arenas:
 		unlock_arena(arena_id)
 		print("GameState: Unlocked tier %d arena - %s" % [new_tier, arena_id])
-	
+
 	current_tier = new_tier
 	print("GameState: Advanced to tier ", current_tier)
 
@@ -243,11 +267,11 @@ func can_advance_tier() -> bool:
 	## Check if player can advance to next tier
 	# Must complete all arenas in current tier
 	var current_tier_arenas: Array[String] = get_arenas_by_tier(current_tier)
-	
+
 	for arena_id in current_tier_arenas:
 		if not is_arena_completed(arena_id):
 			return false
-	
+
 	return true
 
 
@@ -263,7 +287,7 @@ func complete_arena(arena_id: String) -> void:
 	if not completed_arenas.has(arena_id):
 		completed_arenas.append(arena_id)
 		arena_completed.emit(arena_id)
-		
+
 		# Check for tier advancement
 		if can_advance_tier():
 			advance_tier()
@@ -296,6 +320,36 @@ func _unlock_all_parts() -> void:
 	## DEPRECATED: Arcade mode now just sets credits high for free purchases
 	pass
 
+
+func _give_all_parts() -> void:
+	## Arcade mode: Unlock all parts for testing
+	## Bible: Add all components from DataLoader
+	if not DataLoader or not is_instance_valid(DataLoader):
+		push_warning("GameState: Cannot give all parts - DataLoader not available")
+		return
+	
+	## Add all chassis
+	for chassis in DataLoader.get_all_chassis():
+		var id: String = chassis.get("id", "")
+		if not id.is_empty():
+			owned_parts[id] = 99
+	
+	## Add all plating (armor)
+	for plating in DataLoader.get_all_plating():
+		var id: String = plating.get("id", "")
+		if not id.is_empty():
+			owned_parts[id] = 99
+	
+	## Add all weapons
+	for weapon in DataLoader.get_all_weapons():
+		var id: String = weapon.get("id", "")
+		if not id.is_empty():
+			owned_parts[id] = 99
+	
+	parts_changed.emit()
+	print("GameState: All parts unlocked for arcade mode")
+
+
 func is_arcade_mode() -> bool:
 	return game_mode == "arcade"
 
@@ -303,18 +357,9 @@ func is_campaign_mode() -> bool:
 	return game_mode == "campaign"
 
 
-# --- Save / Load (Integrated with SaveManager) ---
+# --- Save / Load ---
 
 func save_game() -> void:
-	## Save using new SaveManager if available, else fallback
-	if SaveManager:
-		_save_with_manager()
-	else:
-		_save_legacy()
-
-func _save_with_manager() -> void:
-	## Use the new SaveManager system
-	# Prepare save data
 	var save_data: Dictionary = {
 		"version": CURRENT_VERSION,
 		"credits": credits,
@@ -328,27 +373,7 @@ func _save_with_manager() -> void:
 		"campaign_progress": campaign_progress,
 		"settings": settings
 	}
-	
-	# Store in SaveManager and save
-	SaveManager.current_save_data = save_data
-	SaveManager.save_game(current_save_slot)
 
-func _save_legacy() -> void:
-	## Fallback to legacy save system
-	var save_data: Dictionary = {
-		"version": CURRENT_VERSION,
-		"credits": credits,
-		"current_tier": current_tier,
-		"owned_parts": owned_parts,
-		"part_hp": part_hp,
-		"loadouts": loadouts,
-		"active_loadout_ids": active_loadout_ids,
-		"completed_arenas": completed_arenas,
-		"unlocked_arenas": unlocked_arenas,
-		"campaign_progress": campaign_progress,
-		"settings": settings
-	}
-	
 	var json_text: String = JSON.stringify(save_data, "\t")
 	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -358,105 +383,75 @@ func _save_legacy() -> void:
 	else:
 		push_error("Failed to save game: ", FileAccess.get_open_error())
 
+
 func load_game() -> bool:
-	## Load using new SaveManager if available
-	if SaveManager:
-		return _load_with_manager()
-	else:
-		return _load_game_legacy()
-
-func _load_with_manager() -> bool:
-	## Use the new SaveManager system
-	if not SaveManager.save_exists(current_save_slot):
-		print("No save found in SaveManager, starting new game")
+	if not FileAccess.file_exists(SAVE_PATH):
+		print("No save file found, starting new game")
 		return false
-	
-	var err = SaveManager.load_game(current_save_slot)
+
+	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if not file:
+		push_error("Failed to load save: ", FileAccess.get_open_error())
+		return false
+
+	var json_text: String = file.get_as_text()
+	file.close()
+
+	var json: JSON = JSON.new()
+	var err: int = json.parse(json_text)
 	if err != OK:
-		push_error("SaveManager failed to load: ", err)
+		push_error("Save file JSON parse error: ", json.get_error_message())
 		return false
-	
-	# Apply loaded data
-	var data = SaveManager.current_save_data
-	_apply_save_data(data)
-	print("Game loaded via SaveManager from slot ", current_save_slot)
-	return true
 
-func _apply_save_data(data: Dictionary) -> void:
-	## Apply save data to GameState
+	var data: Dictionary = json.data
+
+	# Version check / migration could go here
 	var version: String = data.get("version", "0.0.0")
-	
+
 	credits = data.get("credits", 500)
 	current_tier = data.get("current_tier", 0)
 	owned_parts = data.get("owned_parts", {})
 	part_hp = data.get("part_hp", {})
-	
+
 	# Convert loaded arrays to typed arrays
 	var loaded_loadouts: Array = data.get("loadouts", [])
 	loadouts.clear()
 	for item in loaded_loadouts:
 		if item is Dictionary:
 			loadouts.append(item)
-	
+
 	var loaded_active_ids: Array = data.get("active_loadout_ids", [])
 	active_loadout_ids.clear()
 	for item in loaded_active_ids:
 		if item is String:
 			active_loadout_ids.append(item)
-	
+
 	var loaded_completed: Array = data.get("completed_arenas", [])
 	completed_arenas.clear()
 	for item in loaded_completed:
 		if item is String:
 			completed_arenas.append(item)
-	
-	var loaded_unlocked: Array = data.get("unlocked_arenas", ["arena_boot_camp"])
+
+	var loaded_unlocked: Array = data.get("unlocked_arenas", ["roxtan_park"])
 	unlocked_arenas.clear()
 	for item in loaded_unlocked:
 		if item is String:
 			unlocked_arenas.append(item)
-	
+
 	campaign_progress = data.get("campaign_progress", {"main": []})
 	settings = data.get("settings", settings)
 
-func _load_game_legacy() -> bool:
-	## Fallback to legacy load system
-	if not FileAccess.file_exists(SAVE_PATH):
-		print("No save file found, starting new game")
-		return false
-	
-	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
-	if not file:
-		push_error("Failed to load save: ", FileAccess.get_open_error())
-		return false
-	
-	var json_text: String = file.get_as_text()
-	file.close()
-	
-	var json: JSON = JSON.new()
-	var err: int = json.parse(json_text)
-	if err != OK:
-		push_error("Save file JSON parse error: ", json.get_error_message())
-		return false
-	
-	var data: Dictionary = json.data
-	_apply_save_data(data)
-	
-	print("Game loaded via legacy system, version: ", data.get("version", "unknown"))
+	print("Game loaded, version: ", version)
 	return true
 
+
+func save_exists(slot: int = 0) -> bool:
+	## Check if a save file exists
+	## Bible: Use FileAccess.file_exists for safe checking
+	return FileAccess.file_exists(SAVE_PATH)
+
+
 func delete_save() -> void:
-	## Delete save using SaveManager if available
-	if SaveManager:
-		SaveManager.delete_save()
-	
-	# Also delete legacy save
 	if FileAccess.file_exists(SAVE_PATH):
 		DirAccess.remove_absolute(SAVE_PATH)
 		print("Save file deleted")
-
-func save_exists() -> bool:
-	## Check if save exists in SaveManager or legacy
-	if SaveManager and SaveManager.save_exists(current_save_slot):
-		return true
-	return FileAccess.file_exists(SAVE_PATH)

@@ -68,6 +68,12 @@ func load_game(slot: int = 0) -> Error:
 	return OK
 
 
+func save_exists(slot: int = 0) -> bool:
+	## Check if a save exists for the given slot
+	## Bible: Delegate to GameState
+	return _game_state.save_exists(slot)
+
+
 func trigger_autosave_now() -> void:
 	## Call this after significant events (battle end, purchase, etc.)
 	_autosave_timer = 0.0

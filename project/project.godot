@@ -17,6 +17,7 @@ config/windows_native_icon="res://assets/ui/icon.ico"
 
 [autoload]
 
+EventBus="*res://autoload/event_bus.gd"
 DataLoader="*res://autoload/DataLoader.gd"
 GameState="*res://autoload/GameState.gd"
 SimulationManager="*res://autoload/SimulationManager.gd"
@@ -24,10 +25,7 @@ UIManager="*res://autoload/UIManager.gd"
 SaveManager="*res://autoload/SaveManager.gd"
 AudioManager="*res://autoload/AudioManager.gd"
 VFXManager="*res://autoload/VFXManager.gd"
-EventBus="*res://autoload/event_bus.gd"
-GameManager="*res://autoload/game_manager.gd"
-PerformanceMonitor="*res://autoload/performance_monitor.gd"
-AgentSystem="*res://autoload/agent_system.gd"
+AutomatedTestRunner="*res://autoload/automated_test_runner.gd"
 
 [display]
 
