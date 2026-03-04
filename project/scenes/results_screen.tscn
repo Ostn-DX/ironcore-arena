@@ -10,3 +10,159 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_results")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="MainPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -325.0
+offset_right = 300.0
+offset_bottom = 325.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="MainPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 15
+
+[node name="TitleLabel" type="Label" parent="MainPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "VICTORY!"
+horizontal_alignment = 1
+
+[node name="GradeLabel" type="Label" parent="MainPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 96
+text = "S"
+horizontal_alignment = 1
+
+[node name="ConditionLabel" type="Label" parent="MainPanel/VBox"]
+layout_mode = 2
+text = "All enemies eliminated"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MainPanel/VBox"]
+layout_mode = 2
+
+[node name="StatsSection" type="VBoxContainer" parent="MainPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatsTitle" type="Label" parent="MainPanel/VBox/StatsSection"]
+layout_mode = 2
+text = "Battle Statistics"
+horizontal_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="MainPanel/VBox/StatsSection"]
+layout_mode = 2
+
+[node name="TimeRow" type="HBoxContainer" parent="MainPanel/VBox/StatsSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainPanel/VBox/StatsSection/TimeRow"]
+layout_mode = 2
+text = "Battle Time:"
+
+[node name="Value" type="Label" parent="MainPanel/VBox/StatsSection/TimeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "2:34"
+horizontal_alignment = 2
+
+[node name="KDRRow" type="HBoxContainer" parent="MainPanel/VBox/StatsSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainPanel/VBox/StatsSection/KDRRow"]
+layout_mode = 2
+text = "K/D Ratio:"
+
+[node name="Value" type="Label" parent="MainPanel/VBox/StatsSection/KDRRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "5 / 0"
+horizontal_alignment = 2
+
+[node name="AccuracyRow" type="HBoxContainer" parent="MainPanel/VBox/StatsSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainPanel/VBox/StatsSection/AccuracyRow"]
+layout_mode = 2
+text = "Accuracy:"
+
+[node name="Value" type="Label" parent="MainPanel/VBox/StatsSection/AccuracyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "78.5%"
+horizontal_alignment = 2
+
+[node name="DamageRow" type="HBoxContainer" parent="MainPanel/VBox/StatsSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainPanel/VBox/StatsSection/DamageRow"]
+layout_mode = 2
+text = "Damage:"
+
+[node name="Value" type="Label" parent="MainPanel/VBox/StatsSection/DamageRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "1,250 dealt"
+horizontal_alignment = 2
+
+[node name="HSeparator3" type="HSeparator" parent="MainPanel/VBox"]
+layout_mode = 2
+
+[node name="RewardsSection" type="HBoxContainer" parent="MainPanel/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="CreditsIcon" type="Label" parent="MainPanel/VBox/RewardsSection"]
+layout_mode = 2
+text = "💰"
+
+[node name="CreditsValue" type="Label" parent="MainPanel/VBox/RewardsSection"]
+layout_mode = 2
+text = "150"
+
+[node name="ButtonsRow" type="HBoxContainer" parent="MainPanel/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="ContinueBtn" type="Button" parent="MainPanel/VBox/ButtonsRow"]
+layout_mode = 2
+text = "Continue"
+
+[node name="RestartBtn" type="Button" parent="MainPanel/VBox/ButtonsRow"]
+layout_mode = 2
+text = "Restart"
+
+[node name="EditBtn" type="Button" parent="MainPanel/VBox/ButtonsRow"]
+layout_mode = 2
+text = "Edit Bot"
+
+[node name="NextBtn" type="Button" parent="MainPanel/VBox/ButtonsRow"]
+layout_mode = 2
+text = "Next →"
