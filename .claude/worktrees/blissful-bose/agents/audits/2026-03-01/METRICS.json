@@ -1,0 +1,28 @@
+{
+  "audit_date": "2026-03-01",
+  "generated_at": "2026-03-01T00:32:17Z",
+  "simulated": false,
+  "overall_status": "DRIFT_DETECTED",
+  "vault_validation": "PASS",
+  "dev_gate": "PASS",
+  "runs_scanned": 4,
+  "gate_failures": 0,
+  "gate_failure_rate": 0.0,
+  "missing_manifests": 0,
+  "tampered_packs": 3,
+  "repeated_files": {
+    "agents/context/conventions.md": 3,
+    "agents/context/invariants.md": 2,
+    "agents/context/project_summary.md": 2
+  },
+  "drift_violations": [
+    {
+      "indicator": "tampered_pack_count",
+      "actual": 3.0,
+      "threshold": 1.0,
+      "severity": "critical",
+      "remediation": "3 context pack(s) failed SHA-256 integrity check. Files were modified outside the enforcement pipeline. Rebuild affected packs: `python tools/build_context_pack.py <ticket.md>`."
+    }
+  ],
+  "auto_ticket_generated": "AUDIT-0003"
+}

@@ -7,16 +7,16 @@ enum IndicatorType { SINGLE, GROUP_LEADER, GROUP_MEMBER }
 
 @export var indicator_type: IndicatorType = IndicatorType.SINGLE
 @export var radius: float = 25.0
-@export var color_player: Color = Color(0.2, 0.8, 1.0, 0.8)  # Cyan for player
-@export var color_enemy: Color = Color(1.0, 0.3, 0.3, 0.8)   # Red for enemy
-@export var color_group: Color = Color(1.0, 0.8, 0.0, 0.6)   # Gold for group
+@export var color_player: Color = Color(0.2, 0.8, 1.0, 0.8)	# Cyan for player
+@export var color_enemy: Color = Color(1.0, 0.3, 0.3, 0.8)	 # Red for enemy
+@export var color_group: Color = Color(1.0, 0.8, 0.0, 0.6)	 # Gold for group
 
 var is_selected: bool = false
 var is_hovered: bool = false
 var pulse_time: float = 0.0
 
 func _ready() -> void:
-	z_index = 10  # Draw on top
+	z_index = 10	# Draw on top
 	visible = false
 
 func _process(delta: float) -> void:
@@ -94,7 +94,7 @@ func _draw_group_member(color: Color, alpha: float) -> void:
 	# Dashed ring effect (using line segments)
 	var segments: int = 8
 	for i in range(segments):
-		if i % 2 == 0:  # Skip every other segment for dashed effect
+		if i % 2 == 0:	# Skip every other segment for dashed effect
 			continue
 		var angle1: float = (i / float(segments)) * TAU
 		var angle2: float = ((i + 1) / float(segments)) * TAU

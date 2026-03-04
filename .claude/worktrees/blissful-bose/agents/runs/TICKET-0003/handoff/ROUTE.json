@@ -1,0 +1,24 @@
+{
+  "ticket_id": "TICKET-0003",
+  "chosen_executor": "claude",
+  "reason": "needs_external_llm: true",
+  "estimated_cost_tier": "medium",
+  "required_gates": [
+    "build_context_pack",
+    "require_context_pack",
+    "verify_manifest",
+    "build_handoff_packet",
+    "human_review"
+  ],
+  "routing_factors": {
+    "scope": "architectural",
+    "risk": "high",
+    "tags": [],
+    "allowlist_count": 3,
+    "needs_external_llm": true,
+    "needs_codex": false,
+    "manual": false,
+    "explicit_executor": null
+  },
+  "generated_at": "2026-02-28T01:22:20Z"
+}

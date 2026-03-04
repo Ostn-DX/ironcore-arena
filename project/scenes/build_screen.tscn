@@ -32,112 +32,158 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
+[node name="MainGrid" type="GridContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 20
+columns = 3
 
-[node name="TopRow" type="HBoxContainer" parent="MarginContainer/VBox"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 20
-
-[node name="ShopPanel" type="VBoxContainer" parent="MarginContainer/VBox/TopRow"]
+[node name="ShopPanel" type="VBoxContainer" parent="MarginContainer/MainGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="Title" type="Label" parent="MarginContainer/VBox/TopRow/ShopPanel"]
+[node name="Title" type="Label" parent="MarginContainer/MainGrid/ShopPanel"]
 layout_mode = 2
 text = "SHOP"
 horizontal_alignment = 1
 
-[node name="ShopButtons" type="HBoxContainer" parent="MarginContainer/VBox/TopRow/ShopPanel"]
+[node name="ShopButtons" type="HBoxContainer" parent="MarginContainer/MainGrid/ShopPanel"]
 layout_mode = 2
-alignment = 1
 
-[node name="ShopList" type="ItemList" parent="MarginContainer/VBox/TopRow/ShopPanel"]
+[node name="ShopList" type="ItemList" parent="MarginContainer/MainGrid/ShopPanel"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="InventoryPanel" type="VBoxContainer" parent="MarginContainer/VBox/TopRow"]
+[node name="InventoryPanel" type="VBoxContainer" parent="MarginContainer/MainGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="Title" type="Label" parent="MarginContainer/VBox/TopRow/InventoryPanel"]
+[node name="Title" type="Label" parent="MarginContainer/MainGrid/InventoryPanel"]
 layout_mode = 2
 text = "INVENTORY"
 horizontal_alignment = 1
 
-[node name="InventoryList" type="ItemList" parent="MarginContainer/VBox/TopRow/InventoryPanel"]
+[node name="InventoryFilter" type="OptionButton" parent="MarginContainer/MainGrid/InventoryPanel"]
+layout_mode = 2
+
+[node name="InventoryList" type="ItemList" parent="MarginContainer/MainGrid/InventoryPanel"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MyBotsPanel" type="VBoxContainer" parent="MarginContainer/VBox/TopRow"]
+[node name="MyBotsPanel" type="VBoxContainer" parent="MarginContainer/MainGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="Title" type="Label" parent="MarginContainer/VBox/TopRow/MyBotsPanel"]
+[node name="Title" type="Label" parent="MarginContainer/MainGrid/MyBotsPanel"]
 layout_mode = 2
 text = "MY BOTS"
 horizontal_alignment = 1
 
-[node name="MyBotsList" type="ItemList" parent="MarginContainer/VBox/TopRow/MyBotsPanel"]
+[node name="MyBotsList" type="ItemList" parent="MarginContainer/MainGrid/MyBotsPanel"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="BotNameEdit" type="LineEdit" parent="MarginContainer/VBox/TopRow/MyBotsPanel"]
+[node name="BotNameEdit" type="LineEdit" parent="MarginContainer/MainGrid/MyBotsPanel"]
 layout_mode = 2
 placeholder_text = "Bot Name"
 
-[node name="PreviewPanel" type="Panel" parent="MarginContainer/VBox"]
+[node name="DescriptionPanel" type="VBoxContainer" parent="MarginContainer/MainGrid"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 150)
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="PreviewLabel" type="Label" parent="MarginContainer/VBox/PreviewPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-text = "Select an item"
+[node name="Title" type="Label" parent="MarginContainer/MainGrid/DescriptionPanel"]
+layout_mode = 2
+text = "ITEM DETAILS"
+horizontal_alignment = 1
+
+[node name="ItemIcon" type="TextureRect" parent="MarginContainer/MainGrid/DescriptionPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 5
+
+[node name="ItemNameLabel" type="Label" parent="MarginContainer/MainGrid/DescriptionPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+
+[node name="ItemStatsLabel" type="Label" parent="MarginContainer/MainGrid/DescriptionPanel"]
+layout_mode = 2
+
+[node name="ItemDescriptionLabel" type="Label" parent="MarginContainer/MainGrid/DescriptionPanel"]
+layout_mode = 2
 autowrap_mode = 3
 
-[node name="WeightLabel" type="Label" parent="MarginContainer/VBox/PreviewPanel"]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = -30.0
-offset_right = 150.0
-offset_bottom = -10.0
-grow_vertical = 0
-text = "Weight: 0 / 0 kg"
+[node name="ManufacturerLabel" type="Label" parent="MarginContainer/MainGrid/DescriptionPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
 
-[node name="CreditsLabel" type="Label" parent="MarginContainer/VBox/PreviewPanel"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -30.0
-offset_right = -10.0
-offset_bottom = -10.0
-grow_horizontal = 0
-grow_vertical = 0
+[node name="PreviewLabel" type="Label" parent="MarginContainer/MainGrid/DescriptionPanel"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Select an item to view details"
+
+[node name="ActionButton" type="Button" parent="MarginContainer/MainGrid/DescriptionPanel"]
+layout_mode = 2
+text = "Action"
+visible = false
+
+[node name="ActionsPanel" type="VBoxContainer" parent="MarginContainer/MainGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Title" type="Label" parent="MarginContainer/MainGrid/ActionsPanel"]
+layout_mode = 2
+text = "ACTIONS"
+horizontal_alignment = 1
+
+[node name="MountButton" type="Button" parent="MarginContainer/MainGrid/ActionsPanel"]
+layout_mode = 2
+text = "Mount"
+
+[node name="UnmountButton" type="Button" parent="MarginContainer/MainGrid/ActionsPanel"]
+layout_mode = 2
+text = "Unmount"
+
+[node name="EnableButton" type="Button" parent="MarginContainer/MainGrid/ActionsPanel"]
+layout_mode = 2
+text = "Enable"
+
+[node name="DisableButton" type="Button" parent="MarginContainer/MainGrid/ActionsPanel"]
+layout_mode = 2
+text = "Disable"
+
+[node name="TeamColorPicker" type="ColorPickerButton" parent="MarginContainer/MainGrid/ActionsPanel"]
+layout_mode = 2
+text = "Team Color"
+color = Color(0.8, 0.2, 0.2, 1)
+
+[node name="StatsContainer" type="VBoxContainer" parent="MarginContainer/MainGrid/ActionsPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="WeightLabel" type="Label" parent="MarginContainer/MainGrid/ActionsPanel/StatsContainer"]
+layout_mode = 2
+text = "Weight: 0"
+
+[node name="DPSLabel" type="Label" parent="MarginContainer/MainGrid/ActionsPanel/StatsContainer"]
+layout_mode = 2
+text = "DPS: 0"
+
+[node name="BottomBar" type="HBoxContainer" parent="MarginContainer/MainGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CreditsLabel" type="Label" parent="MarginContainer/MainGrid/BottomBar"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Credits: 0"
 
-[node name="BottomBar" type="HBoxContainer" parent="MarginContainer/VBox"]
+[node name="TestBtn" type="Button" parent="MarginContainer/MainGrid/BottomBar"]
 layout_mode = 2
-alignment = 1
+text = "Test Battle"
 
-[connection signal="item_selected" from="MarginContainer/VBox/TopRow/ShopPanel/ShopList" to="." method="_on_shop_selected"]
-[connection signal="item_selected" from="MarginContainer/VBox/TopRow/InventoryPanel/InventoryList" to="." method="_on_inventory_selected"]
-[connection signal="item_selected" from="MarginContainer/VBox/TopRow/MyBotsPanel/MyBotsList" to="." method="_on_my_bot_selected"]
-[connection signal="text_changed" from="MarginContainer/VBox/TopRow/MyBotsPanel/BotNameEdit" to="." method="_on_name_changed"]
+[node name="BackBtn" type="Button" parent="MarginContainer/MainGrid/BottomBar"]
+layout_mode = 2
+text = "Back"

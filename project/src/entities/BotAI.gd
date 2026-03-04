@@ -81,7 +81,7 @@ func _evaluate_engaging() -> void:
 		return
 	
 	# Bot handles firing in its own state machine
-	if bot.state == Bot.State.IDLE and bot.cooldown_timer <= 0:
+	if bot.state == Bot.State.ACTIVE and bot.weapon_cooldown_ticks <= 0:
 		bot.attack(target)
 
 

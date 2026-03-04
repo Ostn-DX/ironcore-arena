@@ -5,11 +5,17 @@ extends Node
 signal save_completed(success: bool)
 signal load_completed(success: bool)
 
-@onready var _game_state = get_node("/root/GameState")
-
 var autosave_enabled: bool = true
 var autosave_interval_seconds: float = 60.0
 var _autosave_timer: float = 0.0
+var current_save_data: Dictionary = {}
+
+var _game_state = null
+
+func _get_game_state():
+	if _game_state == null:
+		_game_state = get_node("/root/GameState")
+	return _game_state
 
 
 func _ready() -> void:
@@ -28,25 +34,38 @@ func _process(delta: float) -> void:
 
 func save() -> void:
 	## Manual save
-	_game_state.save_game()
+	_get_game_state().save_game()
 	save_completed.emit(true)
 
 
 func autosave() -> void:
 	## Automatic save (called on interval and key events)
-	_game_state.save_game()
+	_get_game_state().save_game()
 	print("Autosaved")
 
 
 func load() -> void:
 	## Manual load
-	var success: bool = _game_state.load_game()
+	var success: bool = _get_game_state().load_game()
 	load_completed.emit(success)
 
 
 func delete_save() -> void:
 	## Delete save file (for reset/new game)
-	_game_state.delete_save()
+	_get_game_state().delete_save()
+
+func save_exists(slot: int = 0) -> bool:
+	## Check if save exists
+	return _has_save()
+
+func save_game(slot: int = 0) -> Error:
+	## Save game via GameState
+	_get_game_state()._save_legacy()
+	return OK
+
+func load_game(slot: int = 0) -> Error:
+	## Load game - just return OK, GameState handles actual loading
+	return OK
 
 
 func save_exists(slot: int = 0) -> bool:

@@ -201,6 +201,41 @@ func remove_loadout(loadout_id: String) -> bool:
 	return false
 
 
+func save_loadout(loadout: Dictionary) -> void:
+	## Save/update a loadout - adds if new, updates if exists
+	## Called from build_screen when saving bot configuration
+	
+	if not loadout is Dictionary:
+		push_error("save_loadout: Invalid loadout - not a Dictionary")
+		return
+	
+	## Ensure loadout has required fields
+	if not loadout.has("name"):
+		loadout["name"] = "Bot " + str(loadouts.size() + 1)
+	
+	## Generate ID if not provided
+	if not loadout.has("id"):
+		loadout["id"] = "bot_%d" % (loadouts.size() + 1)
+	
+	var loadout_id: String = loadout.get("id", "")
+	var found: bool = false
+	
+	## Update existing loadout
+	for i in range(loadouts.size()):
+		if loadouts[i].get("id") == loadout_id:
+			loadouts[i] = loadout.duplicate()
+			found = true
+			break
+	
+	## Add new loadout if not found
+	if not found:
+		loadouts.append(loadout.duplicate())
+	
+	loadouts_changed.emit()
+	save_game()
+	print("GameState: Saved loadout '%s' (id: %s)" % [loadout.get("name", "unnamed"), loadout_id])
+
+
 func get_loadout(loadout_id: String) -> Dictionary:
 	for loadout in loadouts:
 		if loadout.get("id") == loadout_id:

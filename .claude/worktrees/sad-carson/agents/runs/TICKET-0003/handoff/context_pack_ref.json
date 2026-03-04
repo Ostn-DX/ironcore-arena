@@ -1,0 +1,21 @@
+{
+  "ticket_id": "TICKET-0003",
+  "pack_path": "tools/context_packs/TICKET-0003",
+  "manifest_path": "tools/context_packs/TICKET-0003/manifest.json",
+  "allowed_file_count": 3,
+  "vault_note_count": 4,
+  "files": [
+    "project_summary.md",
+    "invariants.md",
+    "conventions.md",
+    "ticket.md",
+    "allowed_files/agents/context/conventions.md",
+    "allowed_files/agents/context/invariants.md",
+    "allowed_files/agents/context/project_summary.md",
+    "vault_notes/02_Autonomy_Framework/Autonomy_Ladder_L0_to_L5.md",
+    "vault_notes/02_Autonomy_Framework/Autonomy_Scoring_Rubric.md",
+    "vault_notes/02_Autonomy_Framework/Escalation_Policy.md",
+    "vault_notes/09_Quality_Gates/Dev_Gate_Validation_System.md"
+  ],
+  "generated_at": "2026-02-28T01:03:06Z"
+}

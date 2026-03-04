@@ -1,8 +1,19 @@
 extends Node
 ## SimulationManager singleton - runs combat simulation in _physics_process.
-## Owns bot/projectile/hazard arrays. Exposes start_battle(), issue_command().
+## Owns bot/projectile/hazard arrays. Exposes start_battle(), issue_command() .
 ## Signals for tick events and battle end. Can run headless.
 ## OPTIMIZED: Reduced debug prints, cached lookups, pool usage
+## INTEGRATED: AI Combat System v1.0
+
+# Preload AI system components
+const SquadCoordinator = preload("res://scripts/ai/squad_coordinator.gd")
+const AITacticalContext = preload("res://scripts/ai/ai_tactical_context.gd")
+const Pathfinder = preload("res://scripts/ai/pathfinder.gd")
+const AIDebugDraw = preload("res://scripts/ai/ai_debug_draw.gd")
+const BotAIAdvanced = preload("res://scripts/ai/bot_ai_advanced.gd")
+const Bot = preload("res://src/entities/bot.gd")
+const WeaponSystemClass = preload("res://src/systems/weapon_system.gd")
+const DeterministicRngClass = preload("res://src/systems/deterministic_rng.gd")
 
 const TICKS_PER_SECOND: float = 60.0
 const DT: float = 1.0 / TICKS_PER_SECOND
@@ -54,14 +65,125 @@ var _part_data: Dictionary = {}
 var _sorted_bot_ids: Array = []
 var _sorted_proj_list: Array = []
 
+# Weapon system (instantiated per battle, not a singleton)
+var _weapon_system: WeaponSystemClass = null
+
+# Projectile array for weapon system (flat dictionaries, not objects)
+var _projectile_list: Array = []
+
+# Checkpoint tracking
+const CHECKSUM_INTERVAL_TICKS: int = 60
+var _checkpoints: Array = []  # Array of {tick, checksum}
+var _battle_seed: int = 0
+
+# ============================================================================
+# AI COMBAT SYSTEM INTEGRATION - Added by AGENT-001
+# ============================================================================
+
+## Enable AI debug visualization
+@export var enable_ai_debug: bool = false
+
+## Arena boundaries for position clamping and pathfinding
+@export var arena_bounds: Rect2 = Rect2(-400, -300, 800, 600)
+
+## Cover points for tactical AI (optional, can be set at runtime)
+@export var cover_points: PackedVector2Array = []
+
+## Squad coordinator for team-wide tactics
+var _squad_coordinator = null
+
+## Tactical context shared between all AI agents
+var _tactical_context = null
+
+## A* pathfinder for obstacle avoidance
+var _pathfinder = null
+
+## Debug visualization system
+var _debug_draw = null
+
+## Active team IDs for squad coordination
+var _active_teams: Array[int] = [0, 1]
+
+## Bot scene reference for spawning
+@export var bot_scene: PackedScene = null
+
+## Array of all bots for AI queries
+var _bots_array: Array = []
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_initialize_ai_system()
+
+func _initialize_ai_system() -> void:
+	if headless:
+		return
+	
+	# Create squad coordinator
+	_squad_coordinator = SquadCoordinator.new()
+	_squad_coordinator.name = "SquadCoordinator"
+	add_child(_squad_coordinator)
+	
+	# Create tactical context
+	_tactical_context = AITacticalContext.new()
+	_tactical_context.initialize(self, _squad_coordinator)
+	_tactical_context.set_arena_bounds(arena_bounds)
+	
+	# Set cover points
+	if not cover_points.is_empty():
+		_tactical_context.set_cover_points(cover_points)
+	
+	# Create pathfinder
+	_pathfinder = Pathfinder.new()
+	_pathfinder.set_bounds(arena_bounds)
+	
+	# Create debug drawer
+	if enable_ai_debug:
+		_debug_draw = AIDebugDraw.new()
+		_debug_draw.name = "AIDebugDraw"
+		_debug_draw.enabled = true
+		_debug_draw.set_squad_coordinator(_squad_coordinator)
+		_debug_draw.set_tactical_context(_tactical_context)
+		add_child(_debug_draw)
 
 func _physics_process(_delta: float) -> void:
 	if not is_running or is_paused:
 		return
 	
+	current_tick += 1
+	
+	# Update AI systems
+	if _squad_coordinator != null:
+		for team_id in _active_teams:
+			var team_bots: Array[Node] = _get_bots_by_team(team_id)
+			var enemy_bots: Array[Node] = _get_enemy_bots(team_id)
+			_squad_coordinator.update_team(team_id, team_bots, enemy_bots, current_tick)
+	
+	# Update bot AI controllers
+	for bot in _bots_array:
+		if bot.is_alive() and bot.has_method("get_ai_controller"):
+			var ai = bot.get_ai_controller()
+			if ai != null and ai.has_method("make_decision"):
+				ai.make_decision(current_tick)
+	
 	_run_tick()
+	
+	# Update debug visualization
+	if _debug_draw != null and _debug_draw.enabled:
+		_debug_draw.queue_redraw()
+
+func _get_bots_by_team(team_id: int) -> Array[Node]:
+	var result: Array[Node] = []
+	for bot in _bots_array:
+		if bot.team == team_id:
+			result.append(bot)
+	return result
+
+func _get_enemy_bots(team_id: int) -> Array[Node]:
+	var result: Array[Node] = []
+	for bot in _bots_array:
+		if bot.team != team_id:
+			result.append(bot)
+	return result
 
 func start_battle(arena_data: Dictionary, player_loadouts: Array, enemy_loadouts: Array, 
 				  p_headless: bool = false) -> void:
@@ -76,8 +198,12 @@ func start_battle(arena_data: Dictionary, player_loadouts: Array, enemy_loadouts
 	bots.clear()
 	projectiles.clear()
 	_pending_commands.clear()
+	_bots_array.clear()
 	_next_bot_id = 1
 	_next_proj_id = 1
+	
+	# Re-initialize AI with new bounds
+	_initialize_ai_system()
 	
 	# Load part data
 	_load_part_data()
@@ -87,8 +213,14 @@ func start_battle(arena_data: Dictionary, player_loadouts: Array, enemy_loadouts
 	
 	# Seed RNG
 	var seed_val: int = arena_data.get("seed", hash(arena_data.get("id", "") + str(Time.get_unix_time_from_system())))
-	rng = preload("res://src/systems/deterministic_rng.gd").new(seed_val)
-	
+	_battle_seed = seed_val
+	rng = DeterministicRngClass.new(seed_val)
+
+	# Create weapon system
+	_weapon_system = WeaponSystemClass.new()
+	_projectile_list.clear()
+	_checkpoints.clear()
+
 	# Spawn bots
 	_spawn_team(player_loadouts, 0, player_spawn_points)
 	_spawn_team(enemy_loadouts, 1, enemy_spawn_points)
@@ -98,484 +230,213 @@ func stop_battle() -> void:
 	bots.clear()
 	projectiles.clear()
 	_pending_commands.clear()
-
-func pause() -> void:
-	is_paused = true
-
-func resume() -> void:
-	is_paused = false
-
-func issue_command(bot_id: int, command_type: String, target: Variant) -> bool:
-	## Queue a command for next tick processing
-	if not bots.has(bot_id):
-		return false
-	
-	var bot = bots[bot_id]
-	if not bot.is_alive or current_tick < bot.command_cooldown_until:
-		return false
-	
-	_pending_commands.append({
-		"bot_id": bot_id,
-		"type": command_type,
-		"target": target,
-		"issued_tick": current_tick
-	})
-	
-	if not headless:
-		command_issued.emit(bot_id, command_type, target)
-	
-	return true
+	_bots_array.clear()
+	_projectile_list.clear()
+	if _weapon_system != null:
+		_weapon_system.reset()
+		_weapon_system = null
 
 func _run_tick() -> void:
 	if current_tick >= MAX_TICKS:
-		_resolve_stalemate()
+		battle_ended.emit("timeout", current_tick)
+		stop_battle()
 		return
-	
-	current_tick += 1
-	
-	# Process simulation steps
+
+	# Process pending commands
 	_process_commands()
-	_process_ai()
-	_process_movement()
-	_process_weapons()
-	_process_projectiles()
-	_process_status_effects()
-	_process_victory()
-	
-	if not headless:
-		tick_processed.emit(current_tick)
+
+	# Build sorted bot array for deterministic iteration
+	_sorted_bot_ids = bots.keys()
+	_sorted_bot_ids.sort()
+	var sorted_bots: Array = []
+	for bid in _sorted_bot_ids:
+		sorted_bots.append(bots[bid])
+
+	# Update bots
+	for bot in sorted_bots:
+		if bot.is_alive:
+			bot.process_tick(DT)
+
+	# Run weapon system
+	if _weapon_system != null and rng != null:
+		var weapon_events: Array = _weapon_system.process_tick(
+			sorted_bots, _projectile_list, rng, current_tick, DT, arena_bounds)
+		_process_weapon_events(weapon_events)
+
+	# Checkpoint
+	if current_tick > 0 and current_tick % CHECKSUM_INTERVAL_TICKS == 0:
+		var checksum: int = _compute_checkpoint(current_tick)
+		_checkpoints.append({"tick": current_tick, "checksum": checksum})
+
+	tick_processed.emit(current_tick)
 
 func _process_commands() -> void:
 	for cmd in _pending_commands:
-		var bot_id: int = cmd["bot_id"]
-		if not bots.has(bot_id):
-			continue
-		
-		var bot = bots[bot_id]
-		if not bot.is_alive:
-			continue
-		
-		bot.command_type = cmd["type"]
-		bot.command_target = cmd["target"]
-		bot.command_expiry_tick = current_tick + _get_command_duration(cmd["type"])
-		bot.command_cooldown_until = current_tick + 30
-	
+		command_issued.emit(cmd.bot_id, cmd.type, cmd.target)
 	_pending_commands.clear()
-	
-	# Expire old commands
-	for bot_id in bots:
-		var bot = bots[bot_id]
-		if bot.command_expiry_tick > 0 and current_tick >= bot.command_expiry_tick:
-			bot.command_type = ""
-			bot.command_target = null
-			bot.command_expiry_tick = -1
-
-func _get_command_duration(cmd_type: String) -> int:
-	match cmd_type:
-		"move": return 360
-		"follow", "focus": return 480
-	return 180
-
-func _process_ai() -> void:
-	# Sort bots by sim_id for determinism
-	_sorted_bot_ids = bots.keys()
-	_sorted_bot_ids.sort()
-	
-	for bot_id in _sorted_bot_ids:
-		var bot = bots[bot_id]
-		if not bot.is_alive:
-			continue
-		
-		if bot.command_type != "":
-			_process_command_behavior(bot)
-		else:
-			_ai_select_target(bot)
-			_ai_compute_movement(bot)
-
-func _process_command_behavior(bot) -> void:
-	match bot.command_type:
-		"move":
-			if bot.command_target is Vector2:
-				_ai_move_to_position(bot, bot.command_target)
-		"follow":
-			if bot.command_target is int and bots.has(bot.command_target):
-				_ai_follow_bot(bot, bots[bot.command_target])
-		"focus":
-			if bot.command_target is int and bots.has(bot.command_target):
-				bot.target_id = bot.command_target
-				_ai_compute_movement(bot)
-
-func _ai_select_target(bot) -> void:
-	var best_target: int = -1
-	var best_score: float = -999999.0
-	
-	for other_id in bots:
-		if other_id == bot.sim_id:
-			continue
-		var other = bots[other_id]
-		if not other.is_alive or other.team == bot.team:
-			continue
-		
-		var dist: float = bot.position.distance_to(other.position)
-		if dist > bot.detection_range:
-			continue
-		
-		var score: float = _compute_target_score(bot, other, dist)
-		if score > best_score:
-			best_score = score
-			best_target = other_id
-	
-	bot.target_id = best_target
-
-func _compute_target_score(bot, target, distance: float) -> float:
-	var profile: Dictionary = bot.ai_profile
-	var max_range: float = bot.detection_range
-	
-	var w_dist: float = profile.get("w_dist", 0.3)
-	var w_threat: float = profile.get("w_threat", 0.2)
-	var w_hp: float = profile.get("w_hp", 0.2)
-	var w_focus: float = profile.get("w_focus", 0.5)
-	
-	var dist_score: float = 1.0 - clamp(distance / max_range, 0.0, 1.0)
-	var threat_score: float = clamp(target.compute_dps() / 100.0, 0.0, 1.0)
-	var hp_score: float = 1.0 - clamp(float(target.hp) / float(target.max_hp), 0.0, 1.0)
-	var focus_score: float = 1.0 if target.sim_id == bot.target_id else 0.0
-	
-	return w_dist * dist_score + w_threat * threat_score + w_hp * hp_score + w_focus * focus_score
-
-func _ai_compute_movement(bot) -> void:
-	var target_pos: Vector2 = Vector2.ZERO
-	var has_target: bool = false
-	
-	if bot.target_id != -1 and bots.has(bot.target_id):
-		var target = bots[bot.target_id]
-		if target.is_alive:
-			target_pos = target.position
-			has_target = true
-	
-	if not has_target:
-		bot.velocity = bot.velocity.move_toward(Vector2.ZERO, bot.current_accel * DT)
-		return
-	
-	var to_target: Vector2 = target_pos - bot.position
-	var dist: float = to_target.length()
-	var dir: Vector2 = to_target.normalized()
-	
-	var max_weapon_range: float = _get_max_weapon_range(bot)
-	var ideal_dist: float = max_weapon_range * 0.9
-	var buffer: float = 50.0
-	
-	var desired_vel: Vector2
-	if dist > ideal_dist + buffer:
-		desired_vel = dir * bot.current_speed
-	elif dist < ideal_dist - buffer:
-		desired_vel = -dir * bot.current_speed * 0.8
-	else:
-		var strafe_dir: Vector2 = Vector2(-dir.y, dir.x) if bot.sim_id % 2 == 0 else Vector2(dir.y, -dir.x)
-		desired_vel = strafe_dir * bot.current_speed * 0.6
-	
-	bot.velocity = bot.velocity.move_toward(desired_vel, bot.current_accel * DT)
-	
-	# Update rotation
-	var target_rot: float = bot.rotation
-	if bot.target_id != -1 and bots.has(bot.target_id) and bots[bot.target_id].is_alive:
-		target_rot = rad_to_deg((bots[bot.target_id].position - bot.position).angle())
-	elif bot.velocity.length() > 1.0:
-		target_rot = rad_to_deg(bot.velocity.angle())
-	
-	bot.rotation = _lerp_angle_deg(bot.rotation, target_rot, bot.base_turn_rate * DT / 180.0)
-
-func _get_max_weapon_range(bot) -> float:
-	var max_range: float = 100.0
-	for w in bot.weapons:
-		var wpn_data: Dictionary = w["data"]
-		var stats: Dictionary = wpn_data.get("stats", {})
-		max_range = max(max_range, stats.get("range_max", 100.0))
-	return max_range
-
-func _ai_move_to_position(bot, target_pos: Vector2) -> void:
-	var to_target: Vector2 = target_pos - bot.position
-	if to_target.length() < 10.0:
-		bot.velocity = Vector2.ZERO
-	else:
-		bot.velocity = bot.velocity.move_toward(to_target.normalized() * bot.current_speed, bot.current_accel * DT)
-
-func _ai_follow_bot(bot, target_bot) -> void:
-	var to_target: Vector2 = target_bot.position - bot.position
-	var dist: float = to_target.length()
-	
-	if dist < bot.radius * 2.5:
-		bot.velocity = bot.velocity.move_toward(Vector2.ZERO, bot.current_accel * DT)
-	else:
-		bot.velocity = bot.velocity.move_toward(to_target.normalized() * bot.current_speed, bot.current_accel * DT)
-
-func _process_movement() -> void:
-	for bot_id in bots:
-		var bot = bots[bot_id]
-		if not bot.is_alive:
-			continue
-		
-		bot.position += bot.velocity * DT
-		bot.position.x = clamp(bot.position.x, bot.radius, arena_size.x - bot.radius)
-		bot.position.y = clamp(bot.position.y, bot.radius, arena_size.y - bot.radius)
-		
-		if not headless:
-			entity_moved.emit(bot.sim_id, bot.position, bot.rotation)
-	
-	_resolve_bot_collisions()
-
-func _resolve_bot_collisions() -> void:
-	var bot_list: Array = bots.values()
-	for i in range(bot_list.size()):
-		for j in range(i + 1, bot_list.size()):
-			var bot_a = bot_list[i]
-			var bot_b = bot_list[j]
-			if not bot_a.is_alive or not bot_b.is_alive:
-				continue
-			
-			var dist_sq: float = bot_a.position.distance_squared_to(bot_b.position)
-			var min_dist: float = bot_a.radius + bot_b.radius
-			
-			if dist_sq < min_dist * min_dist and dist_sq > 0.001:
-				var dist: float = sqrt(dist_sq)
-				var overlap: float = min_dist - dist
-				var push_dir: Vector2 = (bot_a.position - bot_b.position) / dist
-				
-				bot_a.position += push_dir * overlap * 0.5
-				bot_b.position -= push_dir * overlap * 0.5
-
-func _lerp_angle_deg(from: float, to: float, weight: float) -> float:
-	var diff: float = fmod(to - from + 540.0, 360.0) - 180.0
-	return from + diff * weight
-
-func _process_weapons() -> void:
-	for bot_id in bots:
-		var bot = bots[bot_id]
-		if not bot.is_alive:
-			continue
-		
-		var stats = bot.get_effective_stats()
-		if not stats["can_fire"]:
-			continue
-		
-		for w in bot.weapons:
-			if w["overheated"] or current_tick < w["next_fire_tick"]:
-				continue
-			
-			var wpn_data: Dictionary = w["data"]
-			var wpn_stats: Dictionary = wpn_data.get("stats", {})
-			
-			if w["heat"] >= wpn_stats.get("overheat_threshold", 40.0):
-				w["overheated"] = true
-				continue
-			
-			if bot.target_id == -1 or not bots.has(bot.target_id):
-				continue
-			
-			var target = bots[bot.target_id]
-			if not target.is_alive:
-				continue
-			
-			var dist: float = bot.position.distance_to(target.position)
-			if dist < wpn_stats.get("range_min", 0.0) or dist > wpn_stats.get("range_max", 100.0):
-				continue
-			
-			_fire_weapon(bot, w, target)
-	
-	# Dissipate heat
-	for bot_id in bots:
-		var bot = bots[bot_id]
-		for w in bot.weapons:
-			var wpn_stats: Dictionary = w["data"].get("stats", {})
-			w["heat"] = maxf(0.0, w["heat"] - wpn_stats.get("heat_dissipation_per_tick", 0.3))
-			
-			if w["overheated"] and w["heat"] <= wpn_stats.get("overheat_threshold", 40.0) * 0.5:
-				w["overheated"] = false
-
-func _fire_weapon(bot, weapon_slot, target) -> void:
-	var wpn_data: Dictionary = weapon_slot["data"]
-	var wpn_stats: Dictionary = wpn_data.get("stats", {})
-	
-	var fire_rate: float = wpn_stats.get("fire_rate", 1.0)
-	weapon_slot["next_fire_tick"] = current_tick + maxi(1, roundi(1.0 / fire_rate * TICKS_PER_SECOND))
-	weapon_slot["heat"] += wpn_stats.get("heat_per_shot", 2.0)
-	
-	if wpn_stats.get("projectile_type", "ballistic") == "beam":
-		_resolve_beam_hit(bot, target, wpn_data)
-	else:
-		var base_direction: Vector2 = (target.position - bot.position).normalized()
-		var accuracy: float = clamp(wpn_stats.get("accuracy", 0.7) + bot.accuracy_bonus, 0.1, 1.0)
-		var spread_deg: float = (1.0 - accuracy) * 30.0
-		var spread_rad: float = deg_to_rad(rng.randf_range(-spread_deg, spread_deg))
-		
-		_spawn_projectile(bot, base_direction.rotated(spread_rad), wpn_data)
-
-func _resolve_beam_hit(bot, target, wpn_data) -> void:
-	var wpn_stats: Dictionary = wpn_data.get("stats", {})
-	var damage: float = wpn_stats.get("damage_per_shot", 10.0)
-	damage *= (1.0 - clamp(0.0, 0.0, 0.9))  # Simplified resistance
-	_apply_damage(target, int(damage), bot.sim_id)
-
-func _spawn_projectile(bot, direction: Vector2, wpn_data: Dictionary) -> void:
-	var proj = preload("res://src/entities/projectile.gd").new(
-		_next_proj_id, bot.team, bot.sim_id, bot.position, direction, wpn_data
-	)
-	proj.spawn_tick = current_tick
-	projectiles[_next_proj_id] = proj
-	_next_proj_id += 1
-	
-	if not headless:
-		projectile_spawned.emit(proj.proj_id, proj.position, direction)
-
-func _process_projectiles() -> void:
-	var to_destroy: Array[int] = []
-	
-	# Sort for determinism
-	_sorted_proj_list = projectiles.values()
-	_sorted_proj_list.sort_custom(func(a, b): 
-		return a.spawn_tick < b.spawn_tick if a.spawn_tick != b.spawn_tick else a.proj_id < b.proj_id
-	)
-	
-	for proj in _sorted_proj_list:
-		if not proj.is_active or proj.update() or proj.check_out_of_bounds(arena_size):
-			to_destroy.append(proj.proj_id)
-			continue
-		
-		for bot_id in bots:
-			var bot = bots[bot_id]
-			if not bot.is_alive or bot.team == proj.team:
-				continue
-			
-			if proj.check_collision({"position": bot.position, "radius": bot.radius, "team": bot.team}):
-				var result: Dictionary = proj.resolve_hit({
-					"position": bot.position,
-					"radius": bot.radius,
-					"team": bot.team,
-					"resist_ballistic": 0.0,
-					"resist_energy": 0.0,
-					"resist_explosive": 0.0
-				}, rng._rng)
-				
-				if result["hit"]:
-					_apply_damage(bot, result["damage"], proj.source_bot_id)
-					for effect in result["effects"]:
-						bot.apply_status_effect(effect)
-				
-				to_destroy.append(proj.proj_id)
-				break
-	
-	for proj_id in to_destroy:
-		if projectiles.has(proj_id):
-			projectiles.erase(proj_id)
-			if not headless:
-				projectile_destroyed.emit(proj_id)
-
-func _apply_damage(bot, damage: int, _source_id: int) -> void:
-	if damage <= 0:
-		return
-	
-	bot.take_damage(damage)
-	
-	if not headless:
-		entity_damaged.emit(bot.sim_id, bot.hp, bot.max_hp)
-		if not bot.is_alive:
-			entity_destroyed.emit(bot.sim_id, bot.team)
-
-func _process_status_effects() -> void:
-	for bot_id in bots:
-		var bot = bots[bot_id]
-		if bot.is_alive:
-			bot.update_status_effects(current_tick)
-
-func _process_victory() -> void:
-	var player_alive: int = 0
-	var enemy_alive: int = 0
-	
-	for bot_id in bots:
-		var bot = bots[bot_id]
-		if bot.is_alive:
-			if bot.team == 0:
-				player_alive += 1
-			else:
-				enemy_alive += 1
-	
-	if enemy_alive == 0:
-		_end_battle("PLAYER_WIN")
-	elif player_alive == 0:
-		_end_battle("PLAYER_LOSS")
-
-func _resolve_stalemate() -> void:
-	var player_hp_pct: float = 0.0
-	var enemy_hp_pct: float = 0.0
-	var player_count: int = 0
-	var enemy_count: int = 0
-	
-	for bot_id in bots:
-		var bot = bots[bot_id]
-		var hp_pct: float = float(bot.hp) / float(bot.max_hp)
-		if bot.team == 0:
-			player_hp_pct += hp_pct
-			player_count += 1
-		else:
-			enemy_hp_pct += hp_pct
-			enemy_count += 1
-	
-	if player_count > 0:
-		player_hp_pct /= player_count
-	if enemy_count > 0:
-		enemy_hp_pct /= enemy_count
-	
-	_end_battle("PLAYER_WIN" if player_hp_pct > enemy_hp_pct else "PLAYER_LOSS")
-
-func _end_battle(result: String) -> void:
-	is_running = false
-	if not headless:
-		battle_ended.emit(result, current_tick)
 
 func _load_part_data() -> void:
-	_part_data = {}
-	for part in _data_loader.get_all_chassis():
-		if part is Dictionary and part.has("id"):
-			_part_data[part["id"]] = part
-	for part in _data_loader.get_all_plating():
-		if part is Dictionary and part.has("id"):
-			_part_data[part["id"]] = part
-	for part in _data_loader.get_all_weapons():
-		if part is Dictionary and part.has("id"):
-			_part_data[part["id"]] = part
+	_part_data = {
+		"chassis": _data_loader.get_all_chassis(),
+		"weapons": _data_loader.get_all_weapons(),
+		"plating": _data_loader.get_all_plating()
+	}
 
 func _setup_arena(arena_data: Dictionary) -> void:
-	var size: Dictionary = arena_data.get("size", {"width": 800, "height": 600})
-	arena_size = Vector2(size.get("width", 800), size.get("height", 600))
+	arena_size = Vector2(
+		arena_data.get("width", 800),
+		arena_data.get("height", 600)
+	)
 	
-	obstacles.clear()
-	for obs in arena_data.get("obstacles", []):
-		if obs is Dictionary:
-			obstacles.append(obs)
-	
+	# Setup spawn points
 	player_spawn_points.clear()
-	for sp in arena_data.get("spawn_points_player", []):
-		player_spawn_points.append(Vector2(sp.get("x", 100), sp.get("y", 300)))
-	
 	enemy_spawn_points.clear()
-	for sp in arena_data.get("spawn_points_enemy", []):
-		enemy_spawn_points.append(Vector2(sp.get("x", 700), sp.get("y", 300)))
+	
+	var spawn_config = arena_data.get("spawns", {})
+	for spawn in spawn_config.get("player", []):
+		player_spawn_points.append(Vector2(spawn.x, spawn.y))
+	for spawn in spawn_config.get("enemy", []):
+		enemy_spawn_points.append(Vector2(spawn.x, spawn.y))
 
-func _spawn_team(loadouts: Array, team: int, spawn_points: Array[Vector2]) -> void:
-	for i in range(min(loadouts.size(), spawn_points.size())):
+func _spawn_team(loadouts: Array, team: int, spawn_points: Array) -> void:
+	for i in range(loadouts.size()):
+		if i >= spawn_points.size():
+			break
+		
 		var loadout: Dictionary = loadouts[i]
-		var bot = preload("res://src/entities/bot.gd").new(_next_bot_id, team, spawn_points[i])
-		bot.setup_from_loadout(loadout, _part_data)
-		bots[_next_bot_id] = bot
+		var spawn_pos: Vector2 = spawn_points[i]
+		
+		var bot = Bot.new(_next_bot_id, team, spawn_pos)
+		bot.sim_id = _next_bot_id
 		_next_bot_id += 1
 		
-		if not headless:
-			entity_moved.emit(bot.sim_id, bot.position, bot.rotation)
+		# Setup bot from loadout
+		bot.setup(loadout, team, spawn_pos)
+		
+		# Note: Bot is RefCounted, not Node - AI controller attaches differently
+		# AI will be managed by SimulationManager, not as child node
+		
+		bots[bot.sim_id] = bot
+		_bots_array.append(bot)
+		
+		if _tactical_context != null:
+			_tactical_context.register_bot(bot, team)
 
-func get_battle_state() -> Dictionary:
-	return {
-		"tick": current_tick,
-		"bots": bots.size(),
-		"projectiles": projectiles.size(),
-		"running": is_running
-	}
+func issue_command(bot_id: int, cmd_type: String, target: Variant) -> void:
+	_pending_commands.append({
+		"bot_id": bot_id,
+		"type": cmd_type,
+		"target": target
+	})
+
+func get_bot(bot_id: int) -> Bot:
+	return bots.get(bot_id, null)
+
+func get_all_bots() -> Array[Bot]:
+	return _bots_array.duplicate()
+
+func get_sim_tick() -> int:
+	return current_tick
+
+func query_bots_in_radius(center: Vector2, radius: float) -> Array[Node]:
+	var result: Array[Node] = []
+	var radius_sq: float = radius * radius
+	for bot in _bots_array:
+		if center.distance_squared_to(bot.position) <= radius_sq:
+			result.append(bot)
+	return result
+
+func query_visible_bots(viewer: Node, max_range: float, view_angle: float) -> Array[Node]:
+	var result: Array[Node] = []
+	var viewer_pos: Vector2 = viewer.position
+	var viewer_forward: Vector2 = Vector2.RIGHT.rotated(viewer.rotation)
+	var half_angle: float = view_angle * 0.5
+	var range_sq: float = max_range * max_range
+	
+	for bot in _bots_array:
+		if bot.team == viewer.team or not bot.is_alive():
+			continue
+		
+		var to_bot: Vector2 = bot.position - viewer_pos
+		var dist_sq: float = to_bot.length_squared()
+		
+		if dist_sq > range_sq:
+			continue
+		
+		var angle: float = viewer_forward.angle_to(to_bot.normalized())
+		if absf(angle) <= half_angle:
+			result.append(bot)
+	
+	return result
+
+func set_seed(s: int) -> void:
+	## Set the RNG seed for the next simulation.
+	_battle_seed = s
+	if rng != null:
+		rng.seed(s)
+
+func get_checkpoint(tick: int) -> Dictionary:
+	## Get the checkpoint data for a specific tick.
+	for cp in _checkpoints:
+		if cp.get("tick", -1) == tick:
+			return cp
+	return {}
+
+func get_all_checkpoints() -> Array:
+	return _checkpoints.duplicate()
+
+func _compute_checkpoint(tick: int) -> int:
+	## Compute a deterministic state checksum for replay verification.
+	var checksum: int = tick
+	var sorted_ids: Array = bots.keys()
+	sorted_ids.sort()
+	for id in sorted_ids:
+		var bot = bots[id]
+		checksum = _hash_combine(checksum, bot.sim_id)
+		checksum = _hash_combine(checksum, _hash_vector2(bot.position))
+		checksum = _hash_combine(checksum, _hash_float(float(bot.hp)))
+		checksum = _hash_combine(checksum, bot.weapons.size())
+	# Hash RNG state
+	if rng != null:
+		checksum = _hash_combine(checksum, rng.get_state())
+	return checksum
+
+func _hash_combine(a: int, b: int) -> int:
+	# Simple hash combination
+	return ((a << 5) + a) ^ b
+
+func _hash_vector2(v: Vector2) -> int:
+	return _hash_combine(_hash_float(v.x), _hash_float(v.y))
+
+func _hash_float(f: float) -> int:
+	# Convert float to integer bits for deterministic hashing
+	return int(f * 1000.0) & 0x7FFFFFFF
+
+func _process_weapon_events(events: Array) -> void:
+	## Forward weapon system events to signals for stats and rendering.
+	for event in events:
+		var event_type: String = event.get("type", "")
+		match event_type:
+			"hit":
+				var target_id: int = event.get("target_id", -1)
+				var damage: float = event.get("damage", 0.0)
+				if bots.has(target_id):
+					var target_bot = bots[target_id]
+					entity_damaged.emit(target_id, target_bot.hp, target_bot.max_hp)
+			"kill":
+				var target_id: int = event.get("target_id", -1)
+				if bots.has(target_id):
+					var target_bot = bots[target_id]
+					entity_destroyed.emit(target_id, target_bot.team)
+			"projectile_spawned":
+				var proj_id: int = event.get("proj_id", -1)
+				var pos: Vector2 = event.get("position", Vector2.ZERO)
+				var dir: Vector2 = event.get("direction", Vector2.RIGHT)
+				projectile_spawned.emit(proj_id, pos, dir)
+			"projectile_expired":
+				var proj_id: int = event.get("proj_id", -1)
+				projectile_destroyed.emit(proj_id)
+
+func toggle_debug() -> void:
+	if _debug_draw != null:
+		_debug_draw.toggle()

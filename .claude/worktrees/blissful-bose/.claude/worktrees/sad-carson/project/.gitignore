@@ -1,0 +1,58 @@
+.godot/
+*.tmp
+.import/
+export/
+build/
+.DS_Store
+.vscode/
+.idea/
+
+# Godot 4+ specific
+.godot/
+*.import
+
+# Build artifacts
+*.exe
+*.x86_64
+*.apk
+*.ipa
+*.app/
+
+# OS files
+Thumbs.db
+.DS_Store
+.directory
+
+# IDE
+.vs/
+*.csproj.user
+*.sln.docstates
+
+# Secrets (NEVER commit these)
+*.key
+*.pem
+.env
+env/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Testing
+.gut/
+test_results/
+coverage/
+
+# Local-only files
+local/
+*.local

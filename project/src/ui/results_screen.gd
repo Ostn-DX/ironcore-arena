@@ -25,9 +25,9 @@ var appear_tween: Tween = null
 const COLOR_VICTORY: Color = Color(0.2, 0.9, 0.2)
 const COLOR_DEFEAT: Color = Color(0.9, 0.2, 0.2)
 const COLOR_DRAW: Color = Color(0.9, 0.9, 0.2)
-const COLOR_S_RANK: Color = Color(1.0, 0.84, 0.0)  # Gold
-const COLOR_A_RANK: Color = Color(0.8, 0.9, 1.0)   # Silver-ish
-const COLOR_B_RANK: Color = Color(0.8, 0.5, 0.3)   # Bronze-ish
+const COLOR_S_RANK: Color = Color(1.0, 0.84, 0.0)	# Gold
+const COLOR_A_RANK: Color = Color(0.8, 0.9, 1.0)	 # Silver-ish
+const COLOR_B_RANK: Color = Color(0.8, 0.5, 0.3)	 # Bronze-ish
 const COLOR_DEFAULT: Color = Color(0.7, 0.7, 0.7)
 
 # Current result data
@@ -123,7 +123,7 @@ func _create_background() -> void:
 
 func _create_title_section() -> void:
 	## Victory/Defeat/Draw title
-	var result_type = _current_result.get("result_type", 1)  # Default DEFEAT
+	var result_type = _current_result.get("result_type", 1)	# Default DEFEAT
 	var is_victory: bool = result_type == BattleManager.BattleResult.ResultType.VICTORY
 	var is_draw: bool = result_type == BattleManager.BattleResult.ResultType.DRAW or result_type == BattleManager.BattleResult.ResultType.TIMEOUT
 	
@@ -292,7 +292,7 @@ func _add_stat_row(label: String, value: String, extra: String = "") -> void:
 	
 	if extra != "":
 		var extra_node: Label = Label.new()
-		extra_node.text = "  (" + extra + ")"
+		extra_node.text = "	(" + extra + ")"
 		extra_node.add_theme_font_size_override("font_size", 12)
 		extra_node.modulate = Color(0.5, 0.5, 0.5)
 		row.add_child(extra_node)
@@ -366,21 +366,30 @@ func _create_buttons() -> void:
 	var continue_btn: Button = Button.new()
 	continue_btn.text = "Continue" if is_victory else "Retry"
 	continue_btn.size = Vector2(120, 45)
-	continue_btn.pressed.connect(_on_continue)
+	# Bible B1.3: Safe signal connection
+	if continue_btn and is_instance_valid(continue_btn):
+		if not continue_btn.pressed.is_connected(_on_continue):
+			continue_btn.pressed.connect(_on_continue)
 	buttons_container.add_child(continue_btn)
 	
 	# Restart button
 	var restart_btn: Button = Button.new()
 	restart_btn.text = "Restart"
 	restart_btn.size = Vector2(120, 45)
-	restart_btn.pressed.connect(_on_restart)
+	# Bible B1.3: Safe signal connection
+	if restart_btn and is_instance_valid(restart_btn):
+		if not restart_btn.pressed.is_connected(_on_restart):
+			restart_btn.pressed.connect(_on_restart)
 	buttons_container.add_child(restart_btn)
 	
 	# Edit loadout button
 	var edit_btn: Button = Button.new()
 	edit_btn.text = "Edit Bot"
 	edit_btn.size = Vector2(120, 45)
-	edit_btn.pressed.connect(_on_edit_loadout)
+	# Bible B1.3: Safe signal connection
+	if edit_btn and is_instance_valid(edit_btn):
+		if not edit_btn.pressed.is_connected(_on_edit_loadout):
+			edit_btn.pressed.connect(_on_edit_loadout)
 	buttons_container.add_child(edit_btn)
 	
 	# Next arena button (only on victory)
@@ -388,7 +397,10 @@ func _create_buttons() -> void:
 		var next_btn: Button = Button.new()
 		next_btn.text = "Next →"
 		next_btn.size = Vector2(100, 45)
-		next_btn.pressed.connect(_on_next_arena)
+		# Bible B1.3: Safe signal connection
+		if next_btn and is_instance_valid(next_btn):
+			if not next_btn.pressed.is_connected(_on_next_arena):
+				next_btn.pressed.connect(_on_next_arena)
 		buttons_container.add_child(next_btn)
 
 func _animate_appear() -> void:

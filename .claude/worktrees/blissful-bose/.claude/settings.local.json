@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python tools/test_vault_validation.py)",
+      "Bash(python tools/validate_vault.py)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(python tools/require_context_pack.py TICKET-001)",
+      "Bash(python tools/require_context_pack.py NONEXISTENT-999)",
+      "Bash(python tools/build_context_pack.py agents/tickets/TICKET-001.md)",
+      "Bash(python tools/verify_manifest.py TICKET-001)",
+      "Bash(python tools/build_context_pack.py tools/test_ticket_traversal.md)",
+      "Bash(python tools/build_context_pack.py tools/test_ticket_overlimit.md)",
+      "Bash(bash tools/dev_gate.sh --skip-godot)",
+      "Bash(ls \"C:\\\\Users\\\\ahols\\\\workspace\\\\.openclaw\\\\workspace\\\\ironcore-work\\\\Studio_OS\\\\09_Quality_Gates\"\" && ls \"C:Usersaholsworkspace.openclawworkspaceironcore-workStudio_OS02_Autonomy_Framework\"\")",
+      "Bash(python tools/run_ticket.py --ticket agents/tickets/TICKET-0001.md)",
+      "Bash(echo \"FINAL EXIT: $?\")",
+      "Bash(python -c \":*)",
+      "Bash(python tools/run_ticket.py --ticket agents/tickets/TICKET-001.md)",
+      "Bash(python tools/run_ticket.py --ticket agents/tickets/TICKET-0002.md)",
+      "Bash(python tools/run_ticket.py --ticket agents/tickets/TICKET-0003.md)",
+      "Bash(python tools/run_ticket.py --ticket agents/tickets/TICKET-0004.md)",
+      "Bash(python tools/studio_audit.py)",
+      "Bash(python tools/studio_audit.py --simulate-drift)",
+      "Bash(chmod +x /c/Users/ahols/workspace/.openclaw/workspace/ironcore-work/tools/studio_run.sh)",
+      "Bash(python -m pytest tools/tests/test_schema_validation.py -v)",
+      "Bash(python tools/tests/test_schema_validation.py -v)",
+      "Bash(python tools/validate_configs.py)",
+      "Bash(python tools/build_context_pack.py agents/tickets/TICKET-0001.md)",
+      "Bash(python tools/verify_manifest.py TICKET-0001)",
+      "Bash(python -c \"import json; m=json.load\\(open\\(''tools/context_packs/TICKET-0001/manifest.json''\\)\\); print\\(json.dumps\\(m, indent=2\\)[:500]\\)\")",
+      "Bash(python tools/require_context_pack.py TICKET-0001)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}

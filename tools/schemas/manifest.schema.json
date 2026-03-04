@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "manifest.schema.json",
+  "title": "Context Pack Manifest",
+  "description": "Integrity manifest for a ticket context pack produced by build_context_pack.py",
+  "type": "object",
+  "required": ["ticket_id", "allowed_file_count", "vault_note_count", "max_allowed", "files"],
+  "properties": {
+    "ticket_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]*-[0-9]+$",
+      "description": "Ticket identifier in WORD-DIGITS format (e.g. TICKET-0001)"
+    },
+    "allowed_file_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of code files copied from the allowlist"
+    },
+    "vault_note_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of vault notes copied from the notes list"
+    },
+    "max_allowed": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Maximum allowlist size enforced at build time"
+    },
+    "hash_algorithm": {
+      "type": "string",
+      "const": "sha256",
+      "description": "Hash algorithm used for file integrity. Always sha256."
+    },
+    "files": {
+      "type": "object",
+      "description": "Map of pack-relative file path to prefixed sha256 digest (sha256:<64hex>)",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^sha256:[a-f0-9]{64}$",
+        "description": "Prefixed SHA-256 digest in format sha256:<64 lowercase hex characters>"
+      }
+    }
+  },
+  "additionalProperties": false
+}

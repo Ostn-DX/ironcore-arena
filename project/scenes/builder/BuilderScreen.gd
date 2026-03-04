@@ -36,14 +36,32 @@ func _ready():
 	_update_weight_display()
 	
 	# Connect buttons
-	start_button.pressed.connect(_on_start_pressed)
-	save_button.pressed.connect(_on_save_pressed)
-	back_button.pressed.connect(_on_back_pressed)
+	# Bible B1.3: Safe signal connection
+	if start_button and is_instance_valid(start_button):
+	    if not start_button.pressed.is_connected(_on_start_pressed):
+	        start_button.pressed.connect(_on_start_pressed)
+	# Bible B1.3: Safe signal connection
+	if save_button and is_instance_valid(save_button):
+	    if not save_button.pressed.is_connected(_on_save_pressed):
+	        save_button.pressed.connect(_on_save_pressed)
+	# Bible B1.3: Safe signal connection
+	if back_button and is_instance_valid(back_button):
+	    if not back_button.pressed.is_connected(_on_back_pressed):
+	        back_button.pressed.connect(_on_back_pressed)
 	
 	# Connect list selections
-	chassis_list.item_selected.connect(_on_chassis_selected)
-	plating_list.item_selected.connect(_on_plating_selected)
-	weapon_list.item_selected.connect(_on_weapon_selected)
+	# Bible B1.3: Safe signal connection
+	if chassis_list and is_instance_valid(chassis_list):
+	    if not chassis_list.item_selected.is_connected(_on_chassis_selected):
+	        chassis_list.item_selected.connect(_on_chassis_selected)
+	# Bible B1.3: Safe signal connection
+	if plating_list and is_instance_valid(plating_list):
+	    if not plating_list.item_selected.is_connected(_on_plating_selected):
+	        plating_list.item_selected.connect(_on_plating_selected)
+	# Bible B1.3: Safe signal connection
+	if weapon_list and is_instance_valid(weapon_list):
+	    if not weapon_list.item_selected.is_connected(_on_weapon_selected):
+	        weapon_list.item_selected.connect(_on_weapon_selected)
 
 
 ## Populate component lists from DataLoader
@@ -57,17 +75,17 @@ func _populate_component_lists() -> void:
 	
 	# Chassis
 	for chassis in _data_loader.get_chassis_by_tier(tier):
-		var idx = chassis_list.add_item("%s (T%d)" % [chassis.name, chassis.tier])
+		var idx: String = chassis_list.add_item("%s (T%d)" % [chassis.name, chassis.tier])
 		chassis_list.set_item_metadata(idx, chassis.id)
 	
 	# Plating  
 	for plating in _data_loader.get_plating_by_tier(tier):
-		var idx = plating_list.add_item("%s (T%d)" % [plating.name, plating.tier])
+		var idx: String = plating_list.add_item("%s (T%d)" % [plating.name, plating.tier])
 		plating_list.set_item_metadata(idx, plating.id)
 	
 	# Weapons
 	for weapon in _data_loader.get_weapons_by_tier(tier):
-		var idx = weapon_list.add_item("%s (T%d)" % [weapon.name, weapon.tier])
+		var idx: String = weapon_list.add_item("%s (T%d)" % [weapon.name, weapon.tier])
 		weapon_list.set_item_metadata(idx, weapon.id)
 
 
@@ -76,8 +94,12 @@ func _create_bot_slots() -> void:
 	for i in range(5):
 		var slot = BuildSlot.new()
 		slot.slot_index = i
-		slot.clicked.connect(_on_slot_clicked.bind(i))
-		slot.bot_assembled.connect(_on_bot_assembled.bind(i))
+		# Bible B1.3: Safe signal connections
+		if slot and is_instance_valid(slot):
+			if not slot.clicked.is_connected(_on_slot_clicked.bind(i)):
+				slot.clicked.connect(_on_slot_clicked.bind(i))
+			if not slot.bot_assembled.is_connected(_on_bot_assembled.bind(i)):
+				slot.bot_assembled.connect(_on_bot_assembled.bind(i))
 		bot_slots.add_child(slot)
 		current_team.append(slot)
 

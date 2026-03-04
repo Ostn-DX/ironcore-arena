@@ -1,0 +1,135 @@
+[
+  {
+    "id": "mission_01_first_contact",
+    "name": "First Contact",
+    "mission_number": 1,
+    "act": "I: Initiate",
+    "tier": 1,
+    "weight_cap": 50,
+    "entry_fee": 0,
+    "reward_credits": 100,
+    "time_limit": 300,
+    "size": {"width": 600, "height": 400},
+    "theme": "clean",
+    "new_enemy": "scout",
+    "enemy_types": 1,
+    "objective": "elimination",
+    "objective_count": 3,
+    "player_bots": 1,
+    "enemies": [
+      {"type": "scout", "count": 3, "spawn_delay": 0}
+    ],
+    "obstacles": [],
+    "description": "Your first encounter. Learn to fight Scouts."
+  },
+  {
+    "id": "mission_02_scout_swarm",
+    "name": "Scout Swarm",
+    "mission_number": 2,
+    "act": "I: Initiate",
+    "tier": 1,
+    "weight_cap": 60,
+    "entry_fee": 0,
+    "reward_credits": 120,
+    "time_limit": 360,
+    "size": {"width": 700, "height": 450},
+    "theme": "clean",
+    "new_enemy": null,
+    "enemy_types": 1,
+    "objective": "elimination",
+    "objective_count": 8,
+    "player_bots": 1,
+    "enemies": [
+      {"type": "scout", "count": 4, "spawn_delay": 0},
+      {"type": "scout", "count": 4, "spawn_delay": 180}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 350, "y": 225, "width": 60, "height": 30}
+    ],
+    "description": "More Scouts. Master their movement patterns."
+  },
+  {
+    "id": "mission_03_steel_meeting",
+    "name": "Steel Meeting",
+    "mission_number": 3,
+    "act": "I: Initiate",
+    "tier": 1,
+    "weight_cap": 80,
+    "entry_fee": 0,
+    "reward_credits": 150,
+    "time_limit": 420,
+    "size": {"width": 800, "height": 500},
+    "theme": "industrial",
+    "new_enemy": "fighter",
+    "enemy_types": 2,
+    "objective": "elimination",
+    "objective_count": 6,
+    "player_bots": 2,
+    "enemies": [
+      {"type": "scout", "count": 4, "spawn_delay": 0},
+      {"type": "fighter", "count": 2, "spawn_delay": 60}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 300, "y": 200, "width": 80, "height": 30},
+      {"type": "cover", "x": 500, "y": 300, "width": 80, "height": 30}
+    ],
+    "description": "Fighters join the fight. Heavier armor requires different tactics."
+  },
+  {
+    "id": "mission_04_mixed_patrol",
+    "name": "Mixed Patrol",
+    "mission_number": 4,
+    "act": "I: Initiate",
+    "tier": 1,
+    "weight_cap": 90,
+    "entry_fee": 50,
+    "reward_credits": 180,
+    "time_limit": 480,
+    "size": {"width": 900, "height": 550},
+    "theme": "industrial",
+    "new_enemy": null,
+    "enemy_types": 2,
+    "objective": "elimination",
+    "objective_count": 10,
+    "player_bots": 2,
+    "enemies": [
+      {"type": "scout", "count": 6, "spawn_delay": 0},
+      {"type": "fighter", "count": 4, "spawn_delay": 120}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 250, "y": 180, "width": 80, "height": 30},
+      {"type": "cover", "x": 450, "y": 275, "width": 80, "height": 30},
+      {"type": "cover", "x": 650, "y": 370, "width": 80, "height": 30}
+    ],
+    "description": "Balanced enemy forces. Adapt your strategy."
+  },
+  {
+    "id": "mission_05_heavy_resistance",
+    "name": "Heavy Resistance",
+    "mission_number": 5,
+    "act": "I: Initiate",
+    "tier": 1,
+    "weight_cap": 100,
+    "entry_fee": 50,
+    "reward_credits": 200,
+    "time_limit": 540,
+    "size": {"width": 1000, "height": 600},
+    "theme": "rust",
+    "new_enemy": "tank",
+    "enemy_types": 3,
+    "objective": "elimination",
+    "objective_count": 9,
+    "player_bots": 2,
+    "enemies": [
+      {"type": "scout", "count": 4, "spawn_delay": 0},
+      {"type": "fighter", "count": 3, "spawn_delay": 60},
+      {"type": "tank", "count": 2, "spawn_delay": 180}
+    ],
+    "obstacles": [
+      {"type": "cover", "x": 300, "y": 200, "width": 100, "height": 40},
+      {"type": "cover", "x": 600, "y": 350, "width": 100, "height": 40},
+      {"type": "wall", "x": 500, "y": 100, "width": 20, "height": 150}
+    ],
+    "description": "Tanks appear. Heavy armor requires sustained damage."
+  }
+]

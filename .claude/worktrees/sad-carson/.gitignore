@@ -1,0 +1,5 @@
+/reports/
+/agent_runs/
+/tools/context_packs/
+*.tmp
+*.log

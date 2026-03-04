@@ -105,7 +105,7 @@ func _draw_radial_highlight(image: Image, center: Vector2i, radius: float, color
 			var dist: float = Vector2(x - highlight_center.x, y - highlight_center.y).length()
 			if dist < radius:
 				var alpha: float = 1.0 - (dist / radius)
-				alpha *= 0.4  ; Soft highlight
+				alpha *= 0.4  # Soft highlight
 				var current: Color = image.get_pixel(x, y)
 				if current.a > 0:
 					image.set_pixel(x, y, current.lerp(color, alpha))
@@ -130,7 +130,7 @@ func _draw_panel_line(image: Image, center: Vector2i, size: int, line_color: Col
 	var radius: float = size * 0.35
 	
 	for angle_deg in range(0, 360, 45):
-		if angle_deg % 90 == 0:  ; Only cardinal directions
+		if angle_deg % 90 == 0:  # Only cardinal directions
 			continue
 		
 		var angle: float = deg_to_rad(angle_deg)
@@ -161,7 +161,7 @@ func generate_weapon(weapon_type: String) -> Image:
 	image.fill(Color.TRANSPARENT)
 	
 	var base_color: Color = PALETTE["grey"].darkened(0.1)
-	var accent_color: Color = PALETTE["orange"]  ; Saturated for attack
+	var accent_color: Color = PALETTE["orange"]  # Saturated for attack
 	
 	match weapon_type:
 		"machine_gun":

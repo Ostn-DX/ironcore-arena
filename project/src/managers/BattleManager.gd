@@ -4,6 +4,7 @@ const Bot = preload("res://src/entities/bot.gd")
 const Arena = preload("res://src/entities/arena.gd")
 ## Manages combat simulation: spawning, updates, win/loss detection.
 ## OPTIMIZED: Cached lookups, reduced allocations, streamlined signals
+## INTEGRATED: EventBus for decoupled communication
 
 @onready var _data_loader = get_node("/root/DataLoader")
 @onready var _game_state = get_node("/root/GameState")
@@ -104,7 +105,7 @@ class BattleResult:
 
 var _current_result: BattleResult = null
 
-# Signals
+# Signals (kept for backward compatibility, also emit EventBus)
 signal battle_started(arena_id: String)
 signal battle_state_changed(new_state: BattleState, old_state: BattleState)
 signal countdown_tick(seconds_left: int)
@@ -287,11 +288,26 @@ func start_battle() -> void:
 	_countdown_timer = 3.0
 	_countdown_value = 3
 	battle_started.emit(_arena_id)
+	
+	# EventBus integration
+	if EventBus:
+		EventBus.battle_started.emit(_arena_id)
+		EventBus.battle_timer_update.emit(int(max_battle_time))
 
 func _change_state(new_state: BattleState) -> void:
 	var old_state: BattleState = current_state
 	current_state = new_state
 	battle_state_changed.emit(new_state, old_state)
+	
+	# EventBus integration
+	if EventBus:
+		match new_state:
+			BattleState.ACTIVE:
+				EventBus.game_state_changed.emit(GameManager.GameState.BATTLE_LOADING if old_state == BattleState.COUNTDOWN else GameManager.GameState.BATTLE_ACTIVE, new_state)
+			BattleState.PAUSED:
+				EventBus.game_paused.emit(true)
+			BattleState.ENDED:
+				EventBus.game_state_changed.emit(GameManager.GameState.BATTLE_ACTIVE, GameManager.GameState.MAIN_MENU)
 
 func _process(delta: float) -> void:
 	match current_state:
@@ -376,6 +392,11 @@ func _end_battle(result_type: BattleResult.ResultType) -> void:
 	
 	_calculate_rewards()
 	battle_ended.emit(_current_result)
+	
+	# EventBus integration
+	if EventBus:
+		var result_str = "victory" if result_type == BattleResult.ResultType.VICTORY else "defeat"
+		EventBus.battle_ended.emit(result_str, _current_result.to_dictionary())
 
 func _calculate_rewards() -> void:
 	if _current_result.result_type != BattleResult.ResultType.VICTORY:
@@ -406,6 +427,11 @@ func _calculate_rewards() -> void:
 	
 	if _current_result.result_type == BattleResult.ResultType.VICTORY:
 		_game_state.add_credits(rewards["credits"])
+		
+		# EventBus integration
+		if EventBus:
+			EventBus.credits_changed.emit(_game_state.credits, rewards["credits"])
+			EventBus.reward_claimed.emit("battle_victory", rewards["credits"])
 	
 	rewards_calculated.emit(rewards)
 
@@ -416,6 +442,11 @@ func _on_bot_destroyed(bot: Node) -> void:
 		stats["enemies_destroyed"] = stats.get("enemies_destroyed", 0) + 1
 	
 	bot_destroyed.emit(bot, bot.team)
+	
+	# EventBus integration
+	if EventBus:
+		EventBus.bot_destroyed.emit(bot.bot_name if bot.has("bot_name") else "Bot", bot.global_position if bot.has("global_position") else Vector2.ZERO, bot.team)
+	
 	_check_battle_end()
 
 func _clear_teams() -> void:

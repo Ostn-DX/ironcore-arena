@@ -38,10 +38,15 @@ func _ready() -> void:
 	flat = true
 	_setup_shadow()
 	_update_style()
-	mouse_entered.connect(_on_mouse_entered)
-	mouse_exited.connect(_on_mouse_exited)
-	button_down.connect(_on_button_down)
-	button_up.connect(_on_button_up)
+	# Bible B1.3: Safe signal connections
+	if not mouse_entered.is_connected(_on_mouse_entered):
+		mouse_entered.connect(_on_mouse_entered)
+	if not mouse_exited.is_connected(_on_mouse_exited):
+		mouse_exited.connect(_on_mouse_exited)
+	if not button_down.is_connected(_on_button_down):
+		button_down.connect(_on_button_down)
+	if not button_up.is_connected(_on_button_up):
+		button_up.connect(_on_button_up)
 
 func _setup_shadow() -> void:
 	_shadow_rect = ColorRect.new()

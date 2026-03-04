@@ -94,10 +94,21 @@ func _ready() -> void:
 func _connect_signals() -> void:
     ## Connect to SimulationManager signals
     
-        _simulation_manager.entity_destroyed.connect(_on_entity_destroyed)
-        _simulation_manager.entity_damaged.connect(_on_entity_damaged)
-        _simulation_manager.projectile_spawned.connect(_on_projectile_spawned)
-        _simulation_manager.command_issued.connect(_on_command_issued)
+        # Bible B1.3: Safe signal connection
+        if _simulation_manager and is_instance_valid(_simulation_manager):
+            if not _simulation_manager.entity_destroyed.is_connected(_on_entity_destroyed):
+                _simulation_manager.entity_destroyed.connect(_on_entity_destroyed)
+        # Bible B1.3: Safe signal connection
+        if _simulation_manager and is_instance_valid(_simulation_manager):
+            if not _simulation_manager.entity_damaged.is_connected(_on_entity_damaged):
+                _simulation_manager.entity_damaged.connect(_on_entity_damaged)
+        # Bible B1.3: Safe signal connection
+        if _simulation_manager and is_instance_valid(_simulation_manager):
+            if not _simulation_manager.projectile_spawned.is_connected(_on_projectile_spawned):
+                _simulation_manager.projectile_spawned.connect(_on_projectile_spawned)
+        if _simulation_manager and is_instance_valid(_simulation_manager):
+            if not _simulation_manager.command_issued.is_connected(_on_command_issued):
+                _simulation_manager.command_issued.connect(_on_command_issued)
 
 
 # ============================================================================
